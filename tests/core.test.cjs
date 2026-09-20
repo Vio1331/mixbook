@@ -1,0 +1,18 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const vm=require('node:vm');
+const fs=require('node:fs');
+const C=require('../core.js');
+const ctx={window:{}};vm.runInNewContext(fs.readFileSync(require('node:path').join(__dirname,'../seed.js'),'utf8'),ctx);
+const seed=()=>C.validate(C.clone(ctx.window.MIX_SEED));
+test('示例数据合法，初始酒柜为空',()=>{const s=seed();assert.equal(s.recipes.length,8);assert.equal(C.query(s,{availability:'ready'}).length,0)});
+test('有必需材料但无可选装饰仍匹配',()=>{const s=seed();s.pantry={gin:true,campari:true,vermouth:true};const m=C.match(s.recipes[0],s);assert.equal(m.ready,true);assert.equal(m.optional.length,1);assert.equal(C.query(s,{availability:'ready'}).length,1)});
+test('只差一种按必需材料计算',()=>{const s=seed();s.pantry={gin:true,campari:true};assert.equal(C.match(s.recipes[0],s).missing.length,1);assert.ok(C.query(s,{availability:'one'}).some(r=>r.id==='negroni'))});
+test('中英文别名及组合筛选',()=>{const s=seed();assert.equal(C.query(s,{q:'gin campari',bases:['金酒'],tags:['苦甜']})[0].id,'negroni');assert.equal(C.query(s,{q:'gin',bases:['朗姆']}).length,0)});
+test('不同设备编辑不同配方自动合并',()=>{const b=seed(),l=C.clone(b),r=C.clone(b);l.recipes[0].notes='本机新笔记';r.recipes[1].notes='手机笔记';const m=C.merge(b,l,r);assert.deepEqual(m.conflicts,[]);assert.equal(m.data.recipes[0].notes,'本机新笔记');assert.equal(m.data.recipes[1].notes,'手机笔记');C.validate(m.data)});
+test('双方修改同一配方需显式处理，不按时间覆盖',()=>{const b=seed(),l=C.clone(b),r=C.clone(b);l.recipes[0].notes='本机';r.recipes[0].notes='云端';r.recipes[0].updatedAt='2100-01-01';const m=C.merge(b,l,r);assert.ok(m.conflicts.includes('recipes:negroni'));assert.equal(m.data.recipes[0].notes,'本机')});
+test('删除与未修改可合并，删除与修改会产生冲突',()=>{const b=seed(),l=C.clone(b),r=C.clone(b);l.recipes.shift();let m=C.merge(b,l,r);assert.equal(m.conflicts.length,0);assert.ok(!m.data.recipes.some(x=>x.id==='negroni'));r.recipes[0].notes='新修改';m=C.merge(b,l,r);assert.ok(m.conflicts.includes('recipes:negroni'))});
+test('库存取消勾选可同步，收藏随删除清理',()=>{const b=seed();b.pantry.gin=true;b.favorites.negroni=true;const l=C.clone(b),r=C.clone(b);l.pantry.gin=false;r.recipes.shift();delete r.favorites.negroni;const m=C.merge(b,l,r);assert.equal(m.data.pantry.gin,false);assert.equal(m.data.favorites.negroni,undefined);C.validate(m.data)});
+test('拒绝不兼容结构、悬空材料与重复编号',()=>{const s=seed();assert.throws(()=>C.validate({...s,schemaVersion:2}));assert.throws(()=>C.validate({...s,pantry:1}));s.recipes[0].ingredients[0].id='missing';assert.throws(()=>C.validate(s));const d=seed();d.ingredients.push(d.ingredients[0]);assert.throws(()=>C.validate(d))});
+test('导入净化掉额外字段，防止令牌随导出流转',()=>{const s=seed();s.token='do-not-export';s.recipes[0].secret='not-a-field';const d=C.validate(s);assert.equal(d.token,undefined);assert.equal(d.recipes[0].secret,undefined)});
+test('拒绝危险属性名作为数据编号',()=>{const s=seed();s.ingredients[0].id='__proto__';assert.throws(()=>C.validate(s))});
