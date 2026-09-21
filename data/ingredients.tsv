@@ -1,0 +1,187 @@
+# id|中文名|分组|上级|品牌|English|图片
+spirit|蒸馏酒|基酒||||
+gin|金酒|基酒|spirit||Gin|gin
+london-dry|伦敦干金酒|基酒|gin||London Dry Gin|gin
+old-tom|老汤姆金酒|基酒|gin||Old Tom Gin|gin
+rum-all|朗姆酒|基酒|spirit||Rum|rum
+rum|白朗姆酒|基酒|rum-all||White Rum|rum
+cuban-white|古巴白朗姆|基酒|rum||White Cuban Ron|rum
+cuban-rum|古巴朗姆酒|基酒|rum-all||Cuban Rum|rum
+jamaican-rum|牙买加朗姆酒|基酒|rum-all||Jamaican Rum|aged-rum
+jamaican-gold|牙买加金朗姆|基酒|jamaican-rum||Gold Jamaican Rum|aged-rum
+jamaican-dark|牙买加深色朗姆|基酒|jamaican-rum||Jamaican Dark Rum|aged-rum
+jamaican-overproof|牙买加高酒精度白朗姆|基酒|rum||Jamaica Overproof White Rum|rum
+aged-rum|陈年朗姆酒|基酒|rum-all||Aged Rum|aged-rum
+blackstrap-rum|黑糖蜜朗姆|基酒|rum-all||Blackstrap Rum|aged-rum
+martinique-molasses|马提尼克糖蜜朗姆|基酒|rum-all||Martinique Molasses Rhum|aged-rum
+agricole|马提尼克农业朗姆|基酒|rum-all||Rhum Martinique Agricole|aged-rum
+puerto-rico-gold|波多黎各金朗姆|基酒|rum-all||Gold Puerto Rican Rum|aged-rum
+demerara-rum|德梅拉拉朗姆|基酒|rum-all||Demerara Rum|aged-rum
+goslings|高斯林黑朗姆|基酒|rum-all|Goslings|Goslings Rum|aged-rum
+havana-profundo|哈瓦那俱乐部 Profundo|基酒|rum-all|Havana Club|Ron Profundo Havana Club|aged-rum
+havana-smoky|哈瓦那俱乐部 Smoky|基酒|rum-all|Havana Club|Ron Smoky Havana Club|aged-rum
+vodka|伏特加|基酒|spirit||Vodka|vodka
+citron-vodka|柑橘伏特加|基酒|vodka||Vodka Citron|vodka
+vanilla-vodka|香草伏特加|基酒|vodka||Vanilla Vodka|vodka
+smirnoff|斯米诺伏特加|基酒|vodka|Smirnoff|Smirnoff Vodka|vodka
+whiskey|威士忌|基酒|spirit||Whiskey Whisky|whiskey
+bourbon|波本威士忌|基酒|whiskey||Bourbon Whiskey|whiskey
+rye|黑麦威士忌|基酒|whiskey||Rye Whiskey|whiskey
+scotch|苏格兰威士忌|基酒|whiskey||Scotch Whisky|whiskey
+blended-scotch|调和苏格兰威士忌|基酒|scotch||Blended Scotch Whisky|whiskey
+islay|艾雷岛单一麦芽威士忌|基酒|scotch||Islay Single Malt|whiskey
+lagavulin-16|乐加维林 16 年|基酒|islay|Lagavulin|Lagavulin 16y|whiskey
+irish-whiskey|爱尔兰威士忌|基酒|whiskey||Irish Whiskey|whiskey
+tequila|龙舌兰酒|基酒|spirit||Tequila|tequila
+tequila-agave|100% 龙舌兰酒|基酒|tequila||Tequila 100% Agave|tequila
+mezcal|梅斯卡尔|基酒|spirit||Mezcal|tequila
+espadin|Espadín 梅斯卡尔|基酒|mezcal||Espadin Mezcal|tequila
+brandy|白兰地|基酒|spirit||Brandy|brandy
+cognac|干邑|基酒|brandy||Cognac|brandy
+calvados|卡尔瓦多斯苹果白兰地|基酒|brandy||Calvados|brandy
+pisco|皮斯科|基酒|brandy||Pisco|brandy
+cachaca|卡莎萨|基酒|spirit||Cachaca Cachaça|rum
+aguardiente|古巴甘蔗烈酒|基酒|spirit||Cuban Aguardiente|rum
+grappa|白格拉帕|基酒|brandy||White Smooth Grappa|brandy
+vermouth|甜红味美思|利口酒与味美思|||Sweet Red Vermouth|vermouth
+dry-vermouth|干味美思|利口酒与味美思|||Dry Vermouth|dry-vermouth
+martini-rosso|马天尼 Rosso 甜红味美思|利口酒与味美思|vermouth|Martini|Martini Rosso|vermouth
+dolin-rouge|杜林 Rouge 甜红味美思|利口酒与味美思|vermouth|Dolin|Dolin Rouge|vermouth
+cinzano-rosso|仙山露 Rosso 甜红味美思|利口酒与味美思|vermouth|Cinzano|Cinzano Rosso|vermouth
+bitter-aperitif|苦味开胃酒|利口酒与味美思|||Bitter Aperitif|
+campari|金巴利|利口酒与味美思|bitter-aperitif|Campari|Bitter Campari|campari
+aperol|阿佩罗|利口酒与味美思|bitter-aperitif|Aperol|Aperol|aperol
+amaro|阿玛罗苦味利口酒|利口酒与味美思|||Amaro|
+nonino|诺尼诺阿玛罗|利口酒与味美思|amaro|Nonino|Amaro Nonino|
+cynar|西那尔洋蓟利口酒|利口酒与味美思|amaro|Cynar|Cynar|
+fernet|菲奈特苦味利口酒|利口酒与味美思|amaro||Fernet|
+fernet-branca|菲奈特布兰卡|利口酒与味美思|fernet|Fernet Branca|Fernet Branca|
+orange-liqueur|橙味利口酒（大类）|利口酒与味美思|||Orange Liqueur|orange-liqueur
+triple-sec|三重橙酒 Triple Sec|利口酒与味美思|orange-liqueur||Triple Sec|orange-liqueur
+curacao|库拉索橙酒|利口酒与味美思|orange-liqueur||Orange Curacao|orange-liqueur
+dry-curacao|干型库拉索橙酒|利口酒与味美思|curacao||Dry Curacao|orange-liqueur
+blue-curacao|蓝橙利口酒|利口酒与味美思|curacao||Blue Curacao|blue-curacao
+cointreau|君度橙酒|利口酒与味美思|triple-sec|Cointreau|Cointreau|cointreau
+bols-blue|波士蓝橙利口酒|利口酒与味美思|blue-curacao|Bols|Bols Blue Curacao|blue-curacao
+cognac-orange|干邑橙味利口酒|利口酒与味美思|orange-liqueur||Cognac Orange Liqueur|orange-liqueur
+grand-marnier|柑曼怡|利口酒与味美思|cognac-orange|Grand Marnier|Grand Marnier|orange-liqueur
+maraschino|马拉斯奇诺樱桃利口酒|利口酒与味美思|||Maraschino|
+luxardo-maraschino|卢萨朵马拉斯奇诺|利口酒与味美思|maraschino|Luxardo|Maraschino Luxardo|
+cherry-liqueur|樱桃利口酒|利口酒与味美思|||Cherry Brandy|
+luxardo-cherry|卢萨朵 Sangue Morlacco|利口酒与味美思|cherry-liqueur|Luxardo|Cherry Sangue Morlacco|
+apricot-brandy|杏子白兰地利口酒|利口酒与味美思|||Apricot Brandy|
+peach-brandy|桃白兰地利口酒|利口酒与味美思|||Peach Brandy|
+peach-schnapps|桃味甜酒|利口酒与味美思|||Peach Schnapps|
+coffee-liqueur|咖啡利口酒|利口酒与味美思|||Coffee Liqueur|coffee-liqueur
+kahlua|甘露咖啡利口酒|利口酒与味美思|coffee-liqueur|Kahlua|Kahlúa|coffee-liqueur
+cacao-brown|深色可可利口酒|利口酒与味美思|||Crème de Cacao Brown|
+cacao-white|白可可利口酒|利口酒与味美思|||Crème de Cacao White|
+menthe-green|绿薄荷利口酒|利口酒与味美思|||Crème de Menthe Green|
+menthe-white|白薄荷利口酒|利口酒与味美思|||Crème de Menthe White|
+violette|紫罗兰利口酒|利口酒与味美思|||Crème de Violette|
+mure|黑莓利口酒|利口酒与味美思|||Crème de Mûre|
+cassis|黑加仑利口酒|利口酒与味美思|||Crème de Cassis|
+raspberry-liqueur|覆盆子利口酒|利口酒与味美思|||Raspberry Liqueur|
+passion-liqueur|百香果利口酒|利口酒与味美思|||Passion Fruit Liqueur|
+amaretto|杏仁利口酒|利口酒与味美思|||Amaretto|
+hazelnut-liqueur|榛子利口酒|利口酒与味美思|||Hazelnut Liqueur|
+frangelico|榛子弗朗格里科|利口酒与味美思|hazelnut-liqueur|Frangelico|Frangelico|
+herbal-liqueur|草本利口酒|利口酒与味美思|||Herbal Liqueur|
+chartreuse-green|绿查特酒|利口酒与味美思|herbal-liqueur|Chartreuse|Green Chartreuse|chartreuse
+chartreuse-yellow|黄查特酒|利口酒与味美思|herbal-liqueur|Chartreuse|Yellow Chartreuse|
+benedictine|廊酒|利口酒与味美思|herbal-liqueur|Bénédictine|DOM Bénédictine|
+drambuie|杜林标威士忌利口酒|利口酒与味美思|herbal-liqueur|Drambuie|Drambuie|
+falernum|法勒南香料甜酒|利口酒与味美思|||Falernum|
+allspice-liqueur|多香果利口酒|利口酒与味美思|||Allspice Dram|
+st-elizabeth|圣伊丽莎白多香果酒|利口酒与味美思|allspice-liqueur|St. Elizabeth|Allspice Saint Elizabeth|
+absinthe|苦艾酒|利口酒与味美思|||Absinthe|
+anise-liqueur|茴香利口酒|利口酒与味美思|||Anise Liqueur|
+pernod|潘诺茴香酒|利口酒与味美思|anise-liqueur|Pernod|Pernod|
+aromatized-wine|加香葡萄酒|利口酒与味美思|||Aromatized Wine|dry-vermouth
+lillet|利莱白|利口酒与味美思|aromatized-wine|Lillet|Lillet Blanc|dry-vermouth
+sparkling|起泡酒|葡萄酒|||Sparkling Wine|champagne
+champagne|香槟|葡萄酒|sparkling||Champagne|champagne
+prosecco|普罗塞克|葡萄酒|sparkling||Prosecco|champagne
+white-wine|干白葡萄酒|葡萄酒|||Dry White Wine|
+red-wine|红葡萄酒|葡萄酒|||Red Wine|
+tawny-port|茶色波特酒|葡萄酒|||Tawny Port|
+sherry|雪莉酒|葡萄酒|||Sherry|
+amontillado|阿蒙蒂亚雪莉|葡萄酒|sherry||Amontillado|
+palo-cortado|帕罗科塔多雪莉|葡萄酒|sherry||Palo Cortado|
+bitters|调味苦精|苦精与调味|||Bitters|bitters
+aromatic-bitters|芳香苦精|苦精与调味|bitters||Aromatic Bitters|bitters
+angostura|安高天娜芳香苦精|苦精与调味|aromatic-bitters|Angostura|Angostura Bitters|angostura
+peychauds|佩肖氏苦精|苦精与调味|aromatic-bitters|Peychaud's|Peychaud’s Bitters|peychauds
+orange-bitters|橙味苦精|苦精与调味|bitters||Orange Bitters|bitters
+amargo-bitters|Amargo 苦精|苦精与调味|bitters||Amargo Bitters|bitters
+worcestershire|伍斯特酱|苦精与调味|||Worcestershire Sauce|
+hot-sauce|辣椒汁|苦精与调味|||Hot Sauce|
+tabasco|塔巴斯科辣椒汁|苦精与调味|hot-sauce|Tabasco|Tabasco|
+salt|盐|糖与其他|||Salt|salt
+celery-salt|芹菜盐|苦精与调味|||Celery Salt|salt
+pepper|黑胡椒|苦精与调味|||Pepper|
+orange-flower|橙花水|苦精与调味|||Orange Flower Water|
+vanilla-extract|香草精|苦精与调味|||Vanilla Extract|
+lime|青柠汁|果汁与汽水|||Fresh Lime Juice|lime-juice
+lemon|柠檬汁|果汁与汽水|||Fresh Lemon Juice|lemon-juice
+orange-juice|鲜橙汁|果汁与汽水|||Fresh Orange Juice|orange-juice
+pineapple-juice|菠萝汁|果汁与汽水|||Fresh Pineapple Juice|pineapple-juice
+grapefruit-juice|葡萄柚汁|果汁与汽水|||Grapefruit Juice|
+cranberry|蔓越莓汁|果汁与汽水|||Cranberry Juice|
+tomato|番茄汁|果汁与汽水|||Tomato Juice|
+cane-juice|甘蔗汁|果汁与汽水|||Sugar Cane Juice|
+peach-puree|白桃果泥|果汁与汽水|||White Peach Puree|
+passion-puree|百香果泥|果汁与汽水|||Passion Fruit Puree|
+soda|苏打水|果汁与汽水|||Soda Water|soda
+tonic|汤力水|果汁与汽水|||Tonic Water|soda
+cola|可乐|果汁与汽水|||Cola|cola
+ginger-beer|姜汁啤酒|果汁与汽水|||Ginger Beer|ginger-beer
+ginger-ale|干姜水|果汁与汽水|||Ginger Ale|ginger-beer
+grapefruit-soda|粉红葡萄柚汽水|果汁与汽水|||Pink Grapefruit Soda|
+water|饮用水|果汁与汽水|||Water|soda
+sugar|细砂糖|糖与其他|||Superfine Sugar|sugar
+cane-sugar|白蔗糖|糖与其他|sugar||White Cane Sugar|sugar
+sugar-cube|方糖|糖与其他|sugar||Sugar Cube|sugar
+powdered-sugar|糖粉|糖与其他|sugar||Powdered Sugar|sugar
+vanilla-sugar|香草糖|糖与其他|||Vanilla Sugar|sugar
+syrup|原味糖浆|糖与其他|||Simple Syrup Sugar Syrup|syrup
+honey|蜂蜜|糖与其他|||Honey|honey
+honey-syrup|蜂蜜糖浆|糖与其他|||Honey Syrup Honey Mix|honey
+monin-honey|莫林蜂蜜糖浆|糖与其他|honey-syrup|Monin|Monin Honey Syrup|honey
+demerara-syrup|德梅拉拉糖浆|糖与其他|||Demerara Syrup|syrup
+raspberry-syrup|覆盆子糖浆|糖与其他|||Raspberry Syrup|grenadine
+grenadine|红石榴糖浆|糖与其他|||Grenadine Syrup|grenadine
+passion-syrup|百香果糖浆|糖与其他|||Passion Fruit Syrup|
+orgeat|杏仁糖浆|糖与其他|||Orgeat Syrup|orgeat
+agave-nectar|龙舌兰糖浆|糖与其他|||Agave Nectar|honey
+elderflower-cordial|接骨木花果露|糖与其他|||Elderflower Cordial|
+chamomile-cordial|洋甘菊果露|糖与其他|||Chamomile Cordial|
+honey-chamomile|蜂蜜洋甘菊混合液|糖与其他|||Honey Chamomile Mix|honey
+donns-mix|Donn’s Mix|糖与其他|||Donn’s Mix|
+cream|鲜奶油|糖与其他|||Fresh Cream|cream
+coconut-cream|椰子奶油|糖与其他|||Coconut Cream|
+egg-white|蛋清|糖与其他|||Egg White|egg
+egg-yolk|蛋黄|糖与其他|||Egg Yolk|egg
+espresso|浓缩咖啡|糖与其他|||Espresso|coffee
+coffee|热黑咖啡|糖与其他|||Hot Coffee|coffee
+orange|鲜橙|新鲜材料与装饰|||Orange|orange
+lemon-fruit|鲜柠檬|新鲜材料与装饰|||Lemon|lemon
+lime-fruit|鲜青柠|新鲜材料与装饰|||Lime|lime
+pineapple|菠萝|新鲜材料与装饰|||Pineapple|pineapple
+passion-fruit|百香果|新鲜材料与装饰|||Passion Fruit|
+peach|桃子|新鲜材料与装饰|||Peach|
+mint|薄荷|新鲜材料与装饰|||Mint|mint
+basil|意大利罗勒|新鲜材料与装饰|||Italian Basil|basil
+ginger|鲜姜|新鲜材料与装饰|||Ginger Gengibre|ginger
+candied-ginger|糖渍姜片|新鲜材料与装饰|||Candied Ginger|
+cherry|鸡尾酒樱桃|新鲜材料与装饰|||Cocktail Maraschino Cherry|cherry
+raspberry|覆盆子|新鲜材料与装饰|||Raspberry|
+blackberry|黑莓|新鲜材料与装饰|||Blackberry|
+berries|新鲜莓果|新鲜材料与装饰|||Berries|
+grapes|白葡萄|新鲜材料与装饰|||White Grapes|
+olive|绿橄榄|新鲜材料与装饰|||Green Olive|olive
+celery|芹菜|新鲜材料与装饰|||Celery|
+chili|红辣椒|新鲜材料与装饰|||Red Chili Pepper|
+nutmeg|肉豆蔻|新鲜材料与装饰|||Nutmeg|
+cloves|丁香|新鲜材料与装饰|||Cloves|
+coffee-beans|咖啡豆|新鲜材料与装饰|||Coffee Beans|coffee
