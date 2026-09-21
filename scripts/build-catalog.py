@@ -46,21 +46,16 @@ def rows(s):
 recipes=[]
 for line in (root/'data/recipes.tsv').read_text().splitlines():
  if not line or line.startswith('#'):continue
- p=line.split('|');assert len(p)==11,(len(p),line)
- slug,name,base,glass,method,fmt,family,formula,garnish,steps,subject=p
+ p=line.split('|');assert len(p)==10,(len(p),line)
+ slug,name,base,glass,method,flavors,formula,garnish,steps,subject=p
  assert slug in facts,slug
  image=slug if (root/f'assets/cocktails/{slug}.webp').exists() or slug=='negroni' else ''
- families=family.split(','); tags=[]
- if any(x in families for x in ['Sour','Daiquiri','Margarita']):tags+=['酸甜','柑橘']
- if any(x in families for x in ['Highball','Fizz','Collins','Spritz','起泡酒']):tags+=['气泡','清爽']
- if any(x in families for x in ['开胃酒','Negroni']):tags+=['苦甜']
- if 'Tiki' in families:tags+=['热带']
- if '奶油类' in families:tags+=['醇厚']
- recipes.append(dict(id='iba-'+slug,name=name,en=facts[slug]['name'],base=base,glass=glass,method=method,formats=[fmt],families=families,tags=tags,ingredients=rows(formula),garnishes=rows(garnish),steps=[steps],notes=notes.get(slug,''),source=facts[slug]['url'],versions=[],parentId='iba-'+parents[slug] if slug in parents else '',ibaCategory='难忘经典' if slug in U else '当代经典' if slug in T else '新时代',catalog=True,sample=False,image=image,createdAt='2026-09-21T00:00:00.000Z',updatedAt='2026-09-21T00:00:00.000Z'))
+ tags=list(filter(None,flavors.split(',')))
+ recipes.append(dict(id='iba-'+slug,name=name,en=facts[slug]['name'],base=base,glass=glass,method=method,tags=tags,ingredients=rows(formula),garnishes=rows(garnish),steps=[steps],notes=notes.get(slug,''),source=facts[slug]['url'],versions=[],parentId='iba-'+parents[slug] if slug in parents else '',sourceName='IBA · '+('难忘经典' if slug in U else '当代经典' if slug in T else '新时代'),catalog=True,sample=False,image=image,createdAt='2026-09-21T00:00:00.000Z',updatedAt='2026-09-21T00:00:00.000Z'))
 assert len(recipes)==len(facts)==102
 assert len({r['id'] for r in recipes})==102
-options=dict(glasses=sorted({r['glass'] for r in recipes}),tags=sorted({t for r in recipes for t in r['tags']}),formats=['短饮','长饮','热饮'],families=sorted({f for r in recipes for f in r['families']}))
-d=dict(schemaVersion=2,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-21-v2')
+options=dict(glasses=sorted({r['glass'] for r in recipes}),tags=sorted({t for r in recipes for t in r['tags']}),sources=['IBA · 难忘经典','IBA · 当代经典','IBA · 新时代'])
+d=dict(schemaVersion=2,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-21-sources-v3')
 (root/'seed.js').write_text('/* IBA recipe facts checked 2026-09-21. See data/sources.json. */\nwindow.MIX_SEED='+json.dumps(d,ensure_ascii=False,separators=(',',':'))+';\n')
-(root/'data/sources.json').write_text(json.dumps(dict(checkedAt='2026-09-21',index='https://iba-world.com/cocktails/all-cocktails/',count=102,editorialNote='杯形按官网方法选择一个允许选项；短饮/长饮/派系为本站整理，并非 IBA 官方分类。中文步骤为重新表述。',recipes=[{k:x[k] for k in ['slug','name','url']} for x in facts.values()]),ensure_ascii=False,indent=2))
+(root/'data/sources.json').write_text(json.dumps(dict(checkedAt='2026-09-21',index='https://iba-world.com/cocktails/all-cocktails/',count=102,editorialNote='杯形按官网方法选择一个允许选项；IBA 三个系列分别记为来源词条。风味标签为本站描述，中文步骤为重新表述。',recipes=[{k:x[k] for k in ['slug','name','url']} for x in facts.values()]),ensure_ascii=False,indent=2))
 print(len(items),'ingredients;',len(recipes),'recipes;',sum(bool(r['image']) for r in recipes),'photos')
