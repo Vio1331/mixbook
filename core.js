@@ -42,7 +42,8 @@ function installCatalog(input,catalog){
    const raw=input.recipes.find(x=>x.id===r.id);
    // This catalog revision changes metadata only. Keep personal formulas, notes and versions.
    if(raw.sourceName===undefined)existing.sourceName=r.sourceName;
-   if(!existing.customized){existing.base=r.base;existing.tags=[...new Set([...existing.tags,...r.tags])];if(!existing.image)existing.image=r.image}
+   if(!existing.customized){existing.base=r.base;existing.tags=[...new Set([...existing.tags,...r.tags])]}
+   if(existing.catalog&&!existing.image)existing.image=r.image;
    continue;
   }
   // A catalog already installed on this device may have deliberate recipe deletions.
