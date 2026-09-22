@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-09-22",
+  "note": "新增酒款仅作为可选目录，不会自动加入个人酒柜。分类用于浏览；matchParent=false 阻止跨边界匹配。",
+  "migrations": {
+    "vermouth": {"name": "甜红味美思"},
+    "orange-liqueur": {"name": "橙味利口酒（大类）"}
+  },
+  "metadata": {
+    "vermouth": {"aliases": ["甜红味美思", "甜味美思", "红威末酒"]},
+    "orange-liqueur": {"aliases": ["橙味利口酒（大类）", "橙酒"]},
+    "dry-gin": {"aliases": ["干型金酒"]},
+    "sloe-gin": {"matchParent": false, "aliases": ["黑刺李利口酒"]},
+    "monkey47-dry": {"aliases": ["猴王47干金酒", "黑森林干金酒"], "source": "https://monkey47.com/nutritional-information"},
+    "monkey47-sloe": {"aliases": ["猴王47黑刺李"], "source": "https://monkey47.com/nutritional-information"},
+    "beefeater": {"source": "https://www.beefeatergin.com/en/blog/what-is-dry-gin/"},
+    "havana-7": {"aliases": ["哈瓦那7年", "哈瓦那俱乐部7年黑朗姆"], "source": "https://havana-club.com/en/product/havana-club-7/"},
+    "laphroaig-10": {"aliases": ["拉弗格10年", "拉弗格十年"], "source": "https://www.laphroaig.com/whiskies/10-year-old"},
+    "ardbeg-10": {"aliases": ["阿贝10年", "阿贝十年"], "source": "https://www.ardbeg.com/en-int/products/ardbeg-ten-years-old"},
+    "cocchi-storico": {"aliases": ["好奇红味美思", "Cocchi Torino"], "source": "https://www.cocchi.it/en/wines/storico-vermouth-di-torino/"},
+    "cocchi-americano": {"aliases": ["好奇美国佬"], "source": "https://www.cocchi.it/en/wines/americano/"},
+    "benedictine": {"aliases": ["D.O.M.廊酒", "DOM廊酒"]}
+  }
+}

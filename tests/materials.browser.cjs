@@ -1,0 +1,97 @@
+const assert=require('node:assert/strict'),path=require('node:path');
+module.exports=async function({page,stored,go,stock}){
+ const row=n=>page.locator('#editor-ingredients .ingredient-edit-row').nth(n);
+ const select=async id=>{
+  const name=await page.evaluate(id=>window.MIX_SEED.ingredients.find(i=>i.id===id)?.name,id);
+  await page.locator('#material-dialog [data-material-search]').fill(name);
+  await page.locator(`#material-dialog [data-material-select="${id}"]`).click();
+ };
+ const pick=async(n,id)=>{await row(n).locator('[data-choose-material]').click();await select(id)};
+ const closeDetail=async()=>{if(await page.locator('#detail-dialog').evaluate(el=>el.open))await page.locator('#detail-dialog [data-close]').click()};
+
+ await page.setViewportSize({width:390,height:844});
+ await go('pantry');await page.locator('[data-action=pantry-edit]').click();
+ await page.locator('#pantry-directory [data-material-group="基酒"]').click();
+ await page.locator('#pantry-directory [data-material-nav=gin]').click();
+ await page.locator('#pantry-directory .material-card [data-material-nav=london-dry]').click();
+ assert.equal(await page.locator('#pantry-directory [data-pantry=beefeater]').count(),1);
+ assert.equal(await page.locator('#pantry-directory [data-pantry=london-dry]').count(),0);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ await page.screenshot({path:path.resolve(__dirname,'../../mixbook-pantry-hierarchy-mobile.png'),fullPage:false});
+ await page.locator('#pantry-directory .material-breadcrumb [data-material-nav=gin]').click();
+ await page.locator('[data-material-new=type]').click();
+ await page.locator('#item-form [name=name]').fill('测试自定义金酒类别');
+ assert.equal(await page.locator('#item-form [name=parentId]').inputValue(),'gin');
+ await page.locator('#item-form button[type=submit]').click();
+ assert.equal((await stored()).ingredients.some(i=>i.name==='测试自定义金酒类别'),false);
+ await page.locator('[data-material-new=product]').click();
+ await page.locator('#item-form [name=name]').fill('测试自定义酒款');
+ await page.locator('#item-form [name=brand]').fill('自选品牌');
+ await page.locator('#item-form button[type=submit]').click();
+ assert.equal((await stored()).ingredients.some(i=>i.name==='测试自定义酒款'),false);
+ await page.locator('[data-action=pantry-save]').click();
+ await page.waitForSelector('[data-action=pantry-edit]');
+ let d=await stored(),type=d.ingredients.find(i=>i.name==='测试自定义金酒类别'),product=d.ingredients.find(i=>i.name==='测试自定义酒款');
+ assert.equal(product.parentId,type.id);assert.equal(type.parentId,'gin');assert.equal(d.pantry[product.id],true);assert.equal(d.pantry[type.id],undefined);
+ await page.reload();await page.waitForSelector('.recipe-card');
+ d=await stored();assert.equal(d.pantry[product.id],true);assert.equal(d.ingredients.find(i=>i.id===product.id).brand,'自选品牌');
+ console.log('PASS hierarchical pantry: type → subtype → product; nested creation and reload');
+
+ await go('pantry');await page.locator('[data-action=pantry-edit]').click();
+ await page.locator('[data-material-new=product]').click();await page.locator('#item-form [name=name]').fill('取消后不保存的产品');
+ await page.locator('#item-form button[type=submit]').click();await page.locator('[data-action=pantry-cancel]').click();
+ assert.equal((await stored()).ingredients.some(i=>i.name==='取消后不保存的产品'),false);
+ console.log('PASS cancelling pantry discards newly created catalog records and stock');
+
+ await go('recipes');await page.locator('[data-action=new]').click();await page.locator('#recipe-form [name=name]').fill('测试烟熏尼格罗尼');
+ await row(0).locator('[data-choose-material]').click();
+ await page.locator('#material-dialog [data-material-group="基酒"]').click();
+ await page.locator('#material-dialog [data-material-nav=whiskey]').click();
+ await page.locator('#material-dialog .material-card [data-material-nav=scotch]').click();
+ assert.equal(await page.locator('#material-dialog [data-material-select=laphroaig-10]').count(),1);
+ assert.equal(await page.evaluate(()=>{const el=document.querySelector('#material-dialog');return el.scrollWidth<=el.clientWidth+1}),true);
+ await page.screenshot({path:path.resolve(__dirname,'../../mixbook-recipe-picker-mobile.png'),fullPage:false});
+ await page.locator('#material-dialog [data-material-select=laphroaig-10]').click();
+ await row(0).locator('[name=amount]').fill('30');
+ await row(0).locator('summary').click();await row(0).locator('[data-add-alternative]').click();await select('ardbeg-10');
+ await row(0).locator('[data-add-alternative]').click();await select('lagavulin-16');
+ for(const [n,id]of [[1,'vermouth'],[2,'campari']]){await page.locator('[data-add-row=ingredients]').click();await pick(n,id);await row(n).locator('[name=amount]').fill('30')}
+ assert.equal(await row(0).locator('[data-alternative]').count(),2);
+ assert.equal(await row(1).locator('[data-choose-material] strong').innerText(),'红味美思');
+ assert.equal(await row(2).locator('[data-choose-material] strong').innerText(),'金巴利');
+ await page.locator('#recipe-form [name=steps]').fill('加冰搅拌，滤入杯中。');
+ await page.locator('#recipe-form button[type=submit]').click();await page.waitForSelector('#detail-dialog[open]');
+ d=await stored();const smoke=d.recipes.find(r=>r.name==='测试烟熏尼格罗尼');
+ assert.deepEqual(smoke.ingredients.map(i=>i.id),['laphroaig-10','vermouth','campari']);
+ assert.deepEqual(smoke.ingredients[0].alternatives,['ardbeg-10','lagavulin-16']);
+ await page.locator(`[data-edit="${smoke.id}"]`).click();
+ assert.equal(await row(0).locator('[data-alternative]').count(),2);
+ await page.locator('#recipe-form button[type=submit]').click();await page.waitForSelector('#detail-dialog[open]');
+ assert.deepEqual((await stored()).recipes.find(r=>r.id===smoke.id).ingredients[0].alternatives,['ardbeg-10','lagavulin-16']);
+ await page.locator(`[data-add-version="${smoke.id}"]`).click();
+ await page.locator('#recipe-form [name=name]').fill('烟熏偏重比例');await row(0).locator('[name=amount]').fill('40');
+ await page.locator('#recipe-form button[type=submit]').click();await page.waitForSelector('#detail-dialog[open]');
+ assert.deepEqual((await stored()).recipes.find(r=>r.id===smoke.id).versions[0].ingredients[0].alternatives,['ardbeg-10','lagavulin-16']);
+ console.log('PASS recipe category/product selection, multiple alternatives, edit round-trip and versions');
+
+ await closeDetail();await go('pantry');await page.locator('[data-action=pantry-edit]').click();await stock('ardbeg-10');
+ await page.locator('[data-action=pantry-save]').click();await page.waitForSelector('[data-action=pantry-edit]');await go('recipes');
+ await page.locator('#recipe-search').fill('测试烟熏');await page.locator(`[data-detail="${smoke.id}"].card-main`).click();
+ assert.match(await page.locator('#detail-dialog .detail-status').innerText(),/使用替代品/);
+ assert.match(await page.locator('#detail-dialog .ingredient-row').first().innerText(),/使用替代品：阿贝 10 年/);
+ await page.screenshot({path:path.resolve(__dirname,'../../mixbook-substitution-mobile.png'),fullPage:false});
+
+ await page.locator(`[data-edit="${smoke.id}"]`).click();await row(2).locator('[data-choose-material]').click();
+ await page.locator('#material-dialog [data-material-home]').click();await page.locator('#material-dialog [data-material-new=product]').click();
+ await page.locator('#item-form [name=name]').fill('测试独立香料酒');await page.locator('#item-form [name=category]').fill('其他');
+ assert.equal(await page.locator('#item-form [name=parentId]').inputValue(),'');
+ await page.locator('#item-form button[type=submit]').click();
+ assert.equal(await page.locator('#material-dialog').evaluate(el=>el.open),false);
+ assert.equal(await row(2).locator('[data-choose-material] strong').innerText(),'测试独立香料酒');
+ assert.equal((await stored()).ingredients.some(i=>i.name==='测试独立香料酒'),false);
+ await page.locator('#editor-dialog [data-close]').first().click();await page.locator('#confirm-dialog [data-choice=yes]').click();
+ assert.equal((await stored()).ingredients.some(i=>i.name==='测试独立香料酒'),false);
+ assert.equal((await stored()).recipes.find(r=>r.id===smoke.id).ingredients[2].id,'campari');
+ console.log('PASS exact product display, explicit substitution status and cancelling nested product creation');
+ await page.setViewportSize({width:1440,height:1000});
+};

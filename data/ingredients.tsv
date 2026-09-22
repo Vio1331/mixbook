@@ -3,6 +3,11 @@ spirit|蒸馏酒|基酒||||
 gin|金酒|基酒|spirit||Gin|gin
 london-dry|伦敦干金酒|基酒|gin||London Dry Gin|gin
 old-tom|老汤姆金酒|基酒|gin||Old Tom Gin|gin
+dry-gin|干金酒|基酒|gin||Dry Gin|gin
+sloe-gin|黑刺李金酒|基酒|gin||Sloe Gin|
+beefeater|必富达伦敦干金酒|基酒|london-dry|Beefeater|Beefeater London Dry Gin|gin
+monkey47-dry|猴王 47 黑森林干金酒|基酒|dry-gin|Monkey 47|Monkey 47 Schwarzwald Dry Gin|gin
+monkey47-sloe|猴王 47 黑刺李金酒|基酒|sloe-gin|Monkey 47|Monkey 47 Schwarzwald Sloe Gin|
 rum-all|朗姆酒|基酒|spirit||Rum|rum
 rum|白朗姆酒|基酒|rum-all||White Rum|rum
 cuban-white|古巴白朗姆|基酒|rum||White Cuban Ron|rum
@@ -12,6 +17,8 @@ jamaican-gold|牙买加金朗姆|基酒|jamaican-rum||Gold Jamaican Rum|aged-rum
 jamaican-dark|牙买加深色朗姆|基酒|jamaican-rum||Jamaican Dark Rum|aged-rum
 jamaican-overproof|牙买加高酒精度白朗姆|基酒|rum||Jamaica Overproof White Rum|rum
 aged-rum|陈年朗姆酒|基酒|rum-all||Aged Rum|aged-rum
+dark-rum|黑朗姆酒|基酒|rum-all||Dark Rum|aged-rum
+havana-7|哈瓦那俱乐部 7 年|基酒|dark-rum|Havana Club|Havana Club 7 Años|aged-rum
 blackstrap-rum|黑糖蜜朗姆|基酒|rum-all||Blackstrap Rum|aged-rum
 martinique-molasses|马提尼克糖蜜朗姆|基酒|rum-all||Martinique Molasses Rhum|aged-rum
 agricole|马提尼克农业朗姆|基酒|rum-all||Rhum Martinique Agricole|aged-rum
@@ -31,6 +38,8 @@ scotch|苏格兰威士忌|基酒|whiskey||Scotch Whisky|whiskey
 blended-scotch|调和苏格兰威士忌|基酒|scotch||Blended Scotch Whisky|whiskey
 islay|艾雷岛单一麦芽威士忌|基酒|scotch||Islay Single Malt|whiskey
 lagavulin-16|乐加维林 16 年|基酒|islay|Lagavulin|Lagavulin 16y|whiskey
+laphroaig-10|拉弗格 10 年|基酒|islay|Laphroaig|Laphroaig 10 Year Old|whiskey
+ardbeg-10|阿贝 10 年|基酒|islay|Ardbeg|Ardbeg Ten Years Old|whiskey
 irish-whiskey|爱尔兰威士忌|基酒|whiskey||Irish Whiskey|whiskey
 tequila|龙舌兰酒|基酒|spirit||Tequila|tequila
 tequila-agave|100% 龙舌兰酒|基酒|tequila||Tequila 100% Agave|tequila
@@ -43,10 +52,11 @@ pisco|皮斯科|基酒|brandy||Pisco|brandy
 cachaca|卡莎萨|基酒|spirit||Cachaca Cachaça|rum
 aguardiente|古巴甘蔗烈酒|基酒|spirit||Cuban Aguardiente|rum
 grappa|白格拉帕|基酒|brandy||White Smooth Grappa|brandy
-vermouth|甜红味美思|利口酒与味美思|||Sweet Red Vermouth|vermouth
+vermouth|红味美思|利口酒与味美思|||Sweet Red Vermouth|vermouth
 dry-vermouth|干味美思|利口酒与味美思|||Dry Vermouth|dry-vermouth
 martini-rosso|马天尼 Rosso 甜红味美思|利口酒与味美思|vermouth|Martini|Martini Rosso|vermouth
 dolin-rouge|杜林 Rouge 甜红味美思|利口酒与味美思|vermouth|Dolin|Dolin Rouge|vermouth
+cocchi-storico|好奇 Storico 都灵甜味美思|利口酒与味美思|vermouth|Cocchi|Cocchi Storico Vermouth di Torino|vermouth
 cinzano-rosso|仙山露 Rosso 甜红味美思|利口酒与味美思|vermouth|Cinzano|Cinzano Rosso|vermouth
 bitter-aperitif|苦味开胃酒|利口酒与味美思|||Bitter Aperitif|
 campari|金巴利|利口酒与味美思|bitter-aperitif|Campari|Bitter Campari|campari
@@ -56,7 +66,7 @@ nonino|诺尼诺阿玛罗|利口酒与味美思|amaro|Nonino|Amaro Nonino|
 cynar|西那尔洋蓟利口酒|利口酒与味美思|amaro|Cynar|Cynar|
 fernet|菲奈特苦味利口酒|利口酒与味美思|amaro||Fernet|
 fernet-branca|菲奈特布兰卡|利口酒与味美思|fernet|Fernet Branca|Fernet Branca|
-orange-liqueur|橙味利口酒（大类）|利口酒与味美思|||Orange Liqueur|orange-liqueur
+orange-liqueur|橙味利口酒|利口酒与味美思|||Orange Liqueur|orange-liqueur
 triple-sec|三重橙酒 Triple Sec|利口酒与味美思|orange-liqueur||Triple Sec|orange-liqueur
 curacao|库拉索橙酒|利口酒与味美思|orange-liqueur||Orange Curacao|orange-liqueur
 dry-curacao|干型库拉索橙酒|利口酒与味美思|curacao||Dry Curacao|orange-liqueur
@@ -99,6 +109,7 @@ anise-liqueur|茴香利口酒|利口酒与味美思|||Anise Liqueur|
 pernod|潘诺茴香酒|利口酒与味美思|anise-liqueur|Pernod|Pernod|
 aromatized-wine|加香葡萄酒|利口酒与味美思|||Aromatized Wine|dry-vermouth
 lillet|利莱白|利口酒与味美思|aromatized-wine|Lillet|Lillet Blanc|dry-vermouth
+cocchi-americano|好奇美国佬 Americano|利口酒与味美思|aromatized-wine|Cocchi|Cocchi Americano|dry-vermouth
 sparkling|起泡酒|葡萄酒|||Sparkling Wine|champagne
 champagne|香槟|葡萄酒|sparkling||Champagne|champagne
 prosecco|普罗塞克|葡萄酒|sparkling||Prosecco|champagne

@@ -10,6 +10,12 @@ for line in (root/'data/ingredients.tsv').read_text().splitlines():
  id,name,category,parent,brand,en,img=line.split('|')
  items.append(dict(id=id,name=name,category=category,parentId=parent,brand=brand,aliases=[en] if en else [],kind='product' if brand else 'type',image=img if (root/f'assets/ingredients/{img}.webp').exists() else ''))
 ids={i['id'] for i in items}
+materials=json.loads((root/'data/material-catalog.json').read_text())
+for i in items:
+ meta=materials['metadata'].get(i['id'],{})
+ i['aliases']=list(dict.fromkeys(i['aliases']+meta.get('aliases',[])))
+ i['matchParent']=meta.get('matchParent',True)
+ i['customized']=False
 U=set('alexander americano angel-face aviation between-the-sheets boulevardier brandy-crusta casino clover-club daiquiri dry-martini gin-fizz hanky-panky john-collins last-word manhattan martinez mary-pickford monkey-gland negroni old-fashioned paradise planters-punch porto-flip ramos-fizz remember-the-maine rusty-nail sazerac sidecar stinger tuxedo vieux-carre whiskey-sour white-lady'.split())
 T=set('bellini black-russian bloody-mary caipirinha cardinale champagne-cocktail corpse-reviver-2 cosmopolitan cuba-libre french-75 french-connection garibaldi grasshopper hemingway-special horses-neck irish-coffee kir lemon-drop-martini long-island-iced-tea mai-tai margarita mimosa mint-julep mojito moscow-mule pina-colada pisco-sour rabo-de-galo sea-breeze sex-on-the-beach singapore-sling tequila-sunrise vesper zombie'.split())
 parents={'boulevardier':'negroni','cardinale':'negroni','new-york-sour':'whiskey-sour','tommys-margarita':'margarita','grand-margarita':'margarita','hemingway-special':'daiquiri','dons-special-daiquiri':'daiquiri'}
@@ -56,7 +62,7 @@ for line in (root/'data/recipes.tsv').read_text().splitlines():
 assert len(recipes)==len(facts)==102
 assert len({r['id'] for r in recipes})==102
 options=dict(glasses=sorted({r['glass'] for r in recipes}),tags=sorted({t for r in recipes for t in r['tags']}),sources=['IBA · 难忘经典','IBA · 当代经典','IBA · 新时代'])
-d=dict(schemaVersion=2,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-21-photos-v4')
+d=dict(schemaVersion=3,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-22-materials-v5',ingredientMigrations=materials['migrations'])
 photo_map=json.loads((root/'data/photo-map.json').read_text())
 photo_meta={p['slug']:{'revision':p['assetSha256'][:12],'number':p['number'],'note':p['note']} for p in photo_map['photos']}
 photo_meta['negroni']={'revision':hashlib.sha256((root/'assets/negroni.webp').read_bytes()).hexdigest()[:12],'note':''}
