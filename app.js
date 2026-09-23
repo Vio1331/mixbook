@@ -139,6 +139,7 @@
    }catch(e){message=e.message||'同步失败，本地修改已保留。'}finally{syncBusy=false;if(!editing()&&(view!=='settings'||!document.activeElement?.closest('#sync-form')))render();if(message){if(interactive||!message.startsWith('已与'))toast(message);const error=$('#sync-error');if(error&&!message.startsWith('已与'))error.textContent=message}updateHeader()}
  }
  function updateHeader(){const el=$('.top-status .status-text');if(el)el.textContent=status()}
+ function showSyncOverlay(show){const el=$('#sync-overlay');el.hidden=!show;el.setAttribute('aria-hidden',String(!show))}
  async function discardDraft(){if(!editing())return true;if(await confirmChoice('放弃尚未保存的修改？','当前编辑内容会丢弃，已保存的数据不受影响。',[['cancel','继续编辑',''],['yes','放弃修改','primary']])!=='yes')return false;pantryDraft=null;editorDraft=null;for(const id of ['item-dialog','material-dialog','editor-dialog'])if($('#'+id).open)closeDialog($('#'+id));return true}
  document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.close){if(b.dataset.close==='editor-dialog'&&!await discardDraft())return;closeDialog(document.getElementById(b.dataset.close));scheduleSync();return}
@@ -174,7 +175,7 @@
  case'export':download(env.data);toast('已生成数据备份。');break;
  case'import':$('#import-file').click();break;
  case'open-sync-settings':openSyncSettings();break;
- case'sync-now':await sync(true);break;
+ case'sync-now':showSyncOverlay(true);try{await sync(true)}finally{showSyncOverlay(false)}break;
  case'disconnect':if(syncBusy){toast('请等待同步结束。');break}if(await confirmChoice('断开 GitHub 连接？','本机和云端数据都会保留，只移除此设备的连接设置和令牌。')==='yes'){config={owner:'',repo:'',branch:'',path:'mixbook.json',auto:false};token='';remember=false;tokenStorage();await persist({...env,base:null,sha:null,syncId:'',lastSync:null});if($('#sync-dialog').open)closeDialog($('#sync-dialog'));render()}break;
  case'remove-samples':{const n=env.data.recipes.filter(r=>r.sample).length;if(!n){toast('没有未修改的初版示例。');break}if(await confirmChoice('移除初版示例？',`移除 ${n} 份未修改示例，IBA 酒谱会保留。`)==='yes'){await update(d=>{const ids=new Set(d.recipes.filter(r=>r.sample).map(r=>r.id));d.recipes=d.recipes.filter(r=>!ids.has(r.id));for(const r of d.recipes)if(ids.has(r.parentId))r.parentId='';for(const id of ids)delete d.favorites[id]});render()}break}
  }
