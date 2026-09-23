@@ -10,9 +10,6 @@ monkey47-dry|猴王 47 黑森林干金酒|基酒|dry-gin|Monkey 47|Monkey 47 Sch
 monkey47-sloe|猴王 47 黑刺李金酒|基酒|sloe-gin|Monkey 47|Monkey 47 Schwarzwald Sloe Gin|
 rum-all|朗姆酒|基酒|spirit||Rum|rum
 rum|白朗姆酒|基酒|rum-all||White Rum|rum
-gold-rum|金朗姆酒|基酒|rum-all||Gold Rum|aged-rum
-overproof-rum|高酒精度朗姆|基酒|rum-all||Overproof Rum|rum
-puerto-rico-rum|波多黎各朗姆|基酒|rum-all||Puerto Rican Rum|aged-rum
 cuban-white|古巴白朗姆|基酒|rum||White Cuban Ron|rum
 cuban-rum|古巴朗姆酒|基酒|rum-all||Cuban Rum|rum
 jamaican-rum|牙买加朗姆酒|基酒|rum-all||Jamaican Rum|aged-rum
