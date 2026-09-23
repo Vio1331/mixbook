@@ -31,7 +31,8 @@ class MaterialBrowser{
   const children=this.data.ingredients.filter(x=>x.parentId===i.id&&x.kind==='type').length;
   const products=this.data.ingredients.filter(x=>x.kind==='product'&&C.ingredientPath(x.id,this.data).some(p=>p.id===i.id)).length;
   const open=i.kind==='type';
-  return `<article class="material-card ${this.data.pantry[i.id]?'checked':''}" data-material-id="${esc(i.id)}"><div class="material-card-head">${open?`<button type="button" class="material-name" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span aria-hidden="true">›</span></button>`:`<strong>${esc(i.name)}</strong>`}${this.options.onEdit?`<button type="button" class="link-button" data-material-edit="${esc(i.id)}">编辑</button>`:''}</div><p class="material-meta">${esc(i.kind==='product'?(i.brand||'具体产品'):`${children} 个子类 · ${products} 款产品`)}</p>${this.q?`<p class="material-path">${esc(this.pathText(i.id))}</p>`:''}${i.matchParent===false?'<p class="material-boundary">独立匹配：不自动代替上级类别</p>':''}<div class="material-controls">${this.itemControls(i)}</div></article>`;
+  const tagNames=(i.tags||[]).map(id=>this.item(id)?.name).filter(Boolean);
+  return `<article class="material-card ${this.data.pantry[i.id]?'checked':''}" data-material-id="${esc(i.id)}"><div class="material-card-head">${open?`<button type="button" class="material-name" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span aria-hidden="true">›</span></button>`:`<strong>${esc(i.name)}</strong>`}${this.options.onEdit?`<button type="button" class="link-button" data-material-edit="${esc(i.id)}">编辑</button>`:''}</div><p class="material-meta">${esc(i.kind==='product'?(i.brand||'具体产品'):`${children} 个子类 · ${products} 款产品`)}</p>${tagNames.length?`<div class="chips material-tags">${tagNames.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`:''}${this.q?`<p class="material-path">${esc(this.pathText(i.id))}</p>`:''}${i.matchParent===false?'<p class="material-boundary">独立匹配：不自动代替上级类别</p>':''}<div class="material-controls">${this.itemControls(i)}</div></article>`;
  }
  render(){
   const d=this.data,all=d.ingredients.filter(i=>this.allowed(i)),current=this.item(this.parentId);
@@ -44,6 +45,9 @@ class MaterialBrowser{
    if(!items.length)body+='<p class="hint">没有匹配项，可以新增类别或具体酒款。</p>';
   }else if(!this.group&&!current){
    body+=`<div class="material-groups">${groups.map(g=>`<button type="button" data-material-group="${esc(g)}"><strong>${esc(g)}</strong><span>${all.filter(i=>i.category===g&&i.kind==='product').length} 款产品 ›</span></button>`).join('')}</div>`;
+  }else if(this.mode==='pantry'&&current&&current.parentId==='spirit'){
+   const tags=all.filter(i=>i.kind==='type'&&i.id!==current.id&&C.ingredientPath(i.id,d).some(p=>p.id===current.id));
+   body+=`<section class="material-current"><div class="row spread"><div><strong>${esc(current.name)}</strong><p class="hint">用标签描述酒款，不再逐级钻入子菜单。一瓶酒可以同时选择产地和风格标签。</p></div><button type="button" class="btn primary" data-material-new="product">＋ 添加酒</button></div></section><div class="tag-manager-head"><div><h3 class="material-section">标签管理 <small>${tags.length}</small></h3><p class="hint">在这里统一新增、修改或删除标签；最后使用页面上方的“保存酒柜”保存。</p></div><button type="button" class="btn" data-material-new="type">＋ 新增标签</button></div><div class="tag-directory">${tags.map(i=>`<button type="button" class="chip tag-edit" data-material-edit="${esc(i.id)}">${esc(i.name)} <span>编辑</span></button>`).join('')||'<p class="hint">还没有标签，先新增一个。</p>'}</div>`;
   }else{
    if(current){
     body+=`<section class="material-current"><strong>${esc(current.name)}</strong><p class="hint">${this.mode==='pantry'&&C.needsProduct(current,d)?'选择下面的具体酒款；没有找到时，可在此类别下新增。':'可以使用当前类别，或继续选择子类及具体酒款。'}</p>${current.matchParent===false?'<p class="material-boundary">此类不会自动满足上级类别的配方要求。</p>':''}<div class="material-controls">${this.itemControls(current)}${this.options.onEdit?`<button type="button" class="link-button" data-material-edit="${esc(current.id)}">编辑类别</button>`:''}</div></section>`;
@@ -55,7 +59,7 @@ class MaterialBrowser{
    if(products.length)body+=`<h3 class="material-section">具体酒款 / 产品 <small>${products.length}</small></h3><div class="material-grid">${products.map(i=>this.card(i)).join('')}</div>`;
    if(!types.length&&!products.length)body+='<p class="hint">此处还没有子类或酒款，可直接新增。</p>';
   }
-  if(this.options.onNew)body+=`<div class="material-new"><button type="button" class="btn" data-material-new="product">＋ 新增具体酒款</button><button type="button" class="btn" data-material-new="type">＋ 新增类别 / 通用材料</button></div>`;
+  if(this.options.onNew&&!(this.mode==='pantry'&&current?.parentId==='spirit'))body+=`<div class="material-new"><button type="button" class="btn" data-material-new="product">＋ 添加酒 / 具体产品</button><button type="button" class="btn" data-material-new="type">＋ 新增标签 / 通用材料</button></div>`;
   this.el.querySelector('[data-material-results]').innerHTML=body;
  }
  navigate(parentId='',group=''){
