@@ -40,6 +40,18 @@ module.exports=async function({page,stored,go,stock}){
  console.log('PASS hierarchical pantry: type → subtype → product; nested creation and reload');
 
  await go('pantry');await page.locator('[data-action=pantry-edit]').click();
+ await page.locator('#pantry-directory [data-material-search]').fill('测试自定义金酒类别');
+ await page.locator(`#pantry-directory [data-material-edit="${type.id}"]`).click();
+ assert.equal(await page.locator('#item-form [data-action=delete-item]').count(),1);
+ await page.locator('#item-form [data-action=delete-item]').click();
+ assert.match(await page.locator('#confirm-dialog').innerText(),/同时删除 1 个下级类别或酒款/);
+ await page.locator('#confirm-dialog [data-choice=yes]').click();
+ assert.equal(await page.locator('#pantry-directory [data-material-search]').count(),1);
+ await page.locator('[data-action=pantry-save]').click();await page.waitForSelector('[data-action=pantry-edit]');
+ d=await stored();assert.equal(d.ingredients.some(i=>i.id===type.id||i.id===product.id),false);assert.equal(d.pantry[product.id],undefined);
+ console.log('PASS deleting an existing category removes descendants and pantry records after save');
+
+ await go('pantry');await page.locator('[data-action=pantry-edit]').click();
  await page.locator('[data-material-new=product]').click();await page.locator('#item-form [name=name]').fill('取消后不保存的产品');
  await page.locator('#item-form button[type=submit]').click();await page.locator('[data-action=pantry-cancel]').click();
  assert.equal((await stored()).ingredients.some(i=>i.name==='取消后不保存的产品'),false);
