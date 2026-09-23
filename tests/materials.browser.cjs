@@ -11,7 +11,9 @@ module.exports=async function({page,stored,go,stock}){
 
  await page.setViewportSize({width:390,height:844});
  await go('pantry');await page.locator('[data-action=pantry-edit]').click();
+ assert.equal(await page.locator('#pantry-directory [data-material-group="利口酒"]').count(),1);
  await page.locator('#pantry-directory [data-material-group="基酒"]').click();
+ assert.deepEqual(await page.locator('#pantry-directory [data-material-nav]').evaluateAll(nodes=>nodes.map(node=>node.textContent.trim())),['金酒 ›','朗姆酒 ›','伏特加 ›','威士忌 ›','龙舌兰 ›','白兰地 ›']);
  await page.locator('#pantry-directory [data-material-nav=gin]').click();
  await page.locator('#pantry-directory .material-card [data-material-nav=london-dry]').click();
  assert.equal(await page.locator('#pantry-directory [data-pantry=beefeater]').count(),1);

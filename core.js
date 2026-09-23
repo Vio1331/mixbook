@@ -23,7 +23,7 @@ function validate(input){
  return{schemaVersion:3,recipes,ingredients,pantry:flags(input.pantry,ids),favorites:flags(input.favorites,rids),options,catalogVersion:text(input.catalogVersion||'',100)};
 }
 function ingredientPath(id,data){const d=new Map(data.ingredients.map(i=>[i.id,i])),out=[],seen=new Set();let i=d.get(id);while(i&&!seen.has(i.id)){out.unshift(i);seen.add(i.id);i=d.get(i.parentId)}return out}
-function needsProduct(i,data){return i.kind==='type'&&(['基酒','利口酒与味美思','葡萄酒'].includes(i.category)||ingredientPath(i.id,data).some(x=>x.id==='bitters'))}
+function needsProduct(i,data){return i.kind==='type'&&(['基酒','利口酒','葡萄酒'].includes(i.category)||ingredientPath(i.id,data).some(x=>x.id==='bitters'))}
 function materialText(i,data){return norm(ingredientPath(i.id,data).flatMap(x=>[x.name,x.brand,...x.aliases]).join(' '))}
 function satisfies(owned,required,data){const d=new Map(data.ingredients.map(i=>[i.id,i]));let p=d.get(owned);const seen=new Set();while(p&&!seen.has(p.id)){if(p.id===required)return true;seen.add(p.id);if(p.matchParent===false)break;p=d.get(p.parentId)}return false}
 function matches(row,data){return data.ingredients.filter(i=>data.pantry[i.id]&&[row.id,...(row.alternatives||[])].some(id=>satisfies(i.id,id,data)))}
@@ -39,7 +39,7 @@ function merge(base,local,remote){[base,local,remote]=[base,local,remote].map(va
 function installCatalog(input,catalog){
  const d=validate(input),c=validate(catalog);if(d.catalogVersion===c.catalogVersion)return d;
  const installed=!!d.catalogVersion;
- for(const i of c.ingredients){const old=d.ingredients.find(x=>x.id===i.id);if(!old)d.ingredients.push(clone(i));else if(!old.customized){const migration=catalog.ingredientMigrations?.[i.id];if(migration)for(const [key,value]of Object.entries(migration))if(['name','parentId','category','kind','brand','matchParent'].includes(key)&&old[key]===value)old[key]=i[key];if(!old.parentId&&!old.image&&input.schemaVersion===1)Object.assign(old,{parentId:i.parentId,kind:i.kind,brand:i.brand,image:i.image});old.aliases=[...new Set([...old.aliases,...i.aliases])]}}
+ for(const i of c.ingredients){const old=d.ingredients.find(x=>x.id===i.id);if(!old)d.ingredients.push(clone(i));else if(!old.customized){const migration=catalog.ingredientMigrations?.[i.id];if(migration)for(const [key,value]of Object.entries(migration))if(['name','parentId','category','kind','brand','matchParent'].includes(key)&&old[key]===value)old[key]=i[key];if(old.category==='利口酒与味美思'&&i.category==='利口酒')old.category=i.category;if(!old.parentId&&!old.image&&input.schemaVersion===1)Object.assign(old,{parentId:i.parentId,kind:i.kind,brand:i.brand,image:i.image});old.aliases=[...new Set([...old.aliases,...i.aliases])]}}
  for(const r of c.recipes){
   const existing=d.recipes.find(x=>x.id===r.id);
   if(existing){

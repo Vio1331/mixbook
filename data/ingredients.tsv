@@ -41,75 +41,75 @@ lagavulin-16|乐加维林 16 年|基酒|islay|Lagavulin|Lagavulin 16y|whiskey
 laphroaig-10|拉弗格 10 年|基酒|islay|Laphroaig|Laphroaig 10 Year Old|whiskey
 ardbeg-10|阿贝 10 年|基酒|islay|Ardbeg|Ardbeg Ten Years Old|whiskey
 irish-whiskey|爱尔兰威士忌|基酒|whiskey||Irish Whiskey|whiskey
-tequila|龙舌兰酒|基酒|spirit||Tequila|tequila
+tequila|龙舌兰|基酒|spirit||Tequila|tequila
 tequila-agave|100% 龙舌兰酒|基酒|tequila||Tequila 100% Agave|tequila
-mezcal|梅斯卡尔|基酒|spirit||Mezcal|tequila
+mezcal|梅斯卡尔|基酒|tequila||Mezcal|tequila
 espadin|Espadín 梅斯卡尔|基酒|mezcal||Espadin Mezcal|tequila
 brandy|白兰地|基酒|spirit||Brandy|brandy
 cognac|干邑|基酒|brandy||Cognac|brandy
 calvados|卡尔瓦多斯苹果白兰地|基酒|brandy||Calvados|brandy
 pisco|皮斯科|基酒|brandy||Pisco|brandy
-cachaca|卡莎萨|基酒|spirit||Cachaca Cachaça|rum
-aguardiente|古巴甘蔗烈酒|基酒|spirit||Cuban Aguardiente|rum
+cachaca|卡莎萨|基酒|rum-all||Cachaca Cachaça|rum
+aguardiente|古巴甘蔗烈酒|基酒|rum-all||Cuban Aguardiente|rum
 grappa|白格拉帕|基酒|brandy||White Smooth Grappa|brandy
-vermouth|红味美思|利口酒与味美思|||Sweet Red Vermouth|vermouth
-dry-vermouth|干味美思|利口酒与味美思|||Dry Vermouth|dry-vermouth
-martini-rosso|马天尼 Rosso 甜红味美思|利口酒与味美思|vermouth|Martini|Martini Rosso|vermouth
-dolin-rouge|杜林 Rouge 甜红味美思|利口酒与味美思|vermouth|Dolin|Dolin Rouge|vermouth
-cocchi-storico|好奇 Storico 都灵甜味美思|利口酒与味美思|vermouth|Cocchi|Cocchi Storico Vermouth di Torino|vermouth
-cinzano-rosso|仙山露 Rosso 甜红味美思|利口酒与味美思|vermouth|Cinzano|Cinzano Rosso|vermouth
-bitter-aperitif|苦味开胃酒|利口酒与味美思|||Bitter Aperitif|
-campari|金巴利|利口酒与味美思|bitter-aperitif|Campari|Bitter Campari|campari
-aperol|阿佩罗|利口酒与味美思|bitter-aperitif|Aperol|Aperol|aperol
-amaro|阿玛罗苦味利口酒|利口酒与味美思|||Amaro|
-nonino|诺尼诺阿玛罗|利口酒与味美思|amaro|Nonino|Amaro Nonino|
-cynar|西那尔洋蓟利口酒|利口酒与味美思|amaro|Cynar|Cynar|
-fernet|菲奈特苦味利口酒|利口酒与味美思|amaro||Fernet|
-fernet-branca|菲奈特布兰卡|利口酒与味美思|fernet|Fernet Branca|Fernet Branca|
-orange-liqueur|橙味利口酒|利口酒与味美思|||Orange Liqueur|orange-liqueur
-triple-sec|三重橙酒 Triple Sec|利口酒与味美思|orange-liqueur||Triple Sec|orange-liqueur
-curacao|库拉索橙酒|利口酒与味美思|orange-liqueur||Orange Curacao|orange-liqueur
-dry-curacao|干型库拉索橙酒|利口酒与味美思|curacao||Dry Curacao|orange-liqueur
-blue-curacao|蓝橙利口酒|利口酒与味美思|curacao||Blue Curacao|blue-curacao
-cointreau|君度橙酒|利口酒与味美思|triple-sec|Cointreau|Cointreau|cointreau
-bols-blue|波士蓝橙利口酒|利口酒与味美思|blue-curacao|Bols|Bols Blue Curacao|blue-curacao
-cognac-orange|干邑橙味利口酒|利口酒与味美思|orange-liqueur||Cognac Orange Liqueur|orange-liqueur
-grand-marnier|柑曼怡|利口酒与味美思|cognac-orange|Grand Marnier|Grand Marnier|orange-liqueur
-maraschino|马拉斯奇诺樱桃利口酒|利口酒与味美思|||Maraschino|
-luxardo-maraschino|卢萨朵马拉斯奇诺|利口酒与味美思|maraschino|Luxardo|Maraschino Luxardo|
-cherry-liqueur|樱桃利口酒|利口酒与味美思|||Cherry Brandy|
-luxardo-cherry|卢萨朵 Sangue Morlacco|利口酒与味美思|cherry-liqueur|Luxardo|Cherry Sangue Morlacco|
-apricot-brandy|杏子白兰地利口酒|利口酒与味美思|||Apricot Brandy|
-peach-brandy|桃白兰地利口酒|利口酒与味美思|||Peach Brandy|
-peach-schnapps|桃味甜酒|利口酒与味美思|||Peach Schnapps|
-coffee-liqueur|咖啡利口酒|利口酒与味美思|||Coffee Liqueur|coffee-liqueur
-kahlua|甘露咖啡利口酒|利口酒与味美思|coffee-liqueur|Kahlua|Kahlúa|coffee-liqueur
-cacao-brown|深色可可利口酒|利口酒与味美思|||Crème de Cacao Brown|
-cacao-white|白可可利口酒|利口酒与味美思|||Crème de Cacao White|
-menthe-green|绿薄荷利口酒|利口酒与味美思|||Crème de Menthe Green|
-menthe-white|白薄荷利口酒|利口酒与味美思|||Crème de Menthe White|
-violette|紫罗兰利口酒|利口酒与味美思|||Crème de Violette|
-mure|黑莓利口酒|利口酒与味美思|||Crème de Mûre|
-cassis|黑加仑利口酒|利口酒与味美思|||Crème de Cassis|
-raspberry-liqueur|覆盆子利口酒|利口酒与味美思|||Raspberry Liqueur|
-passion-liqueur|百香果利口酒|利口酒与味美思|||Passion Fruit Liqueur|
-amaretto|杏仁利口酒|利口酒与味美思|||Amaretto|
-hazelnut-liqueur|榛子利口酒|利口酒与味美思|||Hazelnut Liqueur|
-frangelico|榛子弗朗格里科|利口酒与味美思|hazelnut-liqueur|Frangelico|Frangelico|
-herbal-liqueur|草本利口酒|利口酒与味美思|||Herbal Liqueur|
-chartreuse-green|绿查特酒|利口酒与味美思|herbal-liqueur|Chartreuse|Green Chartreuse|chartreuse
-chartreuse-yellow|黄查特酒|利口酒与味美思|herbal-liqueur|Chartreuse|Yellow Chartreuse|
-benedictine|廊酒|利口酒与味美思|herbal-liqueur|Bénédictine|DOM Bénédictine|
-drambuie|杜林标威士忌利口酒|利口酒与味美思|herbal-liqueur|Drambuie|Drambuie|
-falernum|法勒南香料甜酒|利口酒与味美思|||Falernum|
-allspice-liqueur|多香果利口酒|利口酒与味美思|||Allspice Dram|
-st-elizabeth|圣伊丽莎白多香果酒|利口酒与味美思|allspice-liqueur|St. Elizabeth|Allspice Saint Elizabeth|
-absinthe|苦艾酒|利口酒与味美思|||Absinthe|
-anise-liqueur|茴香利口酒|利口酒与味美思|||Anise Liqueur|
-pernod|潘诺茴香酒|利口酒与味美思|anise-liqueur|Pernod|Pernod|
-aromatized-wine|加香葡萄酒|利口酒与味美思|||Aromatized Wine|dry-vermouth
-lillet|利莱白|利口酒与味美思|aromatized-wine|Lillet|Lillet Blanc|dry-vermouth
-cocchi-americano|好奇美国佬 Americano|利口酒与味美思|aromatized-wine|Cocchi|Cocchi Americano|dry-vermouth
+vermouth|红味美思|利口酒|||Sweet Red Vermouth|vermouth
+dry-vermouth|干味美思|利口酒|||Dry Vermouth|dry-vermouth
+martini-rosso|马天尼 Rosso 甜红味美思|利口酒|vermouth|Martini|Martini Rosso|vermouth
+dolin-rouge|杜林 Rouge 甜红味美思|利口酒|vermouth|Dolin|Dolin Rouge|vermouth
+cocchi-storico|好奇 Storico 都灵甜味美思|利口酒|vermouth|Cocchi|Cocchi Storico Vermouth di Torino|vermouth
+cinzano-rosso|仙山露 Rosso 甜红味美思|利口酒|vermouth|Cinzano|Cinzano Rosso|vermouth
+bitter-aperitif|苦味开胃酒|利口酒|||Bitter Aperitif|
+campari|金巴利|利口酒|bitter-aperitif|Campari|Bitter Campari|campari
+aperol|阿佩罗|利口酒|bitter-aperitif|Aperol|Aperol|aperol
+amaro|阿玛罗苦味利口酒|利口酒|||Amaro|
+nonino|诺尼诺阿玛罗|利口酒|amaro|Nonino|Amaro Nonino|
+cynar|西那尔洋蓟利口酒|利口酒|amaro|Cynar|Cynar|
+fernet|菲奈特苦味利口酒|利口酒|amaro||Fernet|
+fernet-branca|菲奈特布兰卡|利口酒|fernet|Fernet Branca|Fernet Branca|
+orange-liqueur|橙味利口酒|利口酒|||Orange Liqueur|orange-liqueur
+triple-sec|三重橙酒 Triple Sec|利口酒|orange-liqueur||Triple Sec|orange-liqueur
+curacao|库拉索橙酒|利口酒|orange-liqueur||Orange Curacao|orange-liqueur
+dry-curacao|干型库拉索橙酒|利口酒|curacao||Dry Curacao|orange-liqueur
+blue-curacao|蓝橙利口酒|利口酒|curacao||Blue Curacao|blue-curacao
+cointreau|君度橙酒|利口酒|triple-sec|Cointreau|Cointreau|cointreau
+bols-blue|波士蓝橙利口酒|利口酒|blue-curacao|Bols|Bols Blue Curacao|blue-curacao
+cognac-orange|干邑橙味利口酒|利口酒|orange-liqueur||Cognac Orange Liqueur|orange-liqueur
+grand-marnier|柑曼怡|利口酒|cognac-orange|Grand Marnier|Grand Marnier|orange-liqueur
+maraschino|马拉斯奇诺樱桃利口酒|利口酒|||Maraschino|
+luxardo-maraschino|卢萨朵马拉斯奇诺|利口酒|maraschino|Luxardo|Maraschino Luxardo|
+cherry-liqueur|樱桃利口酒|利口酒|||Cherry Brandy|
+luxardo-cherry|卢萨朵 Sangue Morlacco|利口酒|cherry-liqueur|Luxardo|Cherry Sangue Morlacco|
+apricot-brandy|杏子白兰地利口酒|利口酒|||Apricot Brandy|
+peach-brandy|桃白兰地利口酒|利口酒|||Peach Brandy|
+peach-schnapps|桃味甜酒|利口酒|||Peach Schnapps|
+coffee-liqueur|咖啡利口酒|利口酒|||Coffee Liqueur|coffee-liqueur
+kahlua|甘露咖啡利口酒|利口酒|coffee-liqueur|Kahlua|Kahlúa|coffee-liqueur
+cacao-brown|深色可可利口酒|利口酒|||Crème de Cacao Brown|
+cacao-white|白可可利口酒|利口酒|||Crème de Cacao White|
+menthe-green|绿薄荷利口酒|利口酒|||Crème de Menthe Green|
+menthe-white|白薄荷利口酒|利口酒|||Crème de Menthe White|
+violette|紫罗兰利口酒|利口酒|||Crème de Violette|
+mure|黑莓利口酒|利口酒|||Crème de Mûre|
+cassis|黑加仑利口酒|利口酒|||Crème de Cassis|
+raspberry-liqueur|覆盆子利口酒|利口酒|||Raspberry Liqueur|
+passion-liqueur|百香果利口酒|利口酒|||Passion Fruit Liqueur|
+amaretto|杏仁利口酒|利口酒|||Amaretto|
+hazelnut-liqueur|榛子利口酒|利口酒|||Hazelnut Liqueur|
+frangelico|榛子弗朗格里科|利口酒|hazelnut-liqueur|Frangelico|Frangelico|
+herbal-liqueur|草本利口酒|利口酒|||Herbal Liqueur|
+chartreuse-green|绿查特酒|利口酒|herbal-liqueur|Chartreuse|Green Chartreuse|chartreuse
+chartreuse-yellow|黄查特酒|利口酒|herbal-liqueur|Chartreuse|Yellow Chartreuse|
+benedictine|廊酒|利口酒|herbal-liqueur|Bénédictine|DOM Bénédictine|
+drambuie|杜林标威士忌利口酒|利口酒|herbal-liqueur|Drambuie|Drambuie|
+falernum|法勒南香料甜酒|利口酒|||Falernum|
+allspice-liqueur|多香果利口酒|利口酒|||Allspice Dram|
+st-elizabeth|圣伊丽莎白多香果酒|利口酒|allspice-liqueur|St. Elizabeth|Allspice Saint Elizabeth|
+absinthe|苦艾酒|利口酒|||Absinthe|
+anise-liqueur|茴香利口酒|利口酒|||Anise Liqueur|
+pernod|潘诺茴香酒|利口酒|anise-liqueur|Pernod|Pernod|
+aromatized-wine|加香葡萄酒|利口酒|||Aromatized Wine|dry-vermouth
+lillet|利莱白|利口酒|aromatized-wine|Lillet|Lillet Blanc|dry-vermouth
+cocchi-americano|好奇美国佬 Americano|利口酒|aromatized-wine|Cocchi|Cocchi Americano|dry-vermouth
 sparkling|起泡酒|葡萄酒|||Sparkling Wine|champagne
 champagne|香槟|葡萄酒|sparkling||Champagne|champagne
 prosecco|普罗塞克|葡萄酒|sparkling||Prosecco|champagne
