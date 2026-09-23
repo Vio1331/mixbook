@@ -24,9 +24,7 @@
     "cocchi-americano": {"aliases": ["好奇美国佬"], "source": "https://www.cocchi.it/en/wines/americano/"},
     "benedictine": {"aliases": ["D.O.M.廊酒", "DOM廊酒"]},
     "cuban-white": {"tags": ["cuban-rum", "rum"]},
-    "jamaican-gold": {"tags": ["jamaican-rum", "gold-rum"]},
     "jamaican-dark": {"tags": ["jamaican-rum", "dark-rum"]},
-    "jamaican-overproof": {"tags": ["jamaican-rum", "rum", "overproof-rum"]},
-    "puerto-rico-gold": {"tags": ["puerto-rico-rum", "gold-rum"]}
+    "jamaican-overproof": {"tags": ["jamaican-rum", "rum"]}
   }
 }
