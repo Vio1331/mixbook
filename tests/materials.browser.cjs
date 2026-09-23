@@ -13,7 +13,7 @@ module.exports=async function({page,stored,go,stock}){
  await go('pantry');await page.locator('[data-action=pantry-edit]').click();
  assert.equal(await page.locator('#pantry-directory [data-material-group="利口酒"]').count(),1);
  await page.locator('#pantry-directory [data-material-group="基酒"]').click();
- assert.deepEqual(await page.locator('#pantry-directory [data-material-nav]').evaluateAll(nodes=>nodes.map(node=>node.textContent.trim())),['金酒 ›','朗姆酒 ›','伏特加 ›','威士忌 ›','龙舌兰 ›','白兰地 ›']);
+ assert.deepEqual(await page.locator('#pantry-directory [data-material-nav]').evaluateAll(nodes=>nodes.map(node=>node.textContent.replace(/\s/g,''))),['金酒›','朗姆酒›','伏特加›','威士忌›','龙舌兰›','白兰地›']);
  await page.locator('#pantry-directory [data-material-nav=gin]').click();
  await page.locator('#pantry-directory .material-card [data-material-nav=london-dry]').click();
  assert.equal(await page.locator('#pantry-directory [data-pantry=beefeater]').count(),1);
@@ -32,9 +32,12 @@ module.exports=async function({page,stored,go,stock}){
  await page.locator('#item-form button[type=submit]').click();
  assert.equal((await stored()).ingredients.some(i=>i.name==='测试自定义酒款'),false);
  await page.locator('[data-action=pantry-save]').click();
- await page.waitForSelector('[data-action=pantry-edit]');
+ await page.waitForSelector('#pantry-directory [data-material-results]');
+ assert.match(await page.locator('#pantry-directory .material-breadcrumb').innerText(),/测试自定义金酒类别/);
+ assert.equal(await page.locator('#pantry-directory [data-pantry]').count(),1);
  let d=await stored(),type=d.ingredients.find(i=>i.name==='测试自定义金酒类别'),product=d.ingredients.find(i=>i.name==='测试自定义酒款');
  assert.equal(product.parentId,type.id);assert.equal(type.parentId,'gin');assert.equal(d.pantry[product.id],true);assert.equal(d.pantry[type.id],undefined);
+ await page.locator('[data-action=pantry-cancel]').click();
  await page.reload();await page.waitForSelector('.recipe-card');
  d=await stored();assert.equal(d.pantry[product.id],true);assert.equal(d.ingredients.find(i=>i.id===product.id).brand,'自选品牌');
  console.log('PASS hierarchical pantry: type → subtype → product; nested creation and reload');
@@ -77,7 +80,7 @@ module.exports=async function({page,stored,go,stock}){
  console.log('PASS recipe category/product selection, multiple alternatives, edit round-trip and versions');
 
  await closeDetail();await go('pantry');await page.locator('[data-action=pantry-edit]').click();await stock('ardbeg-10');
- await page.locator('[data-action=pantry-save]').click();await page.waitForSelector('[data-action=pantry-edit]');await go('recipes');
+ await page.locator('[data-action=pantry-save]').click();await page.locator('[data-action=pantry-cancel]').click();await page.waitForSelector('[data-action=pantry-edit]');await go('recipes');
  await page.locator('#recipe-search').fill('测试烟熏');await page.locator(`[data-detail="${smoke.id}"].card-main`).click();
  assert.match(await page.locator('#detail-dialog .detail-status').innerText(),/使用替代品/);
  assert.match(await page.locator('#detail-dialog .ingredient-row').first().innerText(),/使用替代品：阿贝 10 年/);
