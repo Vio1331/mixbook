@@ -19,14 +19,10 @@
   <dialog id="sync-dialog" class="editor-dialog sync-dialog" aria-label="GitHub 同步设置"></dialog>
   <dialog id="confirm-dialog" class="confirm-dialog" aria-label="确认操作"></dialog>
   <div id="sync-overlay" class="sync-overlay" role="status" aria-live="polite" aria-hidden="true" hidden>
-    <div class="sync-overlay-card" data-sync-state="loading">
-      <span class="sync-indicator sync-spinner" aria-hidden="true"></span>
-      <strong id="sync-overlay-title">正在同步中</strong>
-      <span id="sync-overlay-message">正在与 GitHub 同步数据，请稍候…</span>
-      <div class="sync-overlay-actions" hidden>
-        <button class="btn" data-action="cancel-sync-result">取消</button>
-        <button class="btn primary" data-action="retry-sync">再次同步</button>
-      </div>
+    <div class="sync-overlay-card">
+      <span class="sync-spinner" aria-hidden="true"></span>
+      <strong>正在同步中</strong>
+      <span>正在与 GitHub 同步数据，请稍候…</span>
     </div>
   </div>
   <div id="toast" role="status" aria-live="polite"></div>
