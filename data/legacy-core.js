@@ -8,7 +8,7 @@
  const uid = () => root.crypto?.randomUUID?.() || 'id-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
  const empty = () => ({schemaVersion:1,recipes:[],ingredients:[],pantry:{},favorites:{}});
  function validate(input){
-   if(!input || typeof input !== 'object' || input.schemaVersion !== 1) throw Error('这个文件不是兼容的喝了么数据。');
+   if(!input || typeof input !== 'object' || input.schemaVersion !== 1) throw Error('这个文件不是兼容的一杯手记数据。');
    if(!Array.isArray(input.recipes)||!Array.isArray(input.ingredients)||!input.pantry||!input.favorites||typeof input.pantry!=='object'||typeof input.favorites!=='object'||Array.isArray(input.pantry)||Array.isArray(input.favorites)) throw Error('数据结构不完整，原有记录未被修改。');
    if(input.recipes.length>10000||input.ingredients.length>10000) throw Error('数据量超过初版支持范围。');
    const unique = (items,label) => {const ids=new Set();for(const x of items){if(!x||typeof x.id!=='string'||!x.id||x.id.length>200||!(/^[a-zA-Z0-9_-]+$/).test(x.id)||['__proto__','constructor','prototype'].includes(x.id)||ids.has(x.id))throw Error(label+'含有无效或重复编号。');ids.add(x.id)}return ids};

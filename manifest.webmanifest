@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "喝了么 · Mixbook",
-  "short_name": "喝了么",
+  "name": "一杯手记 · Mixbook",
+  "short_name": "一杯手记",
   "description": "记录配方、管理酒柜，找到现在能做的一杯。",
   "lang": "zh-CN",
   "start_url": "./",
