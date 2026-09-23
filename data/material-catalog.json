@@ -3,7 +3,11 @@
   "note": "新增酒款仅作为可选目录，不会自动加入个人酒柜。分类用于浏览；matchParent=false 阻止跨边界匹配。",
   "migrations": {
     "vermouth": {"name": "甜红味美思"},
-    "orange-liqueur": {"name": "橙味利口酒（大类）"}
+    "orange-liqueur": {"name": "橙味利口酒（大类）"},
+    "tequila": {"name": "龙舌兰酒"},
+    "mezcal": {"parentId": "spirit"},
+    "cachaca": {"parentId": "spirit"},
+    "aguardiente": {"parentId": "spirit"}
   },
   "metadata": {
     "vermouth": {"aliases": ["甜红味美思", "甜味美思", "红威末酒"]},
