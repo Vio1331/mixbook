@@ -1,4 +1,4 @@
-# 喝了么 · Mixbook v0.3.0
+# 一杯手记 · Mixbook v0.3.0
 
 个人鸡尾酒工具。纯 HTML / CSS / JavaScript，继续使用 GitHub Pages；没有构建依赖、付费数据库或服务器。
 
