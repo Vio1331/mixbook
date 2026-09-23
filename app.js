@@ -110,7 +110,7 @@
  function download(data){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mixbook-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
  function resolveConflicts(result,local,remote,choice){const selected=choice==='remote'?remote:local;for(const key of result.conflicts){const [section,...rest]=key.split(':'),id=rest.join(':');if(section==='recipes'||section==='ingredients'){result.data[section]=result.data[section].filter(x=>x.id!==id);const value=selected[section].find(x=>x.id===id);if(value)result.data[section].push(C.clone(value))}else if(section==='pantry'||section==='favorites'){if(id in selected[section])Object.defineProperty(result.data[section],id,{value:selected[section][id],enumerable:true,writable:true,configurable:true});else delete result.data[section][id]}}const recipeIds=new Set(result.data.recipes.map(x=>x.id));for(const id of Object.keys(result.data.favorites))if(!recipeIds.has(id))delete result.data.favorites[id];return C.validate(result.data)}
  async function importData(file){if(!file)return;if(file.size>1024*1024){toast('文件超过 1 MiB，请使用不含内嵌图片的数据备份。');return}try{const other=C.validate(JSON.parse(await file.text()));const result=C.merge(C.empty(),env.data,other);let choice='local';if(result.conflicts.length){choice=await confirmChoice('导入内容存在不同版本',`${result.conflicts.length} 项记录与本机不同。未冲突的记录会合并，选择仅影响冲突项。`,[['local','冲突项保留本机',''],['remote','冲突项采用导入','primary'],['cancel','取消','']]);if(choice==='cancel')return}else if(await confirmChoice('合并导入数据',`将合并 ${other.recipes.length} 份配方和 ${other.ingredients.length} 种材料，现有记录会保留。`)!=='yes')return;const merged=resolveConflicts(result,env.data,other,choice);if(await update(d=>Object.assign(d,merged))){render();toast('数据已合并并保存。')}}catch(e){toast('导入失败：'+e.message)}}
- function scheduleSync(){clearTimeout(saveTimer);if(config.auto&&token&&navigator.onLine&&!editing())saveTimer=setTimeout(()=>{if(!editing())sync(false)},1800)}
+ function scheduleSync(allowPantry=false){clearTimeout(saveTimer);if(config.auto&&token&&navigator.onLine&&(!editing()||allowPantry))saveTimer=setTimeout(()=>{if(!editing()||allowPantry)sync(false,allowPantry)},1800)}
  function tokenStorage(){try{localStorage.setItem('mixbook.config',JSON.stringify(config));localStorage.removeItem('mixbook.token');sessionStorage.removeItem('mixbook.token');if(token)(remember?localStorage:sessionStorage).setItem('mixbook.token',token)}catch{toast('此浏览器不能记住连接设置；本次仍可尝试连接。')}}
  function validateConfig(c){if(!/^[A-Za-z0-9-]{1,100}$/.test(c.owner)||!/^[A-Za-z0-9_.-]{1,100}$/.test(c.repo))throw Error('请填写有效的 GitHub 用户名与仓库名。');if(!/^[A-Za-z0-9_./-]+\.json$/.test(c.path)||c.path.startsWith('/')||c.path.split('/').some(p=>!p||p==='.'||p==='..'))throw Error('数据路径应是相对路径，以 .json 结尾，例如 mixbook.json。');if(c.branch.length>200)throw Error('分支名过长。')}
  const repoUrl=()=>`https://api.github.com/repos/${encodeURIComponent(config.owner)}/${encodeURIComponent(config.repo)}`;
@@ -119,8 +119,8 @@
  function apiError(res){if(res.status===401)return Error('令牌无效或已过期，请重新填写。');if(res.status===403||res.status===429)return Error('权限不足或 GitHub 暂时限制请求。请检查 Contents 读写权限后稍后重试。');if(res.status===404)return Error('找不到仓库或分支，请检查名称以及令牌的仓库权限。');if(res.status===409)return Error('云端刚发生了修改，本次没有覆盖。请再次同步。');if(res.status===422)return Error('GitHub 拒绝写入，请检查分支保护、路径或仓库初始化状态。');return Error('GitHub 暂时无法处理请求（'+res.status+'）。')}
  function decodeContent(content){const bytes=Uint8Array.from(atob(content.replace(/\s/g,'')),c=>c.charCodeAt(0));return new TextDecoder().decode(bytes)}
  function encodeContent(text){const bytes=new TextEncoder().encode(text);let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s)}
- async function sync(interactive=true){
-   if(syncBusy)return;if(editing()){if(interactive)toast('请先保存或取消当前编辑，再同步。');return}if(!token||!config.owner||!config.repo){if(interactive){view='settings';render();toast('先填写私有仓库与访问令牌。')}return}
+ async function sync(interactive=true,allowPantry=false){
+   if(syncBusy)return;if(editing()&&!allowPantry){if(interactive)toast('请先保存或取消当前编辑，再同步。');return}if(!token||!config.owner||!config.repo){if(interactive){view='settings';render();toast('先填写私有仓库与访问令牌。')}return}
    if(!navigator.onLine){if(interactive)toast('当前离线，修改仍在本机。');return}
    syncBusy=true;updateHeader();clearTimeout(saveTimer);let message='';
    try{
@@ -166,7 +166,7 @@
  case'show-ready':filters={q:'',tags:[],base:'',sourceName:'',availability:'ready',favorite:false};view='recipes';render();break;
  case'pantry-edit':if(syncBusy){toast('请等待同步完成。');break}pantryDraft=C.clone(env.data);pantryQ='';render();break;
  case'pantry-cancel':pantryDraft=null;pantryQ='';render();scheduleSync();break;
- case'pantry-save':{if(await update(d=>{d.pantry=C.clone(pantryDraft.pantry);d.ingredients=C.clone(pantryDraft.ingredients)})){pantryDraft=null;pantryQ='';render();scheduleSync();toast('酒柜已保存。')}break}
+ case'pantry-save':{if(await update(d=>{d.pantry=C.clone(pantryDraft.pantry);d.ingredients=C.clone(pantryDraft.ingredients)})){pantryDraft=C.clone(env.data);pantryBrowser.data=pantryDraft;pantryBrowser.render();updateHeader();scheduleSync(true);toast('酒柜已保存。')}break}
  case'new-pantry-item':openItem('pantry');break;
  case'new-recipe-item':openItem('recipe');break;
  case'delete-item':await deleteItem();break;
