@@ -14,6 +14,7 @@ materials=json.loads((root/'data/material-catalog.json').read_text())
 for i in items:
  meta=materials['metadata'].get(i['id'],{})
  i['aliases']=list(dict.fromkeys(i['aliases']+meta.get('aliases',[])))
+ i['tags']=meta.get('tags',[])
  i['matchParent']=meta.get('matchParent',True)
  i['customized']=False
 U=set('alexander americano angel-face aviation between-the-sheets boulevardier brandy-crusta casino clover-club daiquiri dry-martini gin-fizz hanky-panky john-collins last-word manhattan martinez mary-pickford monkey-gland negroni old-fashioned paradise planters-punch porto-flip ramos-fizz remember-the-maine rusty-nail sazerac sidecar stinger tuxedo vieux-carre whiskey-sour white-lady'.split())
@@ -62,7 +63,7 @@ for line in (root/'data/recipes.tsv').read_text().splitlines():
 assert len(recipes)==len(facts)==102
 assert len({r['id'] for r in recipes})==102
 options=dict(glasses=sorted({r['glass'] for r in recipes}),tags=sorted({t for r in recipes for t in r['tags']}),sources=['IBA · 难忘经典','IBA · 当代经典','IBA · 新时代'])
-d=dict(schemaVersion=3,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-23-pantry-v6',ingredientMigrations=materials['migrations'])
+d=dict(schemaVersion=3,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-23-tags-v7',ingredientMigrations=materials['migrations'])
 photo_map=json.loads((root/'data/photo-map.json').read_text())
 photo_meta={p['slug']:{'revision':p['assetSha256'][:12],'number':p['number'],'note':p['note']} for p in photo_map['photos']}
 photo_meta['negroni']={'revision':hashlib.sha256((root/'assets/negroni.webp').read_bytes()).hexdigest()[:12],'note':''}
