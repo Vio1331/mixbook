@@ -21,8 +21,7 @@ class MaterialBrowser{
  itemControls(i){
   if(this.mode==='pantry'){
    const generic=C.needsProduct(i,this.data);
-   if(generic&&!this.data.pantry[i.id])return '';
-   return `<label class="material-own"><input type="checkbox" data-pantry="${esc(i.id)}" ${this.data.pantry[i.id]?'checked':''}>${generic?'已有记录 · 酒款未记录':'拥有'}</label>`;
+   return `<label class="material-own"><input type="checkbox" data-pantry="${esc(i.id)}" ${this.data.pantry[i.id]?'checked':''}>${generic?'作为通用材料记录':'拥有'}</label>`;
   }
   if(this.mode==='parent'&&i.kind!=='type')return '';
   return `<button type="button" class="btn small" data-material-select="${esc(i.id)}">${this.chooseLabel(i)}</button>`;
