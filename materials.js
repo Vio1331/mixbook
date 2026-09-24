@@ -21,7 +21,7 @@ class MaterialBrowser{
  itemControls(i){
   if(this.mode==='pantry'){
    const generic=C.needsProduct(i,this.data);
-   return `<label class="material-own"><input type="checkbox" data-pantry="${esc(i.id)}" ${this.data.pantry[i.id]?'checked':''}>${generic?'作为通用材料记录':'拥有'}</label>`;
+   return `<label class="material-own"><input type="checkbox" data-pantry="${esc(i.id)}" ${this.options.isOwned?.(i)?'checked':''}>${generic?'作为通用材料记录':'拥有'}</label>`;
   }
   if(this.mode==='parent'&&i.kind!=='type')return '';
   return `<button type="button" class="btn small" data-material-select="${esc(i.id)}">${this.chooseLabel(i)}</button>`;
@@ -31,7 +31,7 @@ class MaterialBrowser{
   const products=this.data.ingredients.filter(x=>x.kind==='product'&&C.ingredientPath(x.id,this.data).some(p=>p.id===i.id)).length;
   const open=i.kind==='type';
   const tagNames=(i.tags||[]).map(id=>this.item(id)?.name).filter(Boolean);
-  return `<article class="material-card ${this.data.pantry[i.id]?'checked':''}" data-material-id="${esc(i.id)}"><div class="material-card-head">${open?`<button type="button" class="material-name" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span aria-hidden="true">›</span></button>`:`<strong>${esc(i.name)}</strong>`}${this.options.onEdit?`<button type="button" class="link-button" data-material-edit="${esc(i.id)}">编辑</button>`:''}</div><p class="material-meta">${esc(i.kind==='product'?(i.brand||'具体产品'):`${children} 个子类 · ${products} 款产品`)}</p>${tagNames.length?`<div class="chips material-tags">${tagNames.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`:''}${this.q?`<p class="material-path">${esc(this.pathText(i.id))}</p>`:''}${i.matchParent===false?'<p class="material-boundary">独立匹配：不自动代替上级类别</p>':''}<div class="material-controls">${this.itemControls(i)}</div></article>`;
+  return `<article class="material-card ${this.options.isOwned?.(i)?'checked':''}" data-material-id="${esc(i.id)}"><div class="material-card-head">${open?`<button type="button" class="material-name" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span aria-hidden="true">›</span></button>`:`<strong>${esc(i.name)}</strong>`}${this.options.onEdit?`<button type="button" class="link-button" data-material-edit="${esc(i.id)}">编辑</button>`:''}</div><p class="material-meta">${esc(i.kind==='product'?(i.brand||'具体产品'):`${children} 个子类 · ${products} 款产品`)}</p>${tagNames.length?`<div class="chips material-tags">${tagNames.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`:''}${this.q?`<p class="material-path">${esc(this.pathText(i.id))}</p>`:''}${i.matchParent===false?'<p class="material-boundary">独立匹配：不自动代替上级类别</p>':''}<div class="material-controls">${this.itemControls(i)}</div></article>`;
  }
  render(){
   const d=this.data,all=d.ingredients.filter(i=>this.allowed(i)),current=this.item(this.parentId);
