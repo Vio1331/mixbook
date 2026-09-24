@@ -9,12 +9,70 @@ for line in (root/'data/ingredients.tsv').read_text().splitlines():
  if not line or line.startswith('#'):continue
  id,name,category,parent,brand,en,img=line.split('|')
  items.append(dict(id=id,name=name,category=category,parentId=parent,brand=brand,aliases=[en] if en else [],kind='product' if brand else 'type',image=img if (root/f'assets/ingredients/{img}.webp').exists() else ''))
+
+# The pantry is deliberately organised independently from the historical IBA
+# ingredient groups.  The first two nodes are the drawers shown in the pantry,
+# their children are pages, and the third level is the user-facing tag set.
+taxonomy={
+ 'alcohol':('酒精成分',{
+  'whiskey':('威士忌',[('bourbon','波本威士忌'),('rye','黑麦威士忌'),('scotch','苏格兰威士忌'),('blended-scotch','调和苏格兰威士忌'),('islay','艾雷岛单一麦芽威士忌'),('canadian-whiskey','加拿大威士忌'),('irish-whiskey','爱尔兰威士忌'),('japanese-whiskey','日本威士忌')]),
+  'gin':('金酒',[('london-dry','伦敦干金酒'),('plymouth-gin','普利茅斯金酒'),('navy-strength-gin','海军强度金酒'),('old-tom','老汤姆金酒'),('modern-gin','现代金酒')]),
+  'rum-all':('朗姆酒',[('rum','白朗姆'),('dark-rum','黑朗姆'),('gold-rum','金朗姆'),('aged-rum','陈年朗姆'),('molasses-rum','糖蜜朗姆'),('agricole','农业朗姆'),('spiced-rum','香料朗姆'),('overproof-rum','高酒精度朗姆'),('cuban-rum','古巴朗姆'),('jamaican-rum','牙买加朗姆'),('demerara-rum','德梅拉拉朗姆'),('martinique-rum','马提尼克朗姆'),('puerto-rico-rum','波多黎各朗姆'),('cachaca','卡莎萨朗姆')]),
+  'tequila':('龙舌兰',[('blanco-tequila','银龙舌兰'),('gold-tequila','金龙舌兰'),('reposado-tequila','短期陈年龙舌兰'),('anejo-tequila','长期陈年龙舌兰')]),
+  'vodka':('伏特加',[('baijiu','中国白酒'),('soju','韩国烧酒'),('shochu','日本烧酒')]),
+  'brandy':('白兰地',[('cognac','干邑'),('pisco','皮斯科')]),
+  'beer':('啤酒',[('pale-ale','淡色艾尔'),('ipa','IPA'),('stout','世涛'),('porter','波特'),('abbey-beer','修道院'),('sour-beer','酸啤'),('wheat-beer','小麦'),('lager','拉格')]),
+  'wine':('葡萄酒',[('red-wine','红葡萄酒'),('white-wine','白葡萄酒'),('rose-wine','桃红葡萄酒'),('sparkling','起泡酒'),('champagne','香槟'),('prosecco','普罗塞克'),('cava','卡瓦'),('ice-wine','冰酒')]),
+  'liqueur':('利口酒',[('absinthe','苦艾酒'),('cacao-liqueur','可可利口酒'),('coffee-liqueur','咖啡利口酒'),('cream-liqueur','奶油利口酒'),('orange-liqueur','橙味利口酒'),('cherry-liqueur','樱桃利口酒'),('passion-liqueur','百香果利口酒'),('herbal-liqueur','草本利口酒'),('pear-liqueur','梨子利口酒'),('honey-liqueur','蜂蜜利口酒'),('mint-liqueur','薄荷利口酒'),('mure','黑莓利口酒'),('banana-liqueur','香蕉利口酒'),('violette','紫罗兰利口酒'),('grapefruit-liqueur','西柚利口酒'),('peach-liqueur','桃子利口酒'),('amaretto','杏仁利口酒')]),
+  'vermouth-root':('味美思',[('vermouth','甜味美思'),('dry-vermouth','干味美思'),('bianco-vermouth','白味美思')]),
+  'port-sherry':('波特&雪莉',[('ruby-port','红宝石波特酒'),('rose-port','桃红波特酒'),('white-port','白波特酒'),('aged-port','陈年波特酒'),('tawny-port','茶色波特酒'),('fino-sherry','Fino 雪莉酒'),('manzanilla-sherry','Manzanilla 雪莉酒'),('amontillado-sherry','Amontillado 雪莉酒'),('palo-cortado-sherry','Palo Cortado 雪莉酒'),('oloroso-sherry','Oloroso 雪莉酒'),('cream-sherry','Cream 雪莉酒'),('pedro-ximenez-sherry','Pedro Ximénez 雪莉酒')]),
+  'aperitif':('开胃酒',[]),'amaro':('阿玛罗',[]),'bitters':('苦精酒',[])
+ }),
+ 'non-alcohol':('非酒精成分',{
+  'juice-root':('果汁',[]),'produce-root':('水果&蔬菜',[]),'syrup-root':('糖浆',[]),'seasoning-root':('调料',[]),
+  'soda-root':('苏打水',[('soda','苏打水'),('tonic','汤力水'),('ginger-beer','姜汁啤酒')]),'other-food':('其他食品',[])
+ })
+}
+by_id={i['id']:i for i in items}
+original_parents={i['id']:i['parentId'] for i in items}
+def ensure(id,name,parent,category):
+ if id not in by_id:
+  by_id[id]=dict(id=id,name=name,category=category,parentId=parent,brand='',aliases=[],kind='type',image='')
+ else:
+  by_id[id].update(name=name,category=category,parentId=parent)
+for drawer,(drawer_name,pages) in taxonomy.items():
+ ensure(drawer,drawer_name,'','酒柜分类')
+ for page,(page_name,tags) in pages.items():
+  ensure(page,page_name,drawer,drawer_name)
+  for tag,tag_name in tags:ensure(tag,tag_name,page,drawer_name)
+
+# Keep detailed IBA-only classifications below the new public tags/pages.
+fallback={'基酒':'alcohol','利口酒':'liqueur','葡萄酒':'wine','苦精与调味':'seasoning-root','果汁与汽水':'juice-root','糖与其他':'other-food','新鲜材料与装饰':'produce-root'}
+protected={drawer for drawer in taxonomy}|{p for _,pages in taxonomy.values() for p in pages}|{t for _,pages in taxonomy.values() for _,tags in pages.values() for t,_ in tags}
+tag_ids={t for _,pages in taxonomy.values() for _,tags in pages.values() for t,_ in tags}
+for i in by_id.values():
+ if i['id'] in protected:continue
+ if i['kind']=='product':
+  p=original_parents.get(i['id'],''); inherited=[]; seen=set()
+  while p and p not in seen:
+   seen.add(p)
+   if p in tag_ids:inherited.append(p)
+   p=original_parents.get(p,'')
+  i['_taxonomyTags']=inherited
+ if not i['parentId'] or i['parentId']=='spirit':i['parentId']=fallback.get(i['category'],'other-food')
+ i['category']=by_id.get(i['parentId'],{}).get('category',i['category'])
+ordered=[]
+for drawer,(_,pages) in taxonomy.items():
+ ordered.append(by_id[drawer])
+ for page,(_,tags) in pages.items():
+  ordered.append(by_id[page]);ordered.extend(by_id[tag] for tag,_ in tags)
+items=ordered+[i for id,i in by_id.items() if id not in protected and id!='spirit']
 ids={i['id'] for i in items}
 materials=json.loads((root/'data/material-catalog.json').read_text())
 for i in items:
  meta=materials['metadata'].get(i['id'],{})
  i['aliases']=list(dict.fromkeys(i['aliases']+meta.get('aliases',[])))
- i['tags']=meta.get('tags',[])
+ i['tags']=list(dict.fromkeys(meta.get('tags',[])+i.pop('_taxonomyTags',[])))
  i['matchParent']=meta.get('matchParent',True)
  i['customized']=False
 U=set('alexander americano angel-face aviation between-the-sheets boulevardier brandy-crusta casino clover-club daiquiri dry-martini gin-fizz hanky-panky john-collins last-word manhattan martinez mary-pickford monkey-gland negroni old-fashioned paradise planters-punch porto-flip ramos-fizz remember-the-maine rusty-nail sazerac sidecar stinger tuxedo vieux-carre whiskey-sour white-lady'.split())
@@ -63,7 +121,7 @@ for line in (root/'data/recipes.tsv').read_text().splitlines():
 assert len(recipes)==len(facts)==102
 assert len({r['id'] for r in recipes})==102
 options=dict(glasses=sorted({r['glass'] for r in recipes}),tags=sorted({t for r in recipes for t in r['tags']}),sources=['IBA · 难忘经典','IBA · 当代经典','IBA · 新时代'])
-d=dict(schemaVersion=3,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-23-tags-v7',ingredientMigrations=materials['migrations'])
+d=dict(schemaVersion=3,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-24-pantry-taxonomy-v8',ingredientMigrations=materials['migrations'])
 photo_map=json.loads((root/'data/photo-map.json').read_text())
 photo_meta={p['slug']:{'revision':p['assetSha256'][:12],'number':p['number'],'note':p['note']} for p in photo_map['photos']}
 photo_meta['negroni']={'revision':hashlib.sha256((root/'assets/negroni.webp').read_bytes()).hexdigest()[:12],'note':''}
