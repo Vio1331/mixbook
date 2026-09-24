@@ -17,7 +17,7 @@ module.exports=async function({page,stored,go,stock}){
  await page.locator('#pantry-directory [data-material-nav=gin]').click();
  await page.locator('#pantry-directory .material-card [data-material-nav=london-dry]').click();
  assert.equal(await page.locator('#pantry-directory [data-pantry=beefeater]').count(),1);
- assert.equal(await page.locator('#pantry-directory [data-pantry=london-dry]').count(),0);
+ assert.equal(await page.locator('#pantry-directory [data-pantry=london-dry]').count(),1);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await page.screenshot({path:path.resolve(__dirname,'../../mixbook-pantry-hierarchy-mobile.png'),fullPage:false});
  await page.locator('#pantry-directory .material-breadcrumb [data-material-nav=gin]').click();
@@ -34,7 +34,7 @@ module.exports=async function({page,stored,go,stock}){
  await page.locator('[data-action=pantry-save]').click();
  await page.waitForSelector('#pantry-directory [data-material-results]');
  assert.match(await page.locator('#pantry-directory .material-breadcrumb').innerText(),/测试自定义金酒类别/);
- assert.equal(await page.locator('#pantry-directory [data-pantry]').count(),1);
+ assert.equal(await page.locator('#pantry-directory [data-pantry]').count(),2);
  let d=await stored(),type=d.ingredients.find(i=>i.name==='测试自定义金酒类别'),product=d.ingredients.find(i=>i.name==='测试自定义酒款');
  assert.equal(product.parentId,type.id);assert.equal(type.parentId,'gin');assert.equal(d.pantry[product.id],true);assert.equal(d.pantry[type.id],undefined);
  await page.locator('[data-action=pantry-cancel]').click();
