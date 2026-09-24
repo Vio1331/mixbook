@@ -1,7 +1,7 @@
-/* v3: hierarchical materials, product inventory and explicit substitution boundaries. */
+/* v4: recipe materials and standalone pantry records with explicit matching rules. */
 (function(root){'use strict';
 const clone=v=>v===undefined?undefined:JSON.parse(JSON.stringify(v)),same=(a,b)=>JSON.stringify(a)===JSON.stringify(b),norm=s=>String(s||'').normalize('NFKC').trim().toLowerCase(),now=()=>new Date().toISOString(),uid=()=>root.crypto?.randomUUID?.()||'id-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
-const empty=()=>({schemaVersion:3,recipes:[],ingredients:[],pantry:{},pantryHidden:{},favorites:{},options:{glasses:[],tags:[],sources:[]},catalogVersion:''});
+const empty=()=>({schemaVersion:4,recipes:[],ingredients:[],pantryItems:[],favorites:{},options:{glasses:[],tags:[],sources:[]},catalogVersion:''});
 function fail(s){throw Error(s)}
 function text(s,n=2000){return typeof s==='string'&&s.length<=n?s:fail('文本字段无效或过长。')}
 function list(a,n=100){return Array.isArray(a)&&a.length<=10000&&a.every(x=>typeof x==='string'&&x.length<=n)?[...new Set(a)]:fail('选项列表无效。')}
@@ -9,7 +9,7 @@ function safeId(s){return typeof s==='string'&&/^[a-zA-Z0-9_-]{1,200}$/.test(s)&
 function image(s){return !s?'':safeId(s)?s:fail('图片标识无效。')}
 function unique(a,label){if(!Array.isArray(a)||a.length>10000)fail(label+'结构无效。');const ids=new Set();for(const v of a){if(!v||!safeId(v.id)||ids.has(v.id))fail(label+'编号无效或重复。');ids.add(v.id)}return ids}
 function validate(input){
- if(!input||![1,2,3].includes(input.schemaVersion))fail('数据版本不兼容，请更新网页。');const v1=input.schemaVersion===1,ids=unique(input.ingredients,'材料'),rids=unique(input.recipes,'酒谱');
+ if(!input||![1,2,3,4].includes(input.schemaVersion))fail('数据版本不兼容，请更新网页。');const v1=input.schemaVersion===1,ids=unique(input.ingredients,'材料'),rids=unique(input.recipes,'酒谱');
  const ingredients=input.ingredients.map(i=>({id:i.id,name:text(i.name,100)||fail('材料需要名称。'),category:text(i.category,50),aliases:list(i.aliases,100),kind:i.kind==='product'?'product':'type',parentId:text(i.parentId||'',200),brand:text(i.brand||'',100),image:image(i.image),tags:list(i.tags||[],200),matchParent:i.matchParent===undefined?true:typeof i.matchParent==='boolean'?i.matchParent:fail('材料匹配边界无效。'),customized:i.customized===true}));
  const dict=new Map(ingredients.map(i=>[i.id,i]));
  function treeCheck(a){const d=new Map(a.map(x=>[x.id,x]));for(const i of a){let p=i;const seen=new Set([i.id]);while(p.parentId){if(!d.has(p.parentId)||seen.has(p.parentId))fail('关联关系无效或形成循环。');seen.add(p.parentId);p=d.get(p.parentId)}}}
@@ -20,8 +20,11 @@ function validate(input){
  function steps(a){if(!Array.isArray(a)||!a.length||a.length>100||a.some(x=>typeof x!=='string'||x.length>3000))fail('请填写调制步骤。');return a}
  const recipes=input.recipes.map(r=>{const versions=r.versions||[];unique(versions,'比例版本');return{id:r.id,name:text(r.name,100)||fail('酒谱需要名称。'),en:text(r.en,100),base:text(r.base,60),method:text(r.method,60),glass:text(r.glass,100),tags:list(r.tags,60),notes:text(r.notes,10000),source:text(r.source,2000),sourceName:text(r.sourceName??(r.ibaCategory?'IBA · '+r.ibaCategory:''),200),steps:steps(r.steps),ingredients:rows(v1?r.ingredients.filter(x=>dict.get(x.id)?.category!=='装饰'):r.ingredients,true),garnishes:rows(v1?r.ingredients.filter(x=>dict.get(x.id)?.category==='装饰'):(r.garnishes||[])),versions:versions.map(v=>({id:v.id,name:text(v.name,100),author:text(v.author||'',100),notes:text(v.notes||'',10000),ingredients:rows(v.ingredients,true),garnishes:rows(v.garnishes||[]),steps:steps(v.steps)})),parentId:text(r.parentId||'',200),catalog:r.catalog===true,customized:r.customized===true,sample:r.sample===true,image:image(r.image),createdAt:typeof r.createdAt==='string'?text(r.createdAt,50):now(),updatedAt:typeof r.updatedAt==='string'?text(r.updatedAt,50):now()}});treeCheck(recipes);
  function flags(m,ids){if(!m||typeof m!=='object'||Array.isArray(m))fail('酒柜或收藏数据无效。');const out={};for(const[k,v]of Object.entries(m)){if(!ids.has(k)||typeof v!=='boolean')fail('酒柜或收藏引用无效。');out[k]=v}return out}
+ const rawPantry=input.schemaVersion<4?Object.keys(input.pantry||{}).filter(id=>input.pantry[id]&&dict.has(id)).map(id=>{const i=dict.get(id);return{id:'pantry-'+id,name:i.name,brand:i.brand,category:i.category,image:i.image,matches:[i.id],tags:i.tags}}):(input.pantryItems||[]);
+ unique(rawPantry,'酒柜记录');const pantryItems=rawPantry.map(i=>({id:i.id,name:text(i.name,100)||fail('酒柜记录需要名称。'),brand:text(i.brand||'',100),category:text(i.category||'',50),image:image(i.image),matches:list(i.matches||[],200),tags:list(i.tags||[],200)}));
+ for(const i of pantryItems)if(!i.matches.length||i.matches.some(id=>!ids.has(id))||i.tags.some(id=>!ids.has(id)))fail('酒柜记录的分类无效。');
  const options={};for(const k of ['glasses','tags','sources'])options[k]=list(input.options?.[k]||[],k==='sources'?200:100);
- return{schemaVersion:3,recipes,ingredients,pantry:flags(input.pantry,ids),pantryHidden:flags(input.pantryHidden||{},ids),favorites:flags(input.favorites,rids),options,catalogVersion:text(input.catalogVersion||'',100)};
+ return{schemaVersion:4,recipes,ingredients,pantryItems,favorites:flags(input.favorites,rids),options,catalogVersion:text(input.catalogVersion||'',100)};
 }
 function ingredientPath(id,data){const d=new Map(data.ingredients.map(i=>[i.id,i])),out=[],seen=new Set();let i=d.get(id);while(i&&!seen.has(i.id)){out.unshift(i);seen.add(i.id);i=d.get(i.parentId)}return out}
 function needsProduct(i,data){return i.kind==='type'&&(['基酒','利口酒','葡萄酒'].includes(i.category)||ingredientPath(i.id,data).some(x=>x.id==='bitters'))}
@@ -32,15 +35,16 @@ function satisfies(owned,required,data){const d=new Map(data.ingredients.map(i=>
  if(r.tags?.length&&r.kind==='type')return r.tags.every(tag=>satisfies(owned,tag,data));
  if(o.tags?.includes(required))return true;
  let p=o,seen=new Set();while(p&&!seen.has(p.id)){if(p.id===required)return true;seen.add(p.id);if(p.matchParent===false)break;p=d.get(p.parentId)}return false}
-function matches(row,data){return data.ingredients.filter(i=>data.pantry[i.id]&&[row.id,...(row.alternatives||[])].some(id=>satisfies(i.id,id,data)))}
+function pantrySatisfies(item,required,data){return(item.tags||[]).includes(required)||(item.matches||[]).some(id=>satisfies(id,required,data))}
+function matches(row,data){return data.pantryItems.filter(i=>[row.id,...(row.alternatives||[])].some(id=>pantrySatisfies(i,id,data)))}
 function have(row,data){return matches(row,data).length>0}
 function match(r,data){const req=[...new Map(r.ingredients.filter(i=>!i.optional).map(i=>[i.id+JSON.stringify(i.alternatives||[]),i])).values()];return{ready:req.every(i=>have(i,data)),missing:req.filter(i=>!have(i,data)),substitutions:req.filter(i=>have(i,data)&&!have({...i,alternatives:[]},data)),optional:r.ingredients.filter(i=>i.optional&&!have(i,data)),garnishes:(r.garnishes||[]).filter(i=>!have(i,data)),total:req.length}}
 function query(data,f={}){const terms=norm(f.q).split(/\s+/).filter(Boolean),dict=new Map(data.ingredients.map(i=>[i.id,materialText(i,data)]));return data.recipes.filter(r=>{const hay=norm([r.name,r.en,r.base,r.method,r.notes,...r.tags,r.sourceName,r.source,...[...r.ingredients,...r.garnishes].flatMap(x=>[x.id,...(x.alternatives||[])].map(id=>dict.get(id)))].join(' ')),m=match(r,data);return terms.every(t=>hay.includes(t))&&(!f.tags?.length||f.tags.some(t=>r.tags.includes(t)))&&(!f.base||r.base===f.base)&&(!f.sourceName||r.sourceName===f.sourceName)&&(!f.favorite||data.favorites[r.id])&&(!f.availability||f.availability==='all'||f.availability==='ready'&&m.ready||f.availability==='one'&&m.missing.length===1)})}
 function merge(base,local,remote){[base,local,remote]=[base,local,remote].map(validate);const out=empty(),conflicts=[];function val(k,b,l,r){if(same(l,r))return clone(l);if(same(l,b))return clone(r);if(same(r,b))return clone(l);conflicts.push(k);return clone(l)}
- for(const section of ['ingredients','recipes']){const ms=[base,local,remote].map(d=>new Map(d[section].map(v=>[v.id,v])));for(const id of new Set(ms.flatMap(m=>[...m.keys()]))){const v=val(section+':'+id,...ms.map(m=>m.get(id)));if(v!==undefined)out[section].push(v)}}
- for(const section of ['pantry','pantryHidden','favorites'])for(const id of new Set([base,local,remote].flatMap(d=>Object.keys(d[section])))){const v=val(section+':'+id,base[section][id],local[section][id],remote[section][id]);if(v!==undefined)out[section][id]=v}
+ for(const section of ['ingredients','recipes','pantryItems']){const ms=[base,local,remote].map(d=>new Map(d[section].map(v=>[v.id,v])));for(const id of new Set(ms.flatMap(m=>[...m.keys()]))){const v=val(section+':'+id,...ms.map(m=>m.get(id)));if(v!==undefined)out[section].push(v)}}
+ for(const section of ['favorites'])for(const id of new Set([base,local,remote].flatMap(d=>Object.keys(d[section])))){const v=val(section+':'+id,base[section][id],local[section][id],remote[section][id]);if(v!==undefined)out[section][id]=v}
  for(const k of Object.keys(out.options))out.options[k]=[...new Set([...local.options[k],...remote.options[k]])];out.catalogVersion=local.catalogVersion||remote.catalogVersion;
- const ids=new Set(out.ingredients.map(i=>i.id)),rids=new Set(out.recipes.map(r=>r.id));for(const section of ['pantry','pantryHidden'])for(const id of Object.keys(out[section]))if(!ids.has(id))delete out[section][id];for(const id of Object.keys(out.favorites))if(!rids.has(id))delete out.favorites[id];for(const r of out.recipes){if(r.parentId&&!rids.has(r.parentId))r.parentId='';for(const x of [...r.ingredients,...r.garnishes,...r.versions.flatMap(v=>[...v.ingredients,...v.garnishes])])if(!ids.has(x.id))conflicts.push('missing-ingredient:'+x.id)}return{data:out,conflicts:[...new Set(conflicts)]};
+ const ids=new Set(out.ingredients.map(i=>i.id)),rids=new Set(out.recipes.map(r=>r.id));out.pantryItems=out.pantryItems.filter(i=>i.matches.every(id=>ids.has(id))&&i.tags.every(id=>ids.has(id)));for(const id of Object.keys(out.favorites))if(!rids.has(id))delete out.favorites[id];for(const r of out.recipes){if(r.parentId&&!rids.has(r.parentId))r.parentId='';for(const x of [...r.ingredients,...r.garnishes,...r.versions.flatMap(v=>[...v.ingredients,...v.garnishes])])if(!ids.has(x.id))conflicts.push('missing-ingredient:'+x.id)}return{data:out,conflicts:[...new Set(conflicts)]};
 }
 function installCatalog(input,catalog){
  const d=validate(input),c=validate(catalog);if(d.catalogVersion===c.catalogVersion)return d;

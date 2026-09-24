@@ -3,7 +3,7 @@ module.exports=async function({page,stored,go,stock}){
  const row=n=>page.locator('#editor-ingredients .ingredient-edit-row').nth(n);
  const select=async id=>{
   const name=await page.evaluate(id=>window.MIX_SEED.ingredients.find(i=>i.id===id)?.name,id);
-  await page.locator('#material-dialog [data-material-search]').fill(name);
+  await page.locator('#material-dialog [data-material-search]').pressSequentially(name);
   await page.locator(`#material-dialog [data-material-select="${id}"]`).click();
  };
  const pick=async(n,id)=>{await row(n).locator('[data-choose-material]').click();await select(id)};
@@ -36,10 +36,10 @@ module.exports=async function({page,stored,go,stock}){
  assert.match(await page.locator('#pantry-directory .material-breadcrumb').innerText(),/测试自定义金酒类别/);
  assert.equal(await page.locator('#pantry-directory [data-pantry]').count(),2);
  let d=await stored(),type=d.ingredients.find(i=>i.name==='测试自定义金酒类别'),product=d.ingredients.find(i=>i.name==='测试自定义酒款');
- assert.equal(product.parentId,type.id);assert.equal(type.parentId,'gin');assert.equal(d.pantry[product.id],true);assert.equal(d.pantry[type.id],undefined);
+ assert.equal(product.parentId,type.id);assert.equal(type.parentId,'gin');assert.equal(d.pantryItems.some(i=>i.matches.includes(product.id)),true);assert.equal(d.pantryItems.some(i=>i.matches.includes(type.id)),false);
  await page.locator('[data-action=pantry-cancel]').click();
  await page.reload();await page.waitForSelector('.recipe-card');
- d=await stored();assert.equal(d.pantry[product.id],true);assert.equal(d.ingredients.find(i=>i.id===product.id).brand,'自选品牌');
+ d=await stored();assert.equal(d.pantryItems.some(i=>i.matches.includes(product.id)),true);assert.equal(d.ingredients.find(i=>i.id===product.id).brand,'自选品牌');
  console.log('PASS hierarchical pantry: type → subtype → product; nested creation and reload');
 
  await go('pantry');await page.locator('[data-action=pantry-edit]').click();
@@ -51,7 +51,7 @@ module.exports=async function({page,stored,go,stock}){
  await page.locator('#confirm-dialog [data-choice=yes]').click();
  assert.equal(await page.locator('#pantry-directory [data-material-search]').count(),1);
  await page.locator('[data-action=pantry-save]').click();await page.locator('[data-action=pantry-cancel]').click();await page.waitForSelector('[data-action=pantry-edit]');
- d=await stored();assert.equal(d.ingredients.some(i=>i.id===type.id||i.id===product.id),false);assert.equal(d.pantry[product.id],undefined);
+ d=await stored();assert.equal(d.ingredients.some(i=>i.id===type.id||i.id===product.id),false);assert.equal(d.pantryItems.some(i=>i.matches.includes(product.id)),false);
  console.log('PASS deleting an existing category removes descendants and pantry records after save');
 
  await go('pantry');await page.locator('[data-action=pantry-edit]').click();
@@ -60,12 +60,11 @@ module.exports=async function({page,stored,go,stock}){
  assert.equal((await stored()).ingredients.some(i=>i.name==='取消后不保存的产品'),false);
  console.log('PASS cancelling pantry discards newly created catalog records and stock');
 
+ assert.equal((await stored()).ingredients.some(i=>i.id==='laphroaig-10'),true);
  await go('recipes');await page.locator('[data-action=new]').click();await page.locator('#recipe-form [name=name]').fill('测试烟熏尼格罗尼');
  await row(0).locator('[data-choose-material]').click();
- await page.locator('#material-dialog [data-material-group="基酒"]').click();
- await page.locator('#material-dialog [data-material-nav=whiskey]').click();
- await page.locator('#material-dialog .material-card [data-material-nav=scotch]').click();
- assert.equal(await page.locator('#material-dialog [data-material-select=laphroaig-10]').count(),1);
+ await page.locator('#material-dialog [data-material-search]').pressSequentially('拉弗格');
+ assert.equal(await page.locator('#material-dialog [data-material-select=laphroaig-10]').count(),1,await page.locator('#material-dialog').innerText());
  assert.equal(await page.evaluate(()=>{const el=document.querySelector('#material-dialog');return el.scrollWidth<=el.clientWidth+1}),true);
  await page.screenshot({path:path.resolve(__dirname,'../../mixbook-recipe-picker-mobile.png'),fullPage:false});
  await page.locator('#material-dialog [data-material-select=laphroaig-10]').click();
