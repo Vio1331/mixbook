@@ -1278,7 +1278,9 @@ window.MIX_TAXONOMY = {
     {"id": "puerto-rico-rum", "name": "波多黎各朗姆", "parentId": "rum", "aliases": ["Puerto Rican Rum"]},
     {"id": "cachaca", "name": "卡莎萨朗姆", "parentId": "rum", "aliases": ["Cachaca", "Cachaça"]},
     {"id": "cognac", "name": "干邑", "parentId": "brandy-root", "aliases": ["Cognac"]},
-    {"id": "pisco", "name": "皮斯科", "parentId": "brandy-root", "aliases": ["Pisco"]}
+    {"id": "pisco", "name": "皮斯科", "parentId": "brandy-root", "aliases": ["Pisco"]},
+    {"id": "soda", "name": "苏打水", "parentId": "soda-root", "aliases": ["Soda"]},
+    {"id": "tonic", "name": "汤力水", "parentId": "soda-root", "aliases": ["Tonic"]}
   ],
   "menus": [
     [
