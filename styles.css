@@ -110,3 +110,36 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 @media(max-width:760px){.item-dialog:has(#pantry-bottle-form){height:calc(100dvh - 16px)}}
 .account-menu{position:relative}.avatar{border:0;cursor:pointer;margin-left:10px}.account-dropdown{position:absolute;right:0;top:44px;min-width:150px;padding:7px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 35px #20242b1f;z-index:30}.account-dropdown[hidden]{display:none}.account-dropdown button{width:100%;padding:10px 12px;text-align:left;border-radius:7px;font-size:.84rem}.account-dropdown button:hover{background:#f5f6f8}.admin-structure{max-width:900px}.admin-help{padding:14px 17px;margin-bottom:18px;background:#fff4eb;border:1px solid #f1ccbd;border-radius:10px;color:#79503a;font-size:.85rem}.admin-group{margin-bottom:14px}.admin-group h2{font-size:1rem}.admin-group .field{margin-top:12px}.admin-save{position:sticky;bottom:12px;display:flex;justify-content:flex-end;padding:14px;margin-top:18px;background:#fffffff0;border:1px solid var(--line);border-radius:12px;backdrop-filter:blur(8px)}.danger-text{color:#b13b32}
 @media(max-width:760px){.account-menu .avatar{display:grid}.account-dropdown{right:0;top:39px}.admin-group{padding:18px}}
+
+/* Unified two-column material chooser. Both columns use the same row rhythm. */
+.type-cascade{display:grid;grid-template-columns:42% 58%;height:280px;border:1px solid var(--line);border-radius:9px;background:#fff;overflow:hidden}
+.type-drawers{border-right:1px solid var(--line)}
+.type-drawers button,.type-options label span,.type-options .material-choice{display:flex;align-items:center;width:100%;min-height:44px;padding:11px 12px;border-radius:7px;text-align:left;font-size:.9rem;font-weight:400;line-height:1.45}
+.type-drawers button{justify-content:space-between}
+.type-drawers button:hover,.type-drawers button.active,.type-options label:hover span,.type-options .material-choice:hover{background:#f2f2f2;color:var(--ink)}
+.type-drawers button.active{color:var(--ink);font-weight:600}
+.type-options label:has(input:checked) span,.type-options .material-choice.selected{color:#777;background:#ededed;font-weight:600}
+.recipe-type-cascade{height:340px;margin-top:16px}
+.recipe-type-cascade .material-choice{border:0;background:transparent}
+
+/* Clear administration hierarchy: overview, actions, then editable cards. */
+.admin-structure{max-width:1100px}
+.admin-overview{display:grid;grid-template-columns:repeat(3,140px) minmax(260px,1fr);gap:1px;margin-bottom:28px;border:1px solid var(--line);border-radius:12px;background:var(--line);overflow:hidden}
+.admin-overview>div,.admin-overview>p{background:#fff;padding:18px 20px}
+.admin-overview strong,.admin-overview span{display:block}
+.admin-overview strong{font-size:1.45rem}
+.admin-overview span,.admin-overview p{font-size:.8rem;color:var(--muted)}
+.admin-overview p{display:flex;align-items:center;line-height:1.7}
+.admin-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:14px}
+.admin-toolbar h2{font-size:1.05rem}.admin-toolbar p{margin-top:4px;color:var(--muted);font-size:.82rem}
+.admin-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.admin-group{margin:0;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+.admin-group header{display:grid;grid-template-columns:38px minmax(0,1fr) 36px;align-items:center;gap:11px;padding:15px 17px;border-bottom:1px solid var(--line);background:#fafafa}
+.admin-index{display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#eee;color:var(--muted);font-size:.75rem;font-weight:700}
+.admin-group h3{font-size:.95rem}.admin-group header p{margin-top:2px;color:var(--muted);font-size:.75rem}
+.admin-card-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:17px}
+.admin-card-body .field{margin:0}.admin-card-body .field>span{display:flex;justify-content:space-between;gap:8px}
+.admin-card-body small{color:var(--muted);font-weight:400}.admin-wide{grid-column:1/-1}
+.admin-card-body textarea{min-height:64px;resize:vertical;line-height:1.55}
+.admin-save{gap:18px;padding:12px 14px;box-shadow:0 8px 28px #2221}.admin-save span{margin-right:auto;color:var(--muted);font-size:.8rem}
+@media(max-width:760px){.admin-overview{grid-template-columns:repeat(3,1fr)}.admin-overview>div{padding:13px 10px}.admin-overview>p{grid-column:1/-1;padding:13px}.admin-toolbar{align-items:flex-start}.admin-groups{grid-template-columns:1fr}.admin-group{padding:0}.admin-card-body{grid-template-columns:1fr}.admin-wide{grid-column:auto}.admin-save span{display:none}.recipe-type-cascade{height:300px}}

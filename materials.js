@@ -6,7 +6,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 class MaterialBrowser{
  constructor(el,data,options={}){
   this.el=el;this.data=data;this.options=options;this.mode=options.mode||'recipe';
-  this.parentId=options.parentId||'';this.group=options.group||'';this.q='';this.hoverDrawer='alcohol';
+  this.parentId=options.parentId||'';this.group=options.group||'';this.q='';this.hoverDrawer=(options.hierarchy||root.MixHierarchy?.get?.()||[])[0]?.[0]||'';
   if(this.parentId)this.group=this.item(this.parentId)?.category||'';
   this.el.innerHTML='<div data-material-path></div><label class="material-search"><span class="sr-only">搜索原料</span><input type="search" data-material-search placeholder="搜索原料名称、标签或酒款..."></label><div data-material-results></div>';
   this.el.onclick=e=>this.click(e);this.el.onchange=e=>this.change(e);
@@ -54,7 +54,8 @@ class MaterialBrowser{
    const items=all.filter(i=>!drawers.includes(i)&&i.id!=='spirit'&&terms.every(t=>C.materialText(i,d).includes(t)));
    body+=`<div class="material-choice-list">${items.map(i=>this.recipeCard(i,false,i.kind==='type'?'tag':'product')).join('')}</div>`;
   }else if(!current){
-   body+=`<div class="material-choice-list root-choice-list">${hierarchy.map(([id])=>this.item(id)).filter(Boolean).map(i=>this.recipeCard(i,true,'root')).join('')}</div>`;
+   const active=hierarchy.some(([id])=>id===this.hoverDrawer)?this.hoverDrawer:hierarchy[0]?.[0];
+   body+=`<div class="type-cascade recipe-type-cascade"><div class="type-drawers" role="tablist" aria-label="一级分类">${hierarchy.map(([id])=>this.item(id)).filter(Boolean).map(i=>`<button type="button" role="tab" data-drawer-preview="${esc(i.id)}" class="${i.id===active?'active':''}" aria-selected="${i.id===active}"><span>${esc(i.name)}</span><span aria-hidden="true">›</span></button>`).join('')}</div><div class="type-options">${hierarchy.map(([id,items])=>`<div role="tabpanel" ${id===active?'':'hidden'}>${items.map(itemId=>this.item(itemId)).filter(Boolean).map(i=>`<button type="button" class="material-choice ${i.id===this.options.selectedId?'selected':''}" data-material-select="${esc(i.id)}">${esc(i.name)}</button>`).join('')}</div>`).join('')}</div></div>`;
   }else if(drawers.some(i=>i.id===current.id)){
    const roots=all.filter(i=>i.kind==='type'&&i.parentId===current.id);
    body+=`<div class="material-choice-list root-choice-list">${roots.map(i=>this.recipeCard(i,true,'root')).join('')}</div>`;
