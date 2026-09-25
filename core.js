@@ -49,6 +49,11 @@ function merge(base,local,remote){[base,local,remote]=[base,local,remote].map(va
 function installCatalog(input,catalog){
  const d=validate(input),c=validate(catalog);if(d.catalogVersion===c.catalogVersion)return d;
  const installed=!!d.catalogVersion;
+ for(const [removed,replacement]of Object.entries(catalog.ingredientRemovals||{})){
+  for(const r of d.recipes)for(const x of [...r.ingredients,...r.garnishes,...r.versions.flatMap(v=>[...v.ingredients,...v.garnishes])]){if(x.id===removed)x.id=replacement;x.alternatives=(x.alternatives||[]).map(id=>id===removed?replacement:id).filter((id,n,a)=>id!==x.id&&a.indexOf(id)===n)}
+  for(const i of d.pantryItems){i.matches=i.matches.map(id=>id===removed?replacement:id).filter((id,n,a)=>a.indexOf(id)===n);i.tags=i.tags.map(id=>id===removed?replacement:id).filter((id,n,a)=>a.indexOf(id)===n)}
+  d.ingredients=d.ingredients.filter(i=>i.id!==removed);
+ }
  for(const i of c.ingredients){const old=d.ingredients.find(x=>x.id===i.id);if(!old)d.ingredients.push(clone(i));else if(!old.customized){const migration=catalog.ingredientMigrations?.[i.id];if(migration)for(const [key,value]of Object.entries(migration))if(['name','parentId','category','kind','brand','matchParent'].includes(key)&&old[key]===value)old[key]=i[key];if(c.catalogVersion.includes('pantry-taxonomy'))for(const key of ['name','parentId','category','kind','matchParent'])old[key]=i[key];if(old.category==='利口酒与味美思'&&i.category==='利口酒')old.category=i.category;if(!old.parentId&&!old.image&&input.schemaVersion===1)Object.assign(old,{parentId:i.parentId,kind:i.kind,brand:i.brand,image:i.image});old.aliases=[...new Set([...old.aliases,...i.aliases])];old.tags=clone(i.tags)}}
  for(const r of c.recipes){
   const existing=d.recipes.find(x=>x.id===r.id);

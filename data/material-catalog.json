@@ -9,6 +9,7 @@
     "cachaca": {"parentId": "spirit"},
     "aguardiente": {"parentId": "spirit"}
   },
+  "removals": {"tequila-agave": "tequila"},
   "metadata": {
     "vermouth": {"aliases": ["甜红味美思", "甜味美思", "红威末酒"]},
     "orange-liqueur": {"aliases": ["橙味利口酒（大类）", "橙酒"]},
