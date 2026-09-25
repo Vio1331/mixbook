@@ -42,6 +42,7 @@ class MaterialBrowser{
  }
  recipeRender(){
   const d=this.data,all=d.ingredients.filter(i=>this.allowed(i)),current=this.item(this.parentId);
+  const hierarchy=this.options.hierarchy||root.MixHierarchy?.get?.()||[],entry=hierarchy.find(([id,items])=>id===this.parentId||items.includes(this.parentId));
   const drawers=all.filter(i=>['alcohol','non-alcohol'].includes(i.id));
   const currentPath=current?this.path(current.id):[];
   const root=currentPath.find(i=>drawers.some(drawer=>drawer.id===i.parentId))||null;
@@ -53,14 +54,14 @@ class MaterialBrowser{
    const items=all.filter(i=>!drawers.includes(i)&&i.id!=='spirit'&&terms.every(t=>C.materialText(i,d).includes(t)));
    body+=`<div class="material-choice-list">${items.map(i=>this.recipeCard(i,false,i.kind==='type'?'tag':'product')).join('')}</div>`;
   }else if(!current){
-   body+=`<div class="recipe-material-directory">${drawers.map(drawer=>{const roots=all.filter(i=>i.kind==='type'&&i.parentId===drawer.id);return `<section><h3>${esc(drawer.name)}</h3><div class="material-root-list">${roots.map(i=>this.recipeCard(i,true,'root')).join('')}</div></section>`}).join('')}</div>`;
+   body+=`<div class="material-choice-list root-choice-list">${hierarchy.map(([id])=>this.item(id)).filter(Boolean).map(i=>this.recipeCard(i,true,'root')).join('')}</div>`;
   }else if(drawers.some(i=>i.id===current.id)){
    const roots=all.filter(i=>i.kind==='type'&&i.parentId===current.id);
    body+=`<div class="material-choice-list root-choice-list">${roots.map(i=>this.recipeCard(i,true,'root')).join('')}</div>`;
-  }else if(root){
-   const tags=all.filter(i=>i.kind==='type'&&i.parentId===root.id);
-   const products=all.filter(i=>i.kind==='product'&&C.ingredientPath(i.id,d).some(p=>p.id===root.id));
-   body+=`<h3 class="material-section">标签</h3><button type="button" class="category-name" data-material-select="${esc(root.id)}">${esc(root.name)}</button><div class="material-choice-list tag-choice-list">${tags.map(i=>this.recipeCard(i,false,'tag')).join('')}<button type="button" class="material-choice add-choice" data-reveal-quick="type">＋ 新增标签</button><form class="inline-quick" data-material-quick="type" hidden><input name="name" maxlength="100" placeholder="标签名称" aria-label="标签名称"><button class="material-choice add-choice" type="submit">添加</button></form></div>`;
+  }else if(entry){
+   const menuRoot=this.item(entry[0]),tags=[...entry[1],...(entry[2]||[])].map(id=>this.item(id)).filter(Boolean);
+   const products=all.filter(i=>i.kind==='product'&&C.ingredientPath(i.id,d).some(p=>p.id===menuRoot.id));
+   body+=`<h3 class="material-section">分类与标签</h3><button type="button" class="category-name" data-material-select="${esc(menuRoot.id)}">${esc(menuRoot.name)}</button><div class="material-choice-list tag-choice-list">${tags.map(i=>this.recipeCard(i,false,'tag')).join('')}<button type="button" class="material-choice add-choice" data-reveal-quick="type">＋ 新增标签</button><form class="inline-quick" data-material-quick="type" hidden><input name="name" maxlength="100" placeholder="标签名称" aria-label="标签名称"><button class="material-choice add-choice" type="submit">添加</button></form></div>`;
    body+=`<h3 class="material-section ingredient-title">原料</h3><div class="material-choice-list ingredient-choice-list">${products.map(i=>this.recipeCard(i)).join('')}<button type="button" class="material-choice add-choice" data-reveal-quick="product">＋ 新增原料</button><form class="inline-quick" data-material-quick="product" hidden><input name="name" maxlength="100" placeholder="原料名称" aria-label="原料名称"><button class="material-choice add-choice" type="submit">添加</button></form></div>`;
   }
   this.el.querySelector('[data-material-results]').innerHTML=body;

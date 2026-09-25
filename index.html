@@ -8,7 +8,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%23e5482d'/%3E%3Cpath d='M12 13h24L24 26zM24 26v10m-8 0h16' fill='none' stroke='white' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./assets/icon-192.png">
   <link rel="stylesheet" href="./styles.css">
-  <script defer src="./core.js"></script><script defer src="./seed.js"></script><script defer src="./materials.js"></script><script defer src="./app.js"></script>
+  <script defer src="./core.js"></script><script defer src="./seed.js"></script><script defer src="./hierarchy.js"></script><script defer src="./materials.js"></script><script defer src="./app.js"></script>
 </head>
 <body>
   <div id="app"><div class="boot">正在打开喝了么…</div></div>
@@ -17,6 +17,7 @@
   <dialog id="item-dialog" class="editor-dialog item-dialog" aria-label="编辑材料"></dialog>
   <dialog id="material-dialog" class="editor-dialog material-dialog" aria-label="选择材料"></dialog>
   <dialog id="sync-dialog" class="editor-dialog sync-dialog" aria-label="GitHub 同步设置"></dialog>
+  <dialog id="admin-dialog" class="editor-dialog admin-dialog" aria-label="管理员页面"></dialog>
   <dialog id="confirm-dialog" class="confirm-dialog" aria-label="确认操作"></dialog>
   <div id="sync-overlay" class="sync-overlay" role="status" aria-live="polite" aria-hidden="true" hidden>
     <div class="sync-overlay-card" data-sync-state="loading">
