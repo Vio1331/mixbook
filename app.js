@@ -66,7 +66,7 @@
  function dateText(v){return v?new Date(v).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'尚未同步'}
  function ingredient(id){return env.data.ingredients.find(x=>x.id===id)}
  function ingredientName(id){return ingredient(id)?.name||'未知材料'}
- function recipeIngredientName(id,data=env.data){const i=data.ingredients.find(x=>x.id===id);if(!i)return'未知材料';if(!i.customized||!i.parentId)return i.name;const parent=data.ingredients.find(x=>x.id===i.parentId);return parent?`${parent.name} · ${i.name}`:i.name}
+ function recipeIngredientName(id,data=env.data){const i=data.ingredients.find(x=>x.id===id);if(!i)return'未知材料';const roots=new Set(pantryMenus.map(entry=>entry[0])),pages=new Set(pantryMenus.flatMap(entry=>entry[1]));if(roots.has(id)||pages.has(id))return i.name;const path=C.ingredientPath(id,data),page=[...path].reverse().find(x=>pages.has(x.id))||(i.tags||[]).map(tag=>data.ingredients.find(x=>x.id===tag)).find(x=>pages.has(x?.id));return page?`${page.name} · ${i.name}`:i.name}
  function pantryHas(d,id){return d.pantryItems.some(i=>i.matches.includes(id))}
  function pantryAdd(d,material){if(pantryHas(d,material.id))return;d.pantryItems.push({id:C.uid(),name:material.name,brand:material.brand||'',category:material.category||'',image:material.image||'',matches:[material.id],tags:[...(material.tags||[])]})}
  function pantryRemove(d,id){d.pantryItems=d.pantryItems.filter(i=>!i.matches.includes(id))}

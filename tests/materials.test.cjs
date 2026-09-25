@@ -54,3 +54,5 @@ test('配方一级、二级、具体名称与分类标签逐级精确匹配',()=
  d.pantryItems=[item('bacardi','百加得',['rum'])];assert.ok(C.have(row('recipe-bacardi'),d));
  d.pantryItems=[item('other','其他白朗姆',['rum'])];assert.equal(C.have(row('recipe-bacardi'),d),false);
 });
+
+test('IBA 的名称与标签原料归入对应的二级菜单',()=>{const d=data(),byId=id=>d.ingredients.find(i=>i.id===id);assert.equal(byId('campari').kind,'product');assert.equal(byId('campari').parentId,'aperitif');assert.equal(byId('fernet-branca').kind,'product');assert.ok(C.ingredientPath('fernet-branca',d).some(i=>i.id==='amaro'));assert.ok(d.recipes.find(r=>r.id==='iba-hanky-panky').ingredients.some(i=>i.id==='fernet-branca'));assert.equal(byId('apricot-brandy').kind,'type');assert.equal(byId('apricot-brandy').parentId,'fruit-brandy');assert.equal(byId('apricot-brandy').name,'杏子白兰地');for(const id of ['calvados','peach-brandy'])assert.equal(byId(id).parentId,'fruit-brandy');assert.equal(byId('aperol').parentId,'aperitif')});
