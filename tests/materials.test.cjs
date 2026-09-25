@@ -29,3 +29,12 @@ test('目录中的古巴白朗姆已按产地与风格拆成联合标签',()=>{c
 test('朗姆标签将产地与风格分开，组合名称只作为配方规则',()=>{const d=data(),tags=['rum','gold-rum','dark-rum','overproof-rum','cuban-rum','jamaican-rum','puerto-rico-rum'];for(const id of tags){const i=d.ingredients.find(x=>x.id===id);assert.ok(i,id);assert.deepEqual(i.tags,[])}assert.deepEqual(d.ingredients.find(i=>i.id==='jamaican-gold').tags,['jamaican-rum','gold-rum']);assert.deepEqual(d.ingredients.find(i=>i.id==='puerto-rico-gold').tags,['puerto-rico-rum','gold-rum']);assert.deepEqual(d.ingredients.find(i=>i.id==='jamaican-dark').tags,['jamaican-rum','dark-rum'])});
 
 test('酒柜记录的多个标签在同一瓶上按交集匹配',()=>{const d=data();d.pantryItems=[{id:'bacardi',name:'百加得白朗姆',brand:'Bacardi',category:'酒精成分',image:'',matches:['rum-all'],tags:['rum','cuban-rum']}];assert.ok(C.have(row('rum'),d));assert.ok(C.have(row('cuban-rum'),d));assert.ok(C.have(row('cuban-white'),d));d.pantryItems[0].tags=['rum'];assert.equal(C.have(row('cuban-white'),d),false)});
+
+test('配方材料按名称、标签、逐层类别的顺序匹配酒柜',()=>{const d=data(),item=(id,name,matches,tags=[])=>({id,name,brand:'',category:'酒精成分',image:'',matches,tags});d.pantryItems=[
+ item('category','威士忌类别',['islay']),
+ item('tag','威士忌标签',['scotch'],['whiskey']),
+ item('name','威士忌',['scotch'])];
+ assert.deepEqual(C.matches(row('whiskey'),d).map(i=>i.id),['name']);
+ d.pantryItems=d.pantryItems.filter(i=>i.id!=='name');assert.deepEqual(C.matches(row('whiskey'),d).map(i=>i.id),['tag']);
+ d.pantryItems=d.pantryItems.filter(i=>i.id!=='tag');assert.deepEqual(C.matches(row('whiskey'),d).map(i=>i.id),['category']);
+ d.pantryItems=[item('deep','拉格维林 16 年',['lagavulin-16'])];assert.deepEqual(C.matches(row('whiskey'),d).map(i=>i.id),['deep'])});
