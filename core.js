@@ -34,13 +34,13 @@ function satisfies(owned,required,data){const d=new Map(data.ingredients.map(i=>
  if(o.id===r.id||[r.name,...r.aliases].map(norm).includes(norm(o.name)))return 0;
  // A classification may describe an intersection (for example Cuban + white rum).
  // Every tag must be present on the same owned bottle; two separate bottles cannot combine.
- if(r.tags?.length&&r.kind==='type')return r.tags.every(tag=>satisfies(owned,tag,data));
+ if(r.tags?.length&&r.kind==='type')return(!r.parentId||satisfies(owned,r.parentId,data))&&r.tags.every(tag=>satisfies(owned,tag,data));
  if(o.tags?.includes(required))return true;
  let p=o,seen=new Set();while(p&&!seen.has(p.id)){if(p.id===required)return true;seen.add(p.id);if(p.matchParent===false)break;p=d.get(p.parentId)}return false}
 function categorySatisfies(owned,required,data){const d=new Map(data.ingredients.map(i=>[i.id,i]));let p=d.get(owned),seen=new Set();while(p&&!seen.has(p.id)){if(p.id===required)return true;seen.add(p.id);if(p.matchParent===false)break;p=d.get(p.parentId)}return false}
 function pantryMatchLevel(item,required,data){const r=data.ingredients.find(i=>i.id===required);if(!r)return Infinity;
  if([r.name,...r.aliases].map(norm).includes(norm(item.name))||(item.matches||[]).includes(required))return 0;
- if(r.tags?.length&&r.kind==='type'){const levels=r.tags.map(tag=>pantryMatchLevel(item,tag,data));return levels.every(Number.isFinite)?Math.max(1,...levels):Infinity}
+ if(r.tags?.length&&r.kind==='type'){const levels=[...(r.parentId?[pantryMatchLevel(item,r.parentId,data)]:[]),...r.tags.map(tag=>pantryMatchLevel(item,tag,data))];return levels.every(Number.isFinite)?Math.max(1,...levels):Infinity}
  if((item.tags||[]).includes(required)||(item.matches||[]).some(id=>data.ingredients.find(i=>i.id===id)?.tags?.includes(required)))return 1;
  return(item.matches||[]).some(id=>categorySatisfies(id,required,data))?2:Infinity}
 function matches(row,data){const required=[row.id,...(row.alternatives||[])],ranked=data.pantryItems.map(item=>({item,level:Math.min(...required.map(id=>pantryMatchLevel(item,id,data)))})).filter(x=>Number.isFinite(x.level));if(!ranked.length)return[];const best=Math.min(...ranked.map(x=>x.level));return ranked.filter(x=>x.level===best).map(x=>x.item)}
