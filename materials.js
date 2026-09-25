@@ -38,7 +38,7 @@ class MaterialBrowser{
  }
  recipeCard(i,navigate=false,kind='product'){
   const action=navigate?`data-material-nav="${esc(i.id)}"`:`data-material-select="${esc(i.id)}"`;
-  return `<button type="button" class="material-choice ${kind==='tag'?'tag-choice':kind==='root'?'root-choice':'product-choice'}" ${action}><span>${esc(i.name)}</span>${navigate?'<span aria-hidden="true">›</span>':''}</button>`;
+  return `<button type="button" class="material-choice ${kind==='tag'?'tag-choice':kind==='root'?'root-choice':'product-choice'}" ${action}><span>${esc(i.name)}</span>${navigate&&kind!=='root'?'<span aria-hidden="true">›</span>':''}</button>`;
  }
  recipeRender(){
   const d=this.data,all=d.ingredients.filter(i=>this.allowed(i)),current=this.item(this.parentId);
@@ -53,8 +53,7 @@ class MaterialBrowser{
    const items=all.filter(i=>!drawers.includes(i)&&i.id!=='spirit'&&terms.every(t=>C.materialText(i,d).includes(t)));
    body+=`<div class="material-choice-list">${items.map(i=>this.recipeCard(i,false,i.kind==='type'?'tag':'product')).join('')}</div>`;
   }else if(!current){
-   const active=drawers.find(i=>i.id===this.hoverDrawer)||drawers[0],roots=all.filter(i=>i.kind==='type'&&i.parentId===active?.id);
-   body+=`<div class="recipe-drawer-browser"><div class="drawer-primary">${drawers.map(i=>`<button type="button" class="${i.id===active?.id?'active':''}" data-drawer-preview="${esc(i.id)}"><strong>${esc(i.name)}</strong><span aria-hidden="true">›</span></button>`).join('')}</div><div class="drawer-secondary" aria-label="${esc(active?.name||'')}分类">${roots.map(i=>this.recipeCard(i,true,'root')).join('')}</div></div>`;
+   body+=`<div class="recipe-material-directory">${drawers.map(drawer=>{const roots=all.filter(i=>i.kind==='type'&&i.parentId===drawer.id);return `<section><h3>${esc(drawer.name)}</h3><div class="material-root-list">${roots.map(i=>this.recipeCard(i,true,'root')).join('')}</div></section>`}).join('')}</div>`;
   }else if(drawers.some(i=>i.id===current.id)){
    const roots=all.filter(i=>i.kind==='type'&&i.parentId===current.id);
    body+=`<div class="material-choice-list root-choice-list">${roots.map(i=>this.recipeCard(i,true,'root')).join('')}</div>`;
