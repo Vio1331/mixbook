@@ -38,3 +38,19 @@ test('配方材料按名称、标签、逐层类别的顺序匹配酒柜',()=>{c
  d.pantryItems=d.pantryItems.filter(i=>i.id!=='name');assert.deepEqual(C.matches(row('whiskey'),d).map(i=>i.id),['tag']);
  d.pantryItems=d.pantryItems.filter(i=>i.id!=='tag');assert.deepEqual(C.matches(row('whiskey'),d).map(i=>i.id),['category']);
  d.pantryItems=[item('deep','拉格维林 16 年',['lagavulin-16'])];assert.deepEqual(C.matches(row('whiskey'),d).map(i=>i.id),['deep'])});
+
+test('配方一级、二级、具体名称与分类标签逐级精确匹配',()=>{const d=data();d.ingredients.push(
+ {id:'recipe-rum-tag',name:'牙买加朗姆',kind:'type',category:'酒精成分',parentId:'rum-all',brand:'',aliases:[],tags:[],customized:true},
+ {id:'recipe-white-jamaica',name:'牙买加朗姆',kind:'type',category:'酒精成分',parentId:'rum',brand:'',aliases:[],tags:['recipe-rum-tag'],customized:true},
+ {id:'recipe-bacardi',name:'百加得',kind:'product',category:'酒精成分',parentId:'rum',brand:'',aliases:[],tags:[],customized:true});
+ const item=(id,name,matches,tags=[])=>({id,name,brand:'',category:'酒精成分',image:'',matches,tags});
+ d.pantryItems=[item('white-jamaica','某牙买加白朗姆',['rum'],['recipe-rum-tag'])];
+ assert.ok(C.have(row('rum-all'),d),'一级目录接受该目录下任意原料');
+ assert.ok(C.have(row('rum'),d),'二级目录接受该二级目录下原料');
+ assert.ok(C.have(row('recipe-rum-tag'),d),'一级目录标签接受带标签原料');
+ assert.ok(C.have(row('recipe-white-jamaica'),d),'二级目录标签要求目录和标签同时满足');
+ d.pantryItems=[item('dark-jamaica','某牙买加深色朗姆',['dark-rum'],['recipe-rum-tag'])];
+ assert.equal(C.have(row('recipe-white-jamaica'),d),false);
+ d.pantryItems=[item('bacardi','百加得',['rum'])];assert.ok(C.have(row('recipe-bacardi'),d));
+ d.pantryItems=[item('other','其他白朗姆',['rum'])];assert.equal(C.have(row('recipe-bacardi'),d),false);
+});
