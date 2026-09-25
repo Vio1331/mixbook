@@ -3,7 +3,8 @@
  *
  * 保存本文件并刷新网站后，原料类别、标签、层级菜单、配方风味标签、
  * 杯型与来源会同步更新。ingredients 中 parentId 表示父级；kind 为 type 表示类别。
- * menus 控制所有两栏原料菜单的左栏和右栏，第三组数组为该分组的可选标签。
+ * menus 控制所有两栏原料菜单的左栏和右栏，第三组数组为该分组的可选标签；
+ * menuTags 单独记录这些标签的名称与归属，避免只有 ID 而无法在页面中显示。
  * 已上线条目请尽量保留 ID，只修改 name；新增条目时 ID 必须全局唯一。
  */
 window.MIX_TAXONOMY = {
@@ -502,6 +503,7 @@ window.MIX_TAXONOMY = {
       "matchParent": true,
       "customized": false
     },
+    {
       "id": "brandy",
       "name": "白兰地",
       "category": "白兰地",
@@ -1069,6 +1071,7 @@ window.MIX_TAXONOMY = {
       "matchParent": true,
       "customized": false
     },
+    {
       "id": "liqueur",
       "name": "利口酒",
       "category": "利口酒",
@@ -1142,7 +1145,6 @@ window.MIX_TAXONOMY = {
       "customized": false
     },
     {
-    {
       "id": "liquid-materials",
       "name": "液体材料",
       "category": "酒柜分类",
@@ -1159,7 +1161,7 @@ window.MIX_TAXONOMY = {
       "id": "soda-root",
       "name": "气泡水",
       "category": "液体材料",
-      "parentId": "liquid-material",
+      "parentId": "liquid-materials",
       "brand": "",
       "aliases": [
         "Soda Water"
@@ -1200,6 +1202,7 @@ window.MIX_TAXONOMY = {
       "matchParent": true,
       "customized": false
     },
+    {
       "id": "other-liquid",
       "name": "其他液体材料",
       "category": "液体材料",
@@ -1266,6 +1269,16 @@ window.MIX_TAXONOMY = {
       "matchParent": true,
       "customized": false
     }
+  ],
+  "menuTags": [
+    {"id": "cuban-rum", "name": "古巴朗姆", "parentId": "rum", "aliases": ["Cuban Rum"]},
+    {"id": "jamaican-rum", "name": "牙买加朗姆", "parentId": "rum", "aliases": ["Jamaican Rum"]},
+    {"id": "demerara-rum", "name": "德梅拉拉朗姆", "parentId": "rum", "aliases": ["Demerara Rum"]},
+    {"id": "martinique-rum", "name": "马提尼克朗姆", "parentId": "rum", "aliases": []},
+    {"id": "puerto-rico-rum", "name": "波多黎各朗姆", "parentId": "rum", "aliases": ["Puerto Rican Rum"]},
+    {"id": "cachaca", "name": "卡莎萨朗姆", "parentId": "rum", "aliases": ["Cachaca", "Cachaça"]},
+    {"id": "cognac", "name": "干邑", "parentId": "brandy-root", "aliases": ["Cognac"]},
+    {"id": "pisco", "name": "皮斯科", "parentId": "brandy-root", "aliases": ["Pisco"]}
   ],
   "menus": [
     [
