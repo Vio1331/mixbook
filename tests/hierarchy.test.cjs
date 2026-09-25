@@ -1,4 +1,5 @@
-const test=require('node:test'),assert=require('node:assert/strict');
-function fresh(storage){global.localStorage=storage;delete require.cache[require.resolve('../hierarchy.js')];return require('../hierarchy.js')}
-test('全局层级默认值和自定义值独立于配方数据库保存',()=>{const values=new Map(),storage={getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},H=fresh(storage),defaults=H.get();assert.equal(defaults[0][0],'whiskey');const custom=[['gin',['london-dry'],['old-tom'],{gin:'我的金酒'}]];assert.deepEqual(H.save(custom),custom);assert.ok(values.has(H.STORAGE_KEY));assert.equal(H.get()[0][3].gin,'我的金酒');assert.equal(H.reset()[0][0],'whiskey')});
-test('全局层级拒绝无效结构',()=>{const H=fresh({getItem:()=>null,setItem(){},removeItem(){}});assert.throws(()=>H.save({root:'gin'}),/无效/)});
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const root=path.join(__dirname,'..');
+function fresh(){const context={window:{}};context.globalThis=context.window;vm.createContext(context);for(const name of ['cocktail-system.js','hierarchy.js'])vm.runInContext(fs.readFileSync(path.join(root,name),'utf8'),context);return context.window}
+test('单一体系文件同时提供完整原料、配方标签和全站菜单层级',()=>{const w=fresh(),menus=w.MixHierarchy.get();assert.equal(menus[0][0],'whiskey');assert.ok(w.MIX_TAXONOMY.ingredients.length>250);assert.ok(w.MIX_TAXONOMY.recipe.tags.includes('酸甜'));assert.ok(w.MIX_TAXONOMY.recipe.glasses.includes('古典杯'));assert.ok(w.MIX_TAXONOMY.recipe.sources.includes('IBA · 当代经典'))});
+test('菜单读取为副本且拒绝无效结构',()=>{const w=fresh(),menus=w.MixHierarchy.get();menus[0][0]='changed';assert.equal(w.MixHierarchy.get()[0][0],'whiskey');assert.equal(w.MixHierarchy.valid({root:'gin'}),false)});

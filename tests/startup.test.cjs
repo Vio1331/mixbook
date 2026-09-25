@@ -8,7 +8,7 @@ test('没有数据库权限时也能打开试用界面，清楚提示临时会�
  const context={document,localStorage:store,sessionStorage:store,navigator:{onLine:false},location:{protocol:'file:'},console,setTimeout(){return 1},clearTimeout(){},setInterval(){},TextEncoder,TextDecoder,URL,Blob,AbortController,crypto:require('node:crypto').webcrypto};
  context.window=context;context.window.addEventListener=()=>{};context.window.scrollTo=()=>{};
  vm.createContext(context);
- for(const name of ['core.js','seed.js','materials.js','app.js'])await vm.runInContext(fs.readFileSync(path.join(__dirname,'..',name),'utf8'),context);
+ for(const name of ['core.js','cocktail-system.js','seed.js','hierarchy.js','materials.js','app.js'])await vm.runInContext(fs.readFileSync(path.join(__dirname,'..',name),'utf8'),context);
  assert.ok(elements.get('#app').innerHTML.includes('临时会话'));
  assert.ok(elements.get('#app').innerHTML.includes('我的酒谱'));
  assert.ok(elements.get('#recipe-results').innerHTML.includes('尼格罗尼'));
