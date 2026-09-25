@@ -49,7 +49,7 @@ mezcal|梅斯卡尔|基酒|tequila||Mezcal|tequila
 espadin|Espadín 梅斯卡尔|基酒|mezcal||Espadin Mezcal|tequila
 brandy|白兰地|基酒|spirit||Brandy|brandy
 cognac|干邑|基酒|brandy||Cognac|brandy
-calvados|卡尔瓦多斯苹果白兰地|基酒|brandy||Calvados|brandy
+calvados|卡尔瓦多斯苹果白兰地|白兰地|fruit-brandy||Calvados|brandy
 pisco|皮斯科|基酒|brandy||Pisco|brandy
 cachaca|卡莎萨|基酒|rum-all||Cachaca Cachaça|rum
 aguardiente|古巴甘蔗烈酒|基酒|rum-all||Cuban Aguardiente|rum
@@ -61,8 +61,8 @@ dolin-rouge|杜林 Rouge 甜红味美思|利口酒|vermouth|Dolin|Dolin Rouge|ve
 cocchi-storico|好奇 Storico 都灵甜味美思|利口酒|vermouth|Cocchi|Cocchi Storico Vermouth di Torino|vermouth
 cinzano-rosso|仙山露 Rosso 甜红味美思|利口酒|vermouth|Cinzano|Cinzano Rosso|vermouth
 bitter-aperitif|苦味开胃酒|利口酒|||Bitter Aperitif|
-campari|金巴利|利口酒|bitter-aperitif|Campari|Bitter Campari|campari
-aperol|阿佩罗|利口酒|bitter-aperitif|Aperol|Aperol|aperol
+campari|金巴利|其他酒|aperitif|Campari|Bitter Campari|campari
+aperol|阿佩罗|其他酒|aperitif|Aperol|Aperol|aperol
 amaro|阿玛罗苦味利口酒|利口酒|||Amaro|
 nonino|诺尼诺阿玛罗|利口酒|amaro|Nonino|Amaro Nonino|
 cynar|西那尔洋蓟利口酒|利口酒|amaro|Cynar|Cynar|
@@ -81,8 +81,8 @@ maraschino|马拉斯奇诺樱桃利口酒|利口酒|||Maraschino|
 luxardo-maraschino|卢萨朵马拉斯奇诺|利口酒|maraschino|Luxardo|Maraschino Luxardo|
 cherry-liqueur|樱桃利口酒|利口酒|||Cherry Brandy|
 luxardo-cherry|卢萨朵 Sangue Morlacco|利口酒|cherry-liqueur|Luxardo|Cherry Sangue Morlacco|
-apricot-brandy|杏子白兰地利口酒|利口酒|||Apricot Brandy|
-peach-brandy|桃白兰地利口酒|利口酒|||Peach Brandy|
+apricot-brandy|杏子白兰地|白兰地|fruit-brandy||Apricot Brandy|
+peach-brandy|桃白兰地|白兰地|fruit-brandy||Peach Brandy|
 peach-schnapps|桃味甜酒|利口酒|||Peach Schnapps|
 coffee-liqueur|咖啡利口酒|利口酒|||Coffee Liqueur|coffee-liqueur
 kahlua|甘露咖啡利口酒|利口酒|coffee-liqueur|Kahlua|Kahlúa|coffee-liqueur
