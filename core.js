@@ -29,14 +29,21 @@ function validate(input){
 function ingredientPath(id,data){const d=new Map(data.ingredients.map(i=>[i.id,i])),out=[],seen=new Set();let i=d.get(id);while(i&&!seen.has(i.id)){out.unshift(i);seen.add(i.id);i=d.get(i.parentId)}return out}
 function needsProduct(i,data){return i.kind==='type'&&ingredientPath(i.id,data).some(x=>x.id==='alcohol'||x.id==='bitters')}
 function materialText(i,data){const d=new Map(data.ingredients.map(x=>[x.id,x]));return norm([...ingredientPath(i.id,data),...(i.tags||[]).map(id=>d.get(id)).filter(Boolean)].flatMap(x=>[x.name,x.brand,...x.aliases]).join(' '))}
-function satisfies(owned,required,data){const d=new Map(data.ingredients.map(i=>[i.id,i])),o=d.get(owned),r=d.get(required);if(!o||!r)return false;
+function ingredientMatchLevel(owned,required,data){const d=new Map(data.ingredients.map(i=>[i.id,i])),o=d.get(owned),r=d.get(required);if(!o||!r)return Infinity;
+ // Match the selected material itself before considering labels or its category tree.
+ if(o.id===r.id||[r.name,...r.aliases].map(norm).includes(norm(o.name)))return 0;
  // A classification may describe an intersection (for example Cuban + white rum).
  // Every tag must be present on the same owned bottle; two separate bottles cannot combine.
- if(r.tags?.length&&r.kind==='type')return r.tags.every(tag=>satisfies(owned,tag,data));
- if(o.tags?.includes(required))return true;
- let p=o,seen=new Set();while(p&&!seen.has(p.id)){if(p.id===required)return true;seen.add(p.id);if(p.matchParent===false)break;p=d.get(p.parentId)}return false}
-function pantrySatisfies(item,required,data){const r=data.ingredients.find(i=>i.id===required);if(r?.kind==='type'&&r.tags?.length)return r.tags.every(tag=>pantrySatisfies(item,tag,data));return(item.tags||[]).includes(required)||(item.matches||[]).some(id=>satisfies(id,required,data))}
-function matches(row,data){return data.pantryItems.filter(i=>[row.id,...(row.alternatives||[])].some(id=>pantrySatisfies(i,id,data)))}
+ if(r.tags?.length&&r.kind==='type'){const levels=r.tags.map(tag=>ingredientMatchLevel(owned,tag,data));return levels.every(Number.isFinite)?Math.max(1,...levels):Infinity}
+ if(o.tags?.includes(required))return 1;
+ let p=o,seen=new Set([o.id]);while(p?.parentId&&!seen.has(p.parentId)){if(p.matchParent===false)break;p=d.get(p.parentId);if(!p)break;if(p.id===required)return 2;seen.add(p.id)}return Infinity}
+function satisfies(owned,required,data){return Number.isFinite(ingredientMatchLevel(owned,required,data))}
+function pantryMatchLevel(item,required,data){const r=data.ingredients.find(i=>i.id===required);if(!r)return Infinity;
+ if([r.name,...r.aliases].map(norm).includes(norm(item.name))||(item.matches||[]).includes(required))return 0;
+ if(r.tags?.length&&r.kind==='type'){const levels=r.tags.map(tag=>pantryMatchLevel(item,tag,data));return levels.every(Number.isFinite)?Math.max(1,...levels):Infinity}
+ if((item.tags||[]).includes(required))return 1;
+ const levels=(item.matches||[]).map(id=>ingredientMatchLevel(id,required,data)).filter(Number.isFinite);return levels.length?Math.min(...levels):Infinity}
+function matches(row,data){const required=[row.id,...(row.alternatives||[])],ranked=data.pantryItems.map(item=>({item,level:Math.min(...required.map(id=>pantryMatchLevel(item,id,data)))})).filter(x=>Number.isFinite(x.level));if(!ranked.length)return[];const best=Math.min(...ranked.map(x=>x.level));return ranked.filter(x=>x.level===best).map(x=>x.item)}
 function have(row,data){return matches(row,data).length>0}
 function match(r,data){const req=[...new Map(r.ingredients.filter(i=>!i.optional).map(i=>[i.id+JSON.stringify(i.alternatives||[]),i])).values()];return{ready:req.every(i=>have(i,data)),missing:req.filter(i=>!have(i,data)),substitutions:req.filter(i=>have(i,data)&&!have({...i,alternatives:[]},data)),optional:r.ingredients.filter(i=>i.optional&&!have(i,data)),garnishes:(r.garnishes||[]).filter(i=>!have(i,data)),total:req.length}}
 function query(data,f={}){const terms=norm(f.q).split(/\s+/).filter(Boolean),dict=new Map(data.ingredients.map(i=>[i.id,materialText(i,data)]));return data.recipes.filter(r=>{const hay=norm([r.name,r.en,r.base,r.method,r.notes,...r.tags,r.sourceName,r.source,...[...r.ingredients,...r.garnishes].flatMap(x=>[x.id,...(x.alternatives||[])].map(id=>dict.get(id)))].join(' ')),m=match(r,data);return terms.every(t=>hay.includes(t))&&(!f.tags?.length||f.tags.some(t=>r.tags.includes(t)))&&(!f.base||r.base===f.base)&&(!f.sourceName||r.sourceName===f.sourceName)&&(!f.favorite||data.favorites[r.id])&&(!f.availability||f.availability==='all'||f.availability==='ready'&&m.ready||f.availability==='one'&&m.missing.length===1)})}
