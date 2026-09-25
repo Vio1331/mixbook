@@ -77,32 +77,33 @@ module.exports=async function({page,stored,go,stock}){
  await page.screenshot({path:path.resolve(__dirname,'../../mixbook-recipe-picker-mobile.png'),fullPage:false});
  await page.locator('#material-dialog [data-material-select=laphroaig-10]').click();
  await row(0).locator('[name=amount]').fill('30');
- await row(0).locator('[data-add-alternative]').click();await select('ardbeg-10');
- await row(0).locator('[data-add-alternative]').click();await select('lagavulin-16');
+ assert.equal(await row(0).locator('[data-add-alternative]').count(),0);
+ assert.equal(await row(0).locator('[data-action=reveal-specific]').evaluate(el=>getComputedStyle(el).color),await page.evaluate(()=>{const el=document.createElement('span');el.style.color='var(--muted)';document.body.append(el);const color=getComputedStyle(el).color;el.remove();return color}));
+ await row(0).locator('[data-action=reveal-specific]').click();
+ await page.screenshot({path:path.resolve(__dirname,'../../mixbook-specific-material-mobile.png'),fullPage:false});
  for(const [n,id]of [[1,'vermouth'],[2,'campari']]){await page.locator('[data-add-row=ingredients]').click();await pick(n,id);await row(n).locator('[name=amount]').fill('30')}
- assert.equal(await row(0).locator('[data-alternative]').count(),2);
  assert.equal(await row(1).locator('[data-choose-material] strong').innerText(),'红味美思');
  assert.equal(await row(2).locator('[data-choose-material] strong').innerText(),'金巴利');
  await page.locator('#recipe-form [name=steps]').fill('加冰搅拌，滤入杯中。');
  await page.locator('#recipe-form button[type=submit]').click();await page.waitForSelector('#detail-dialog[open]');
  d=await stored();const smoke=d.recipes.find(r=>r.name==='测试烟熏尼格罗尼');
  assert.deepEqual(smoke.ingredients.map(i=>i.id),['laphroaig-10','vermouth','campari']);
- assert.deepEqual(smoke.ingredients[0].alternatives,['ardbeg-10','lagavulin-16']);
+ assert.deepEqual(smoke.ingredients[0].alternatives,[]);
  await page.locator(`[data-edit="${smoke.id}"]`).click();
- assert.equal(await row(0).locator('[data-alternative]').count(),2);
+ assert.equal(await row(0).locator('[data-add-alternative]').count(),0);
  await page.locator('#recipe-form button[type=submit]').click();await page.waitForSelector('#detail-dialog[open]');
- assert.deepEqual((await stored()).recipes.find(r=>r.id===smoke.id).ingredients[0].alternatives,['ardbeg-10','lagavulin-16']);
+ assert.deepEqual((await stored()).recipes.find(r=>r.id===smoke.id).ingredients[0].alternatives,[]);
  await page.locator(`[data-add-version="${smoke.id}"]`).click();
  await page.locator('#recipe-form [name=name]').fill('烟熏偏重比例');await row(0).locator('[name=amount]').fill('40');
  await page.locator('#recipe-form button[type=submit]').click();await page.waitForSelector('#detail-dialog[open]');
- assert.deepEqual((await stored()).recipes.find(r=>r.id===smoke.id).versions[0].ingredients[0].alternatives,['ardbeg-10','lagavulin-16']);
- console.log('PASS recipe category/product selection, multiple alternatives, edit round-trip and versions');
+ assert.deepEqual((await stored()).recipes.find(r=>r.id===smoke.id).versions[0].ingredients[0].alternatives,[]);
+ console.log('PASS recipe category/product selection, subdued specific-material action, edit round-trip and versions');
 
  await closeDetail();await go('pantry');await page.locator('[data-action=pantry-edit]').click();await stock('ardbeg-10');
  await page.locator('[data-action=pantry-save]').click();await page.locator('[data-action=pantry-cancel]').click();await page.waitForSelector('[data-action=pantry-edit]');await go('recipes');
  await page.locator('#recipe-search').fill('测试烟熏');await page.locator(`[data-detail="${smoke.id}"].card-main`).click();
- assert.match(await page.locator('#detail-dialog .detail-status').innerText(),/使用替代品/);
- assert.match(await page.locator('#detail-dialog .ingredient-row').first().innerText(),/使用替代品：阿贝 10 年/);
+ assert.match(await page.locator('#detail-dialog .detail-status').innerText(),/还差 1 种材料/);
+ assert.doesNotMatch(await page.locator('#detail-dialog .ingredient-row').first().innerText(),/使用替代品/);
  await page.screenshot({path:path.resolve(__dirname,'../../mixbook-substitution-mobile.png'),fullPage:false});
 
  await page.locator(`[data-edit="${smoke.id}"]`).click();await row(2).locator('[data-choose-material]').click();
@@ -114,6 +115,6 @@ module.exports=async function({page,stored,go,stock}){
  await page.locator('#editor-dialog [data-close]').first().click();await page.locator('#confirm-dialog [data-choice=yes]').click();
  assert.equal((await stored()).ingredients.some(i=>i.name==='测试独立香料酒'),false);
  assert.equal((await stored()).recipes.find(r=>r.id===smoke.id).ingredients[2].id,'campari');
- console.log('PASS exact product display, explicit substitution status and cancelling nested product creation');
+ console.log('PASS exact product display, removed substitution control and cancelling nested product creation');
  await page.setViewportSize({width:1440,height:1000});
 };
