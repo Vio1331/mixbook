@@ -63,13 +63,18 @@ module.exports=async function({page,stored,go,stock}){
  assert.equal((await stored()).ingredients.some(i=>i.id==='laphroaig-10'),true);
  await go('recipes');await page.locator('[data-action=new]').click();await page.locator('#recipe-form [name=name]').fill('测试烟熏尼格罗尼');
  await row(0).locator('[data-choose-material]').click();
+ assert.equal(await page.locator('#material-dialog .dialog-top').innerText(),'选择原料');
+ assert.equal(await page.locator('#material-dialog [data-material-home]').innerText(),'全部原料');
+ assert.equal(await page.locator('#material-dialog [data-material-edit],#material-dialog [data-material-new]').count(),0);
+ await page.locator('#material-dialog [data-material-home]').click();
+ assert.deepEqual(await page.locator('#material-dialog .recipe-drawers strong').allTextContents(),['酒精成分','非酒精成分']);
  await page.locator('#material-dialog [data-material-search]').pressSequentially('拉弗格');
  assert.equal(await page.locator('#material-dialog [data-material-select=laphroaig-10]').count(),1,await page.locator('#material-dialog').innerText());
  assert.equal(await page.evaluate(()=>{const el=document.querySelector('#material-dialog');return el.scrollWidth<=el.clientWidth+1}),true);
  await page.screenshot({path:path.resolve(__dirname,'../../mixbook-recipe-picker-mobile.png'),fullPage:false});
  await page.locator('#material-dialog [data-material-select=laphroaig-10]').click();
  await row(0).locator('[name=amount]').fill('30');
- await row(0).locator('summary').click();await row(0).locator('[data-add-alternative]').click();await select('ardbeg-10');
+ await row(0).locator('[data-add-alternative]').click();await select('ardbeg-10');
  await row(0).locator('[data-add-alternative]').click();await select('lagavulin-16');
  for(const [n,id]of [[1,'vermouth'],[2,'campari']]){await page.locator('[data-add-row=ingredients]').click();await pick(n,id);await row(n).locator('[name=amount]').fill('30')}
  assert.equal(await row(0).locator('[data-alternative]').count(),2);
@@ -98,10 +103,8 @@ module.exports=async function({page,stored,go,stock}){
  await page.screenshot({path:path.resolve(__dirname,'../../mixbook-substitution-mobile.png'),fullPage:false});
 
  await page.locator(`[data-edit="${smoke.id}"]`).click();await row(2).locator('[data-choose-material]').click();
- await page.locator('#material-dialog [data-material-home]').click();await page.locator('#material-dialog [data-material-new=product]').click();
- await page.locator('#item-form [name=name]').fill('测试独立香料酒');await page.locator('#item-form [name=category]').fill('其他');
- assert.equal(await page.locator('#item-form [name=parentId]').inputValue(),'');
- await page.locator('#item-form button[type=submit]').click();
+ await page.locator('#material-dialog [data-material-quick=product] [name=name]').fill('测试独立香料酒');
+ await page.locator('#material-dialog [data-material-quick=product] button').click();
  assert.equal(await page.locator('#material-dialog').evaluate(el=>el.open),false);
  assert.equal(await row(2).locator('[data-choose-material] strong').innerText(),'测试独立香料酒');
  assert.equal((await stored()).ingredients.some(i=>i.name==='测试独立香料酒'),false);

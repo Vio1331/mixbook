@@ -8,8 +8,9 @@ class MaterialBrowser{
   this.el=el;this.data=data;this.options=options;this.mode=options.mode||'recipe';
   this.parentId=options.parentId||'';this.group=options.group||'';this.q='';
   if(this.parentId)this.group=this.item(this.parentId)?.category||'';
-  this.el.innerHTML='<label class="field material-search">搜索类别、酒款或品牌<input type="search" data-material-search placeholder="例如：金酒、拉弗格、D.O.M.…"></label><div data-material-results></div>';
+  this.el.innerHTML='<label class="material-search"><span class="sr-only">搜索原料</span><input type="search" data-material-search placeholder="搜索..."></label><div data-material-results></div>';
   this.el.onclick=e=>this.click(e);this.el.onchange=e=>this.change(e);
+  this.el.onsubmit=e=>{const form=e.target.closest('[data-material-quick]');if(!form)return;e.preventDefault();const name=form.elements.name.value.trim();if(name)this.options.onQuickNew?.(form.dataset.materialQuick,name,this.parentId)};
   this.el.oninput=e=>{if(e.target.matches('[data-material-search]')){this.q=e.target.value;this.render()}};
   this.render();
  }
@@ -33,7 +34,37 @@ class MaterialBrowser{
   const tagNames=(i.tags||[]).map(id=>this.item(id)?.name).filter(Boolean);
   return `<article class="material-card ${this.options.isOwned?.(i)?'checked':''}" data-material-id="${esc(i.id)}"><div class="material-card-head">${open?`<button type="button" class="material-name" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span aria-hidden="true">›</span></button>`:`<strong>${esc(i.name)}</strong>`}${this.options.onEdit?`<button type="button" class="link-button" data-material-edit="${esc(i.id)}">编辑</button>`:''}</div><p class="material-meta">${esc(i.kind==='product'?(i.brand||'具体产品'):`${children} 个子类 · ${products} 款产品`)}</p>${tagNames.length?`<div class="chips material-tags">${tagNames.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`:''}${this.q?`<p class="material-path">${esc(this.pathText(i.id))}</p>`:''}${i.matchParent===false?'<p class="material-boundary">独立匹配：不自动代替上级类别</p>':''}<div class="material-controls">${this.itemControls(i)}</div></article>`;
  }
+ recipeCard(i,navigate=false){
+  return `<article class="material-card"><div class="material-card-head">${navigate?`<button type="button" class="material-name" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span aria-hidden="true">›</span></button>`:`<strong>${esc(i.name)}</strong>`}</div>${navigate?'':`<div class="material-controls"><button type="button" class="btn small" data-material-select="${esc(i.id)}">选择</button></div>`}</article>`;
+ }
+ recipeRender(){
+  const d=this.data,all=d.ingredients.filter(i=>this.allowed(i)),current=this.item(this.parentId);
+  const drawers=all.filter(i=>['alcohol','non-alcohol'].includes(i.id));
+  const currentPath=current?this.path(current.id):[];
+  const root=currentPath.find(i=>drawers.some(drawer=>drawer.id===i.parentId))||null;
+  const crumbs=root?currentPath.slice(0,currentPath.indexOf(root)+1):currentPath;
+  let body=`<nav class="material-breadcrumb" aria-label="原料目录"><button type="button" data-material-home>全部原料</button>${crumbs.map((i,n)=>`<span>›</span>${n===crumbs.length-1?`<strong>${esc(i.name)}</strong>`:`<button type="button" data-material-nav="${esc(i.id)}">${esc(i.name)}</button>`}`).join('')}</nav>`;
+  if(this.q.trim()){
+   const terms=C.norm(this.q).split(/\s+/).filter(Boolean);
+   const items=all.filter(i=>!drawers.includes(i)&&i.id!=='spirit'&&terms.every(t=>C.materialText(i,d).includes(t)));
+   body+=`<div class="material-grid">${items.map(i=>this.recipeCard(i)).join('')}</div>`;
+  }else if(!current){
+   body+=`<div class="material-groups recipe-drawers">${drawers.map(i=>`<button type="button" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span>›</span></button>`).join('')}</div>`;
+  }else if(drawers.some(i=>i.id===current.id)){
+   const roots=all.filter(i=>i.kind==='type'&&i.parentId===current.id);
+   body+=`<div class="material-grid">${roots.map(i=>this.recipeCard(i,true)).join('')}</div>`;
+  }else if(root){
+   const tags=all.filter(i=>i.kind==='type'&&i.parentId===root.id);
+   const products=all.filter(i=>i.kind==='product'&&C.ingredientPath(i.id,d).some(p=>p.id===root.id));
+   body+=`<section class="material-current"><strong>${esc(root.name)}</strong><button type="button" class="btn small" data-material-select="${esc(root.id)}">选择</button></section>`;
+   if(tags.length)body+=`<h3 class="material-section">标签</h3><div class="material-grid">${tags.map(i=>this.recipeCard(i)).join('')}</div>`;
+   if(products.length)body+=`<h3 class="material-section">酒款</h3><div class="material-grid">${products.map(i=>this.recipeCard(i)).join('')}</div>`;
+   body+=`<div class="material-quick-add"><form data-material-quick="type"><input name="name" maxlength="100" placeholder="新建标签"><button class="btn small" type="submit">添加</button></form><form data-material-quick="product"><input name="name" maxlength="100" placeholder="输入酒款名称"><button class="btn small" type="submit">添加</button></form></div>`;
+  }
+  this.el.querySelector('[data-material-results]').innerHTML=body;
+ }
  render(){
+  if(this.mode==='recipe'){this.recipeRender();return}
   const d=this.data,all=d.ingredients.filter(i=>this.allowed(i)),current=this.item(this.parentId);
   const groups=[...new Set(all.map(i=>i.category))];
   let body=`<nav class="material-breadcrumb" aria-label="材料目录位置"><button type="button" data-material-home>全部材料</button>${this.group?`<span>›</span><button type="button" data-material-group="${esc(this.group)}">${esc(this.group)}</button>`:''}${current?this.path(current.id).map(i=>`<span>›</span><button type="button" data-material-nav="${esc(i.id)}">${esc(i.name)}</button>`).join(''):''}</nav>`;
