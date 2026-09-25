@@ -66,7 +66,7 @@ dialog{border:1px solid var(--line);border-radius:18px;padding:0;color:var(--ink
 /* Consistent, compact creation controls and recipe/material editor refinements. */
 input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px solid #aeb4bd;outline-offset:0;border-color:#aeb4bd;box-shadow:0 0 0 2px #e9ebee}
 .editor-dialog,.item-dialog,.material-dialog{width:680px;max-width:calc(100% - 24px)}
-.editor-dialog{height:684px}
+#editor-dialog{height:min(684px,90dvh)}
 .inline-option-add input,.inline-quick input{width:150px;max-width:150px}
 .glass-picker .chips{display:flex;align-items:stretch;flex-wrap:wrap}
 .glass-picker .glass-option{width:92px}
