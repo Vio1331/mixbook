@@ -107,6 +107,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 /* Keep pantry entry forms stable while their variable tag content scrolls with the form. */
 .item-dialog:has(#pantry-bottle-form){height:min(700px,calc(100dvh - 48px));overflow:hidden}.item-dialog #pantry-bottle-form{display:flex;flex-direction:column;height:100%;max-height:none}.item-dialog #pantry-bottle-form .dialog-top,.item-dialog #pantry-bottle-form .dialog-actions{position:static;flex:none}.item-dialog #pantry-bottle-form .editor-body{flex:1;min-height:0;overflow-y:auto}.pantry-tag-picker .chips{max-height:none;overflow:visible}
 .type-dropdown summary{padding:0}.type-dropdown summary input{width:100%;min-height:46px;border:0;padding:12px 42px 12px 14px;background:transparent;font-size:.875rem}.type-dropdown summary input:focus-visible{outline:3px solid #ed8b77;outline-offset:2px}.type-dropdown summary:after{top:50%;transform:translateY(-50%) rotate(90deg);pointer-events:none}.type-dropdown[open] summary:after{transform:translateY(-50%) rotate(-90deg)}
+.pantry-content>.pantry-tags{padding-top:0}.recipe-material-dropdown{margin:0;min-width:0}.recipe-material-dropdown[open]{z-index:12}.recipe-material-dropdown summary input{font-weight:600;color:var(--text)}
 @media(max-width:760px){.item-dialog:has(#pantry-bottle-form){height:calc(100dvh - 16px)}}
 
 /* Unified two-column material chooser. Both columns use the same row rhythm. */
