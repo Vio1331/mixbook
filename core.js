@@ -29,7 +29,7 @@ function validate(input){
 function ingredientPath(id,data){const d=new Map(data.ingredients.map(i=>[i.id,i])),out=[],seen=new Set();let i=d.get(id);while(i&&!seen.has(i.id)){out.unshift(i);seen.add(i.id);i=d.get(i.parentId)}return out}
 function needsProduct(i,data){return i.kind==='type'&&ingredientPath(i.id,data).some(x=>x.id==='alcohol'||x.id==='bitters')}
 function materialText(i,data){const d=new Map(data.ingredients.map(x=>[x.id,x]));return norm([...ingredientPath(i.id,data),...(i.tags||[]).map(id=>d.get(id)).filter(Boolean)].flatMap(x=>[x.name,x.brand,...x.aliases]).join(' '))}
-function ingredientMatchLevel(owned,required,data){const d=new Map(data.ingredients.map(i=>[i.id,i])),o=d.get(owned),r=d.get(required);if(!o||!r)return Infinity;
+function satisfies(owned,required,data){const d=new Map(data.ingredients.map(i=>[i.id,i])),o=d.get(owned),r=d.get(required);if(!o||!r)return false;
  // Match the selected material itself before considering labels or its category tree.
  if(o.id===r.id||[r.name,...r.aliases].map(norm).includes(norm(o.name)))return 0;
  // A classification may describe an intersection (for example Cuban + white rum).
