@@ -8,7 +8,7 @@ class MaterialBrowser{
   this.el=el;this.data=data;this.options=options;this.mode=options.mode||'recipe';
   this.parentId=options.parentId||'';this.group=options.group||'';this.q='';
   if(this.parentId)this.group=this.item(this.parentId)?.category||'';
-  this.el.innerHTML='<label class="material-search"><span class="sr-only">搜索原料</span><input type="search" data-material-search placeholder="搜索..."></label><div data-material-results></div>';
+  this.el.innerHTML='<div data-material-path></div><label class="material-search"><span class="sr-only">搜索原料</span><input type="search" data-material-search placeholder="搜索原料名称、标签或酒款..."></label><div data-material-results></div>';
   this.el.onclick=e=>this.click(e);this.el.onchange=e=>this.change(e);
   this.el.onsubmit=e=>{const form=e.target.closest('[data-material-quick]');if(!form)return;e.preventDefault();const name=form.elements.name.value.trim();if(name)this.options.onQuickNew?.(form.dataset.materialQuick,name,this.parentId)};
   this.el.oninput=e=>{if(e.target.matches('[data-material-search]')){this.q=e.target.value;this.render()}};
@@ -34,8 +34,9 @@ class MaterialBrowser{
   const tagNames=(i.tags||[]).map(id=>this.item(id)?.name).filter(Boolean);
   return `<article class="material-card ${this.options.isOwned?.(i)?'checked':''}" data-material-id="${esc(i.id)}"><div class="material-card-head">${open?`<button type="button" class="material-name" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span aria-hidden="true">›</span></button>`:`<strong>${esc(i.name)}</strong>`}${this.options.onEdit?`<button type="button" class="link-button" data-material-edit="${esc(i.id)}">编辑</button>`:''}</div><p class="material-meta">${esc(i.kind==='product'?(i.brand||'具体产品'):`${children} 个子类 · ${products} 款产品`)}</p>${tagNames.length?`<div class="chips material-tags">${tagNames.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`:''}${this.q?`<p class="material-path">${esc(this.pathText(i.id))}</p>`:''}${i.matchParent===false?'<p class="material-boundary">独立匹配：不自动代替上级类别</p>':''}<div class="material-controls">${this.itemControls(i)}</div></article>`;
  }
- recipeCard(i,navigate=false){
-  return `<article class="material-card"><div class="material-card-head">${navigate?`<button type="button" class="material-name" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span aria-hidden="true">›</span></button>`:`<strong>${esc(i.name)}</strong>`}</div>${navigate?'':`<div class="material-controls"><button type="button" class="btn small" data-material-select="${esc(i.id)}">选择</button></div>`}</article>`;
+ recipeCard(i,navigate=false,kind='product'){
+  const action=navigate?`data-material-nav="${esc(i.id)}"`:`data-material-select="${esc(i.id)}"`;
+  return `<button type="button" class="material-choice ${kind==='tag'?'tag-choice':kind==='root'?'root-choice':'product-choice'}" ${action}><span>${esc(i.name)}</span>${navigate?'<span aria-hidden="true">›</span>':''}</button>`;
  }
  recipeRender(){
   const d=this.data,all=d.ingredients.filter(i=>this.allowed(i)),current=this.item(this.parentId);
@@ -43,28 +44,29 @@ class MaterialBrowser{
   const currentPath=current?this.path(current.id):[];
   const root=currentPath.find(i=>drawers.some(drawer=>drawer.id===i.parentId))||null;
   const crumbs=root?currentPath.slice(0,currentPath.indexOf(root)+1):currentPath;
-  let body=`<nav class="material-breadcrumb" aria-label="原料目录"><button type="button" data-material-home>全部原料</button>${crumbs.map((i,n)=>`<span>›</span>${n===crumbs.length-1?`<strong>${esc(i.name)}</strong>`:`<button type="button" data-material-nav="${esc(i.id)}">${esc(i.name)}</button>`}`).join('')}</nav>`;
+  this.el.querySelector('[data-material-path]').innerHTML=`<nav class="material-breadcrumb" aria-label="原料目录"><button type="button" data-material-home>全部原料</button>${crumbs.map((i,n)=>`<span>›</span>${n===crumbs.length-1?`<strong>${esc(i.name)}</strong>`:`<button type="button" data-material-nav="${esc(i.id)}">${esc(i.name)}</button>`}`).join('')}</nav>`;
+  let body='';
   if(this.q.trim()){
    const terms=C.norm(this.q).split(/\s+/).filter(Boolean);
    const items=all.filter(i=>!drawers.includes(i)&&i.id!=='spirit'&&terms.every(t=>C.materialText(i,d).includes(t)));
-   body+=`<div class="material-grid">${items.map(i=>this.recipeCard(i)).join('')}</div>`;
+   body+=`<div class="material-choice-list">${items.map(i=>this.recipeCard(i,false,i.kind==='type'?'tag':'product')).join('')}</div>`;
   }else if(!current){
    body+=`<div class="material-groups recipe-drawers">${drawers.map(i=>`<button type="button" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span>›</span></button>`).join('')}</div>`;
   }else if(drawers.some(i=>i.id===current.id)){
    const roots=all.filter(i=>i.kind==='type'&&i.parentId===current.id);
-   body+=`<div class="material-grid">${roots.map(i=>this.recipeCard(i,true)).join('')}</div>`;
+   body+=`<div class="material-choice-list root-choice-list">${roots.map(i=>this.recipeCard(i,true,'root')).join('')}</div>`;
   }else if(root){
    const tags=all.filter(i=>i.kind==='type'&&i.parentId===root.id);
    const products=all.filter(i=>i.kind==='product'&&C.ingredientPath(i.id,d).some(p=>p.id===root.id));
-   body+=`<section class="material-current"><strong>${esc(root.name)}</strong><button type="button" class="btn small" data-material-select="${esc(root.id)}">选择</button></section>`;
-   if(tags.length)body+=`<h3 class="material-section">标签</h3><div class="material-grid">${tags.map(i=>this.recipeCard(i)).join('')}</div>`;
-   if(products.length)body+=`<h3 class="material-section">酒款</h3><div class="material-grid">${products.map(i=>this.recipeCard(i)).join('')}</div>`;
-   body+=`<div class="material-quick-add"><form data-material-quick="type"><input name="name" maxlength="100" placeholder="新建标签"><button class="btn small" type="submit">添加</button></form><form data-material-quick="product"><input name="name" maxlength="100" placeholder="输入酒款名称"><button class="btn small" type="submit">添加</button></form></div>`;
+   body+=`<section class="recipe-material-current"><div><span class="eyebrow">当前大类</span><strong>${esc(root.name)}</strong></div><button type="button" class="category-select" data-material-select="${esc(root.id)}">选择「${esc(root.name)}」大类</button></section>`;
+   body+=`<h3 class="material-section">标签</h3><div class="material-choice-list tag-choice-list">${tags.map(i=>this.recipeCard(i,false,'tag')).join('')}<button type="button" class="material-choice add-choice" data-reveal-quick="type">＋ 新增标签</button><form class="inline-quick" data-material-quick="type" hidden><input name="name" maxlength="100" placeholder="标签名称" aria-label="标签名称"><button class="material-choice add-choice" type="submit">添加</button></form></div>`;
+   body+=`<h3 class="material-section">酒款</h3><div class="material-choice-list">${products.map(i=>this.recipeCard(i)).join('')}<button type="button" class="material-choice add-choice" data-reveal-quick="product">＋ 添加酒款</button><form class="inline-quick" data-material-quick="product" hidden><input name="name" maxlength="100" placeholder="酒款名称" aria-label="酒款名称"><button class="material-choice add-choice" type="submit">添加</button></form></div>`;
   }
   this.el.querySelector('[data-material-results]').innerHTML=body;
  }
  render(){
   if(this.mode==='recipe'){this.recipeRender();return}
+  this.el.querySelector('[data-material-path]').innerHTML='';
   const d=this.data,all=d.ingredients.filter(i=>this.allowed(i)),current=this.item(this.parentId);
   const groups=[...new Set(all.map(i=>i.category))];
   let body=`<nav class="material-breadcrumb" aria-label="材料目录位置"><button type="button" data-material-home>全部材料</button>${this.group?`<span>›</span><button type="button" data-material-group="${esc(this.group)}">${esc(this.group)}</button>`:''}${current?this.path(current.id).map(i=>`<span>›</span><button type="button" data-material-nav="${esc(i.id)}">${esc(i.name)}</button>`).join(''):''}</nav>`;
@@ -104,6 +106,7 @@ class MaterialBrowser{
   else if(b.hasAttribute('data-material-select'))this.options.onSelect?.(this.item(b.dataset.materialSelect));
   else if(b.hasAttribute('data-material-edit'))this.options.onEdit?.(this.item(b.dataset.materialEdit));
   else if(b.hasAttribute('data-material-new'))this.options.onNew?.({kind:b.dataset.materialNew,parentId:this.parentId,category:this.group,name:this.q.trim()});
+  else if(b.hasAttribute('data-reveal-quick')){const form=this.el.querySelector(`[data-material-quick="${b.dataset.revealQuick}"]`);b.hidden=true;form.hidden=false;form.elements.name.focus()}
  }
  change(e){
   const id=e.target.dataset.pantry;if(!id||this.mode!=='pantry')return;
