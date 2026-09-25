@@ -1,0 +1,4 @@
+const test=require('node:test'),assert=require('node:assert/strict');
+function fresh(storage){global.localStorage=storage;delete require.cache[require.resolve('../hierarchy.js')];return require('../hierarchy.js')}
+test('全局层级默认值和自定义值独立于配方数据库保存',()=>{const values=new Map(),storage={getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)},H=fresh(storage),defaults=H.get();assert.equal(defaults[0][0],'whiskey');const custom=[['gin',['london-dry'],['old-tom'],{gin:'我的金酒'}]];assert.deepEqual(H.save(custom),custom);assert.ok(values.has(H.STORAGE_KEY));assert.equal(H.get()[0][3].gin,'我的金酒');assert.equal(H.reset()[0][0],'whiskey')});
+test('全局层级拒绝无效结构',()=>{const H=fresh({getItem:()=>null,setItem(){},removeItem(){}});assert.throws(()=>H.save({root:'gin'}),/无效/)});
