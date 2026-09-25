@@ -6,10 +6,12 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 class MaterialBrowser{
  constructor(el,data,options={}){
   this.el=el;this.data=data;this.options=options;this.mode=options.mode||'recipe';
-  this.parentId=options.parentId||'';this.group=options.group||'';this.q='';
+  this.parentId=options.parentId||'';this.group=options.group||'';this.q='';this.hoverDrawer='alcohol';
   if(this.parentId)this.group=this.item(this.parentId)?.category||'';
   this.el.innerHTML='<div data-material-path></div><label class="material-search"><span class="sr-only">搜索原料</span><input type="search" data-material-search placeholder="搜索原料名称、标签或酒款..."></label><div data-material-results></div>';
   this.el.onclick=e=>this.click(e);this.el.onchange=e=>this.change(e);
+  this.el.onmouseover=e=>{const button=e.target.closest('[data-drawer-preview]');if(button&&button.dataset.drawerPreview!==this.hoverDrawer){this.hoverDrawer=button.dataset.drawerPreview;this.render()}};
+  this.el.onfocusin=e=>{const button=e.target.closest('[data-drawer-preview]');if(button&&button.dataset.drawerPreview!==this.hoverDrawer){this.hoverDrawer=button.dataset.drawerPreview;this.render()}};
   this.el.onsubmit=e=>{const form=e.target.closest('[data-material-quick]');if(!form)return;e.preventDefault();const name=form.elements.name.value.trim();if(name)this.options.onQuickNew?.(form.dataset.materialQuick,name,this.parentId)};
   this.el.oninput=e=>{if(e.target.matches('[data-material-search]')){this.q=e.target.value;this.render()}};
   this.render();
@@ -51,16 +53,16 @@ class MaterialBrowser{
    const items=all.filter(i=>!drawers.includes(i)&&i.id!=='spirit'&&terms.every(t=>C.materialText(i,d).includes(t)));
    body+=`<div class="material-choice-list">${items.map(i=>this.recipeCard(i,false,i.kind==='type'?'tag':'product')).join('')}</div>`;
   }else if(!current){
-   body+=`<div class="material-groups recipe-drawers">${drawers.map(i=>`<button type="button" data-material-nav="${esc(i.id)}"><strong>${esc(i.name)}</strong><span>›</span></button>`).join('')}</div>`;
+   const active=drawers.find(i=>i.id===this.hoverDrawer)||drawers[0],roots=all.filter(i=>i.kind==='type'&&i.parentId===active?.id);
+   body+=`<div class="recipe-drawer-browser"><div class="drawer-primary">${drawers.map(i=>`<button type="button" class="${i.id===active?.id?'active':''}" data-drawer-preview="${esc(i.id)}"><strong>${esc(i.name)}</strong><span aria-hidden="true">›</span></button>`).join('')}</div><div class="drawer-secondary" aria-label="${esc(active?.name||'')}分类">${roots.map(i=>this.recipeCard(i,true,'root')).join('')}</div></div>`;
   }else if(drawers.some(i=>i.id===current.id)){
    const roots=all.filter(i=>i.kind==='type'&&i.parentId===current.id);
    body+=`<div class="material-choice-list root-choice-list">${roots.map(i=>this.recipeCard(i,true,'root')).join('')}</div>`;
   }else if(root){
    const tags=all.filter(i=>i.kind==='type'&&i.parentId===root.id);
    const products=all.filter(i=>i.kind==='product'&&C.ingredientPath(i.id,d).some(p=>p.id===root.id));
-   body+=`<section class="recipe-material-current"><div><span class="eyebrow">当前大类</span><strong>${esc(root.name)}</strong></div><button type="button" class="category-select" data-material-select="${esc(root.id)}">选择「${esc(root.name)}」大类</button></section>`;
-   body+=`<h3 class="material-section">标签</h3><div class="material-choice-list tag-choice-list">${tags.map(i=>this.recipeCard(i,false,'tag')).join('')}<button type="button" class="material-choice add-choice" data-reveal-quick="type">＋ 新增标签</button><form class="inline-quick" data-material-quick="type" hidden><input name="name" maxlength="100" placeholder="标签名称" aria-label="标签名称"><button class="material-choice add-choice" type="submit">添加</button></form></div>`;
-   body+=`<h3 class="material-section">酒款</h3><div class="material-choice-list">${products.map(i=>this.recipeCard(i)).join('')}<button type="button" class="material-choice add-choice" data-reveal-quick="product">＋ 添加酒款</button><form class="inline-quick" data-material-quick="product" hidden><input name="name" maxlength="100" placeholder="酒款名称" aria-label="酒款名称"><button class="material-choice add-choice" type="submit">添加</button></form></div>`;
+   body+=`<h3 class="material-section">标签</h3><button type="button" class="category-name" data-material-select="${esc(root.id)}">${esc(root.name)}</button><div class="material-choice-list tag-choice-list">${tags.map(i=>this.recipeCard(i,false,'tag')).join('')}<button type="button" class="material-choice add-choice" data-reveal-quick="type">＋ 新增标签</button><form class="inline-quick" data-material-quick="type" hidden><input name="name" maxlength="100" placeholder="标签名称" aria-label="标签名称"><button class="material-choice add-choice" type="submit">添加</button></form></div>`;
+   body+=`<h3 class="material-section ingredient-title">原料</h3><div class="material-choice-list ingredient-choice-list">${products.map(i=>this.recipeCard(i)).join('')}<button type="button" class="material-choice add-choice" data-reveal-quick="product">＋ 新增原料</button><form class="inline-quick" data-material-quick="product" hidden><input name="name" maxlength="100" placeholder="原料名称" aria-label="原料名称"><button class="material-choice add-choice" type="submit">添加</button></form></div>`;
   }
   this.el.querySelector('[data-material-results]').innerHTML=body;
  }

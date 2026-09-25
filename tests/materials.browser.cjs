@@ -67,7 +67,7 @@ module.exports=async function({page,stored,go,stock}){
  assert.equal(await page.locator('#material-dialog [data-material-home]').innerText(),'全部原料');
  assert.equal(await page.locator('#material-dialog [data-material-edit],#material-dialog [data-material-new]').count(),0);
  await page.locator('#material-dialog [data-material-home]').click();
- assert.deepEqual(await page.locator('#material-dialog .recipe-drawers strong').allTextContents(),['酒精成分','非酒精成分']);
+ assert.deepEqual(await page.locator('#material-dialog .drawer-primary strong').allTextContents(),['酒精成分','非酒精成分']);
  await page.locator('#material-dialog [data-material-search]').pressSequentially('拉弗格');
  assert.equal(await page.locator('#material-dialog [data-material-select=laphroaig-10]').count(),1,await page.locator('#material-dialog').innerText());
  assert.equal(await page.evaluate(()=>{const el=document.querySelector('#material-dialog');return el.scrollWidth<=el.clientWidth+1}),true);
