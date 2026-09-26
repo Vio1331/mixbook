@@ -45,10 +45,14 @@ for drawer,(drawer_name,pages) in taxonomy.items():
  for page,(page_name,tags) in pages.items():
   ensure(page,page_name,drawer,drawer_name)
   for tag,tag_name in tags:ensure(tag,tag_name,page,drawer_name)
+solid_pages={'fruit-vegetable':'水果&蔬菜','seasoning':'调料','other-food':'其他食品'}
+ensure('solid-materials','固体材料','','酒柜分类')
+for id,name in solid_pages.items():ensure(id,name,'solid-materials','固体材料')
 
 # Keep detailed IBA-only classifications below the new public tags/pages.
 fallback={'基酒':'alcohol','利口酒':'liqueur','葡萄酒':'wine','苦精与调味':'seasoning-root','果汁与汽水':'juice-root','糖与其他':'other-food','新鲜材料与装饰':'produce-root'}
 protected={drawer for drawer in taxonomy}|{p for _,pages in taxonomy.values() for p in pages}|{t for _,pages in taxonomy.values() for _,tags in pages.values() for t,_ in tags}
+protected|={'solid-materials',*solid_pages}
 tag_ids={t for _,pages in taxonomy.values() for _,tags in pages.values() for t,_ in tags}
 for i in by_id.values():
  if i['id'] in protected:continue
@@ -61,11 +65,17 @@ for i in by_id.values():
   i['_taxonomyTags']=inherited
  if not i['parentId'] or i['parentId']=='spirit':i['parentId']=fallback.get(i['category'],'other-food')
  i['category']=by_id.get(i['parentId'],{}).get('category',i['category'])
+garnish_fruit=set('orange lemon-fruit lime-fruit pineapple passion-fruit peach mint basil ginger candied-ginger cherry raspberry blackberry berries grapes olive celery chili'.split())
+garnish_seasoning=set('nutmeg cloves salt amargo-bitters'.split())
+garnish_other={'coffee-beans','powdered-sugar','vanilla-sugar'}
+for id in garnish_fruit|garnish_seasoning|garnish_other:
+ i=by_id[id];i.update(kind='product',brand='',category='固体材料',parentId='fruit-vegetable' if id in garnish_fruit else 'seasoning' if id in garnish_seasoning else 'other-food')
 ordered=[]
 for drawer,(_,pages) in taxonomy.items():
  ordered.append(by_id[drawer])
  for page,(_,tags) in pages.items():
   ordered.append(by_id[page]);ordered.extend(by_id[tag] for tag,_ in tags)
+ordered.append(by_id['solid-materials']);ordered.extend(by_id[id] for id in solid_pages)
 items=ordered+[i for id,i in by_id.items() if id not in protected and id!='spirit']
 ids={i['id'] for i in items}
 materials=json.loads((root/'data/material-catalog.json').read_text())
@@ -125,6 +135,6 @@ d=dict(schemaVersion=3,ingredients=items,recipes=recipes,pantry={},favorites={},
 photo_map=json.loads((root/'data/photo-map.json').read_text())
 photo_meta={p['slug']:{'revision':p['assetSha256'][:12],'number':p['number'],'note':p['note']} for p in photo_map['photos']}
 photo_meta['negroni']={'revision':hashlib.sha256((root/'assets/negroni.webp').read_bytes()).hexdigest()[:12],'note':''}
-(root/'seed.js').write_text('/* IBA recipe facts checked 2026-09-21. See data/sources.json. */\nwindow.MIX_SEED='+json.dumps(d,ensure_ascii=False,separators=(',',':'))+';\n/* cocktail-system.js is the editable source of truth for the shared taxonomy. */\nif(window.MIX_TAXONOMY){window.MIX_SEED.ingredients=window.MIX_TAXONOMY.ingredients;window.MIX_SEED.options={...window.MIX_SEED.options,...window.MIX_TAXONOMY.recipe};}\nwindow.MIX_PHOTOS='+json.dumps(photo_meta,ensure_ascii=False,separators=(',',':'))+';\n')
+(root/'seed.js').write_text('/* IBA recipe facts checked 2026-09-21. See data/sources.json. */\nwindow.MIX_SEED='+json.dumps(d,ensure_ascii=False,separators=(',',':'))+';\n/* cocktail-system.js is the editable source of truth for the shared taxonomy. */\nif(window.MIX_TAXONOMY){window.MIX_SEED.ingredients=[...window.MIX_SEED.ingredients.filter(i=>!window.MIX_TAXONOMY.ingredients.some(x=>x.id===i.id)),...window.MIX_TAXONOMY.ingredients];window.MIX_SEED.options={...window.MIX_SEED.options,...window.MIX_TAXONOMY.recipe};}\nwindow.MIX_PHOTOS='+json.dumps(photo_meta,ensure_ascii=False,separators=(',',':'))+';\n')
 (root/'data/sources.json').write_text(json.dumps(dict(checkedAt='2026-09-21',index='https://iba-world.com/cocktails/all-cocktails/',count=102,editorialNote='杯形按官网方法选择一个允许选项；IBA 三个系列分别记为来源词条。风味标签为本站描述，中文步骤为重新表述。',recipes=[{k:x[k] for k in ['slug','name','url']} for x in facts.values()]),ensure_ascii=False,indent=2))
 print(len(items),'ingredients;',len(recipes),'recipes;',sum(bool(r['image']) for r in recipes),'photos')

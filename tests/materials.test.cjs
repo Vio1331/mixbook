@@ -56,3 +56,5 @@ test('配方一级、二级、具体名称与分类标签逐级精确匹配',()=
 });
 
 test('IBA 的名称与标签原料归入对应的二级菜单',()=>{const d=data(),byId=id=>d.ingredients.find(i=>i.id===id);assert.equal(byId('campari').kind,'product');assert.equal(byId('campari').parentId,'aperitif');assert.equal(byId('fernet-branca').kind,'product');assert.ok(C.ingredientPath('fernet-branca',d).some(i=>i.id==='amaro'));assert.ok(d.recipes.find(r=>r.id==='iba-hanky-panky').ingredients.some(i=>i.id==='fernet-branca'));assert.equal(byId('apricot-brandy').kind,'type');assert.equal(byId('apricot-brandy').parentId,'fruit-brandy');assert.equal(byId('apricot-brandy').name,'杏子白兰地');for(const id of ['calvados','peach-brandy'])assert.equal(byId(id).parentId,'fruit-brandy');assert.equal(byId('aperol').parentId,'aperitif')});
+
+test('IBA 装饰均为固体材料二级菜单下的具体原料',()=>{const d=data(),secondary=new Set(['fruit-vegetable','seasoning','other-food']);for(const recipe of d.recipes)for(const garnish of recipe.garnishes){const item=d.ingredients.find(i=>i.id===garnish.id);assert.equal(item.kind,'product',`${recipe.id}: ${garnish.id}`);assert.ok(C.ingredientPath(item.id,d).some(i=>secondary.has(i.id)),`${recipe.id}: ${garnish.id}`)}});

@@ -126,11 +126,11 @@ aromatic-bitters|芳香苦精|苦精与调味|bitters||Aromatic Bitters|bitters
 angostura|安高天娜芳香苦精|苦精与调味|aromatic-bitters|Angostura|Angostura Bitters|angostura
 peychauds|佩肖氏苦精|苦精与调味|aromatic-bitters|Peychaud's|Peychaud’s Bitters|peychauds
 orange-bitters|橙味苦精|苦精与调味|bitters||Orange Bitters|bitters
-amargo-bitters|Amargo 苦精|苦精与调味|bitters||Amargo Bitters|bitters
+amargo-bitters|Amargo 苦精|固体材料|seasoning||Amargo Bitters|bitters
 worcestershire|伍斯特酱|苦精与调味|||Worcestershire Sauce|
 hot-sauce|辣椒汁|苦精与调味|||Hot Sauce|
 tabasco|塔巴斯科辣椒汁|苦精与调味|hot-sauce|Tabasco|Tabasco|
-salt|盐|糖与其他|||Salt|salt
+salt|盐|固体材料|seasoning||Salt|salt
 celery-salt|芹菜盐|苦精与调味|||Celery Salt|salt
 pepper|黑胡椒|苦精与调味|||Pepper|
 orange-flower|橙花水|苦精与调味|||Orange Flower Water|
@@ -155,8 +155,8 @@ water|饮用水|果汁与汽水|||Water|soda
 sugar|细砂糖|糖与其他|||Superfine Sugar|sugar
 cane-sugar|白蔗糖|糖与其他|sugar||White Cane Sugar|sugar
 sugar-cube|方糖|糖与其他|sugar||Sugar Cube|sugar
-powdered-sugar|糖粉|糖与其他|sugar||Powdered Sugar|sugar
-vanilla-sugar|香草糖|糖与其他|||Vanilla Sugar|sugar
+powdered-sugar|糖粉|固体材料|other-food||Powdered Sugar|sugar
+vanilla-sugar|香草糖|固体材料|other-food||Vanilla Sugar|sugar
 syrup|原味糖浆|糖与其他|||Simple Syrup Sugar Syrup|syrup
 honey|蜂蜜|糖与其他|||Honey|honey
 honey-syrup|蜂蜜糖浆|糖与其他|||Honey Syrup Honey Mix|honey
@@ -177,24 +177,24 @@ egg-white|蛋清|糖与其他|||Egg White|egg
 egg-yolk|蛋黄|糖与其他|||Egg Yolk|egg
 espresso|浓缩咖啡|糖与其他|||Espresso|coffee
 coffee|热黑咖啡|糖与其他|||Hot Coffee|coffee
-orange|鲜橙|新鲜材料与装饰|||Orange|orange
-lemon-fruit|鲜柠檬|新鲜材料与装饰|||Lemon|lemon
-lime-fruit|鲜青柠|新鲜材料与装饰|||Lime|lime
-pineapple|菠萝|新鲜材料与装饰|||Pineapple|pineapple
-passion-fruit|百香果|新鲜材料与装饰|||Passion Fruit|
-peach|桃子|新鲜材料与装饰|||Peach|
-mint|薄荷|新鲜材料与装饰|||Mint|mint
-basil|意大利罗勒|新鲜材料与装饰|||Italian Basil|basil
-ginger|鲜姜|新鲜材料与装饰|||Ginger Gengibre|ginger
-candied-ginger|糖渍姜片|新鲜材料与装饰|||Candied Ginger|
-cherry|鸡尾酒樱桃|新鲜材料与装饰|||Cocktail Maraschino Cherry|cherry
-raspberry|覆盆子|新鲜材料与装饰|||Raspberry|
-blackberry|黑莓|新鲜材料与装饰|||Blackberry|
-berries|新鲜莓果|新鲜材料与装饰|||Berries|
-grapes|白葡萄|新鲜材料与装饰|||White Grapes|
-olive|绿橄榄|新鲜材料与装饰|||Green Olive|olive
-celery|芹菜|新鲜材料与装饰|||Celery|
-chili|红辣椒|新鲜材料与装饰|||Red Chili Pepper|
-nutmeg|肉豆蔻|新鲜材料与装饰|||Nutmeg|
-cloves|丁香|新鲜材料与装饰|||Cloves|
-coffee-beans|咖啡豆|新鲜材料与装饰|||Coffee Beans|coffee
+orange|鲜橙|固体材料|fruit-vegetable||Orange|orange
+lemon-fruit|鲜柠檬|固体材料|fruit-vegetable||Lemon|lemon
+lime-fruit|鲜青柠|固体材料|fruit-vegetable||Lime|lime
+pineapple|菠萝|固体材料|fruit-vegetable||Pineapple|pineapple
+passion-fruit|百香果|固体材料|fruit-vegetable||Passion Fruit|
+peach|桃子|固体材料|fruit-vegetable||Peach|
+mint|薄荷|固体材料|fruit-vegetable||Mint|mint
+basil|意大利罗勒|固体材料|fruit-vegetable||Italian Basil|basil
+ginger|鲜姜|固体材料|fruit-vegetable||Ginger Gengibre|ginger
+candied-ginger|糖渍姜片|固体材料|fruit-vegetable||Candied Ginger|
+cherry|鸡尾酒樱桃|固体材料|fruit-vegetable||Cocktail Maraschino Cherry|cherry
+raspberry|覆盆子|固体材料|fruit-vegetable||Raspberry|
+blackberry|黑莓|固体材料|fruit-vegetable||Blackberry|
+berries|新鲜莓果|固体材料|fruit-vegetable||Berries|
+grapes|白葡萄|固体材料|fruit-vegetable||White Grapes|
+olive|绿橄榄|固体材料|fruit-vegetable||Green Olive|olive
+celery|芹菜|固体材料|fruit-vegetable||Celery|
+chili|红辣椒|固体材料|fruit-vegetable||Red Chili Pepper|
+nutmeg|肉豆蔻|固体材料|seasoning||Nutmeg|
+cloves|丁香|固体材料|seasoning||Cloves|
+coffee-beans|咖啡豆|固体材料|other-food||Coffee Beans|coffee

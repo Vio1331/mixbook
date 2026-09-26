@@ -130,9 +130,10 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .type-drawers button>span:first-child{flex:1;min-width:0}
 @media(max-width:760px){.type-dropdown .type-cascade,.type-cascade{grid-template-columns:repeat(2,minmax(0,1fr))}.type-drawers button,.type-options label span,.type-options .material-choice{font-size:.84rem}}
 /* Recipe editor: consistent sections and explicit material qualifiers. */
-.editor-section-title{padding-top:8px;border-top:1px solid var(--line)}
+.editor-section-title{margin:20px 0 10px;font-size:.9rem;font-weight:600}.recipe-name-row .field>span{font-size:.9rem;font-weight:600}
+.garnish-material{display:grid;grid-template-columns:minmax(130px,.8fr) minmax(150px,1.2fr) auto;gap:9px;align-items:center}.garnish-material select,.garnish-material input{width:100%}.garnish-material input:disabled{color:#a4a8af;background:#f3f4f6}.garnish-amount{display:grid;grid-template-columns:minmax(70px,1fr) minmax(70px,1fr) auto 38px;gap:9px;align-items:center;margin-top:9px}
 .recipe-choice{margin:20px 0}.recipe-choice .chips{max-height:none}
 .specific-material{margin-top:8px}.specific-material>.link-button{color:var(--muted);font-size:.75rem;font-weight:400}.specific-material>.link-button:disabled{color:#aeb2b9;cursor:not-allowed}
 .specific-material-editor{display:grid;grid-template-columns:auto minmax(120px,1fr) auto;align-items:center;gap:9px;margin-top:8px;padding:10px;border-radius:8px;background:#f7f8fa}
 .specific-material-editor[hidden]{display:none}.specific-kind{display:flex;gap:8px;font-size:.8rem}.specific-kind label{display:flex;align-items:center;gap:4px}.specific-material-editor input[type=text]{min-width:0;width:100%;padding:7px 9px}
-@media(max-width:760px){.specific-material-editor{grid-template-columns:1fr auto}.specific-kind{grid-column:1/-1}.recipe-name-row{grid-template-columns:1fr 1fr!important}}
+@media(max-width:760px){.specific-material-editor{grid-template-columns:1fr auto}.specific-kind{grid-column:1/-1}.recipe-name-row{grid-template-columns:1fr 1fr!important}.garnish-material{grid-template-columns:1fr 1fr}.garnish-material .btn{grid-column:1/-1}.garnish-amount{grid-template-columns:1fr 1fr auto 38px}}
