@@ -72,13 +72,15 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 #editor-dialog{height:min(684px,90dvh)}
 .inline-option-add input,.inline-quick input{width:150px;max-width:150px}
 .glass-picker .chips{display:flex;align-items:stretch;flex-wrap:wrap}
-.glass-picker .glass-option{width:92px}
+.glass-picker .glass-option,.glass-picker .glass-add-option{width:92px;min-height:76px}
+.glass-picker .glass-add-option{display:flex;flex-direction:column;justify-content:center;gap:5px;border-radius:10px}
+.glass-picker .glass-add-option svg{width:20px;height:20px}
 .glass-picker .inline-option-add{align-self:center}
 .material-dialog-top{justify-content:flex-start;gap:10px}.material-dialog-top .back-button svg{transform:rotate(180deg)}
 .material-dialog-top span{font-size:1.05rem}
 .variant-picker{border:0;padding:0;margin:22px 0}.variant-picker legend{font-size:.9rem;font-weight:600;margin-bottom:10px}.variant-controls{display:grid;grid-template-columns:auto auto minmax(180px,1fr);gap:8px;align-items:center}.variant-controls label{position:relative;cursor:pointer}.variant-controls label input{position:absolute;opacity:0}.variant-controls label span{display:block;padding:8px 12px;border:1px solid var(--line);border-radius:7px;color:var(--muted);font-size:.84rem}.variant-controls label:has(input:checked) span{color:var(--accent);border-color:#edb1a5;background:var(--accent-light)}.variant-controls>input:disabled{background:#f3f4f6;color:#a4a8af}
 .category-name{display:block;margin:-6px 0 14px;font-size:1.25rem;font-weight:700;text-align:left}.category-name:hover{color:var(--accent)}.ingredient-title{padding-top:18px;border-top:1px solid var(--line)}
-@media(max-width:760px){.editor-dialog{height:94dvh}.variant-controls{grid-template-columns:1fr 1fr}.variant-controls>input{grid-column:1/-1}.glass-picker .glass-option{width:calc(33.333% - 5px)}}
+@media(max-width:760px){.editor-dialog{height:94dvh}.variant-controls{grid-template-columns:1fr 1fr}.variant-controls>input{grid-column:1/-1}.glass-picker .glass-option,.glass-picker .glass-add-option{width:calc(33.333% - 5px);min-height:70px}}
 
 /* Editors keep their chrome still; only the content area scrolls. */
 .editor-dialog{overflow:hidden}
