@@ -520,7 +520,7 @@ window.MIX_TAXONOMY = {
     },
     {
       "id": "fruit-brandy",
-      "name": "其他水果白兰地",
+      "name": "水果白兰地",
       "category": "白兰地",
       "parentId": "brandy-root",
       "brand": "",
