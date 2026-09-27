@@ -17,12 +17,12 @@
   highball:'<path d="M6 3h12l-1 18H7L6 3Zm1 4h10"/>',
   collins:'<path d="M7 3h10l-1 18H8L7 3Zm.2 4h9.6"/>',
   rocks:'<path d="M5 7h14l-1 14H6L5 7Zm1 4h12"/>',
-  hurricane:'<path d="M7 3h10c-.1 3.2-2.7 4.1-2.7 7.1 0 2.7 2.1 3.7 1.4 6.3-.4 1.5-1.7 2.6-3.7 2.6s-3.3-1.1-3.7-2.6c-.7-2.6 1.4-3.6 1.4-6.3C9.7 7.1 7.1 6.2 7 3Zm5 16v2m-4 0h8"/><path d="M8.2 6h7.6"/>',
+  hurricane:'<path d="M8 3h8c-.1 2.8-2.1 3.9-2.1 6.3 0 2.2 1.8 3.2 1.3 5.2-.4 1.3-1.5 2.2-3.2 2.2s-2.8-.9-3.2-2.2c-.5-2 1.3-3 1.3-5.2C10.1 6.9 8.1 5.8 8 3Zm4 13.7V21m-4 0h8"/>',
   goblet:'<path d="M5 4h14l-1 6a6 6 0 0 1-12 0L5 4Zm7 12v4m-4 0h8"/>',
   copper:'<path d="M6 4h10v17H6V4Zm0 4h10m0-1h2a3.5 3.5 0 0 1 0 7h-2"/>',
-  irish:'<path d="M7 4h9v9.5a4.5 4.5 0 0 1-9 0V4Zm.1 4H16m0-1h2a3.5 3.5 0 0 1 0 7h-2m-4 4v2m-4 0h8"/>',
+  irish:'<path d="M7 3h9v9a4.5 4.5 0 0 1-9 0V3Zm.1 4H16m0-1h2a3.5 3.5 0 0 1 0 7h-2m-6 3.5V21m-4 0h8"/>',
   julep:'<path d="M6 4h12l-1 17H7L6 4Zm-1 0h14M7 8h10"/>',
-  tiki:'<path d="M6 3h12l-1 18H7L6 3Zm.5 4h11M7 17h10M8 7l2.2 3L8 13m8-6-2.2 3 2.2 3M10.2 10h3.6"/>',
+  tiki:'<path d="M6 3h12l-1 18H7L6 3Zm.2 4h11.6M6.5 12l3-3 2.5 3 2.5-3 3 3M7 17h10"/>',
   shot:'<path d="M7 7h10l-1 14H8L7 7Zm1.5 4h7"/>',
   beer:'<path d="M6 4h10v17H6V4Zm0 4h10m0-1h2a3.5 3.5 0 0 1 0 7h-2M9 11v7m3-7v7"/>',
   snifter:'<path d="M7 4h10l1 6a6 6 0 0 1-12 0l1-6Zm-.3 4h10.6M12 16v4m-4 0h8"/>',
@@ -50,7 +50,7 @@
  ];
  function glassType(name=''){return glassTypes.find(type=>type.match.test(name))}
  function glassKind(name=''){return glassType(name)?.kind||'glass'}
- const glassIcon=name=>`<svg class="glass-svg" viewBox="0 0 24 24" aria-hidden="true">${glassPaths[glassKind(name)]}</svg>`;
+ const glassIcon=name=>{const kind=glassKind(name);return `<svg class="glass-svg glass-svg-${kind}" viewBox="0 0 24 24" aria-hidden="true">${glassPaths[kind]}</svg>`};
  let db,storageError='',env={data:C.validate(C.clone(window.MIX_SEED)),base:null,syncId:'',sha:null,lastSync:null},view='recipes',filters={q:'',tags:[],base:'',sourceName:'',availability:'none',favorite:false,hideCatalog:false},sort='recent',pantryQ='',pantryTags=[],onlyOwned=false,filterOpen=false,pantryFilterOpen=false,syncBusy=false,saveTimer=null,toastTimer=null,editorId=null,lastFocus=null,pantrySection='all',pantryOpen=new Set(['whiskey']);
  function applyTaxonomy(data){
   const taxonomy=window.MIX_TAXONOMY;if(!taxonomy)return data;

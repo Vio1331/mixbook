@@ -170,8 +170,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .recipe-material-dropdown .type-cascade{left:0;right:auto;width:440px;max-width:calc(100vw - 56px)}
 .continue-input{position:relative;display:inline-flex;align-items:center;cursor:pointer;white-space:nowrap}
 .continue-input input{position:absolute;opacity:0;pointer-events:none}
-.continue-input span{display:block;padding:8px 11px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.78rem;line-height:1}
-.continue-input:has(input:checked) span{border-color:#edb1a5;background:var(--accent-light);color:var(--accent);font-weight:600}
+.continue-input>span:not(.sr-only){display:block;padding:8px 11px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.78rem;line-height:1}
+.continue-input:has(input:checked)>span:not(.sr-only){border-color:#edb1a5;background:var(--accent-light);color:var(--accent);font-weight:600}
 .material-structure .specific-material-editor{grid-template-columns:minmax(130px,1fr) auto;gap:7px}
 .material-structure .specific-material-editor[hidden]{display:none}
 .material-structure .specific-kind label{padding:0 8px;font-size:.76rem}
@@ -196,8 +196,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .recipe-material-dropdown .type-cascade{width:540px;height:360px}
 .type-drawers button>span:first-child,.type-options label span,.type-options .material-choice{white-space:normal;overflow-wrap:anywhere}
 .continue-input{grid-column:2;width:58px;height:38px;justify-content:center}
-.continue-input span:not(.sr-only){display:flex;width:58px;height:38px;padding:0;align-items:center;justify-content:center;gap:3px;border:0;border-radius:0;color:var(--muted);background:transparent;font-size:.75rem}
-.continue-input:hover span:not(.sr-only),.continue-input:has(input:checked) span:not(.sr-only){border:0;background:transparent;color:var(--accent);font-weight:500}
+.continue-input>span:not(.sr-only){display:flex;width:58px;height:38px;padding:0;align-items:center;justify-content:center;gap:3px;border:0;border-radius:0;color:var(--muted);background:transparent;font-size:.75rem}
+.continue-input:hover>span:not(.sr-only),.continue-input:has(input:checked)>span:not(.sr-only){border:0;background:transparent;color:var(--accent);font-weight:500}
 .continue-input svg{width:15px;height:15px;flex-shrink:0}
 .material-structure .specific-material-editor{grid-column:3;min-width:0}
 .material-structure .material-amount-row{display:grid!important;grid-column:4;grid-template-columns:72px 72px auto 36px!important;justify-self:end;gap:7px;margin:0!important}
@@ -214,9 +214,9 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 /* Recipe material rows stay visually open; disclosure and name/tag controls express state themselves. */
 #editor-ingredients{border-top:0}
 #editor-ingredients .ingredient-edit-row{padding:10px 0;border-bottom:0}
-.continue-input span:not(.sr-only) .collapse-label{display:none}
-.continue-input:has(input:checked) span:not(.sr-only) .expand-label{display:none}
-.continue-input:has(input:checked) span:not(.sr-only) .collapse-label{display:inline}
+.continue-input>span:not(.sr-only) .collapse-label{display:none}
+.continue-input:has(input:checked)>span:not(.sr-only) .expand-label{display:none}
+.continue-input:has(input:checked)>span:not(.sr-only) .collapse-label{display:inline}
 .continue-input:has(input:checked) svg{transform:rotate(180deg)}
 .continue-input svg{transition:transform .16s ease}
 .material-structure .specific-material-editor{grid-template-columns:68px minmax(130px,1fr)}
@@ -229,3 +229,11 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .material-structure .specific-kind label:has(input:focus-visible){outline:2px solid #ed8b77;outline-offset:1px}
 .specific-material-editor input[data-specific-name]{height:38px}
 @media(max-width:760px){.material-structure .specific-material-editor{grid-template-columns:68px minmax(0,1fr)}}
+
+/* Every glass uses the same visual box and baseline; only genuinely narrow shapes scale down. */
+.glass-option-icon{display:flex;height:34px;align-items:flex-end;justify-content:center}
+.glass-option .glass-svg{display:block;width:30px;height:30px}
+.glass-option .glass-svg-shot{width:25px}
+.glass-option .glass-svg-highball,.glass-option .glass-svg-collins{width:28px}
+.glass-option .glass-svg-cocktail,.glass-option .glass-svg-martini,.glass-option .glass-svg-margarita,.glass-option .glass-svg-coupe,.glass-option .glass-svg-champagne,.glass-option .glass-svg-wine,.glass-option .glass-svg-goblet,.glass-option .glass-svg-snifter{transform:translateY(1px)}
+@media(max-width:760px){.glass-option .glass-svg{width:28px;height:28px}.glass-option .glass-svg-shot{width:23px}.glass-option .glass-svg-highball,.glass-option .glass-svg-collins{width:26px}}
