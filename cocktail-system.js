@@ -1,11 +1,9 @@
 /*
- * 全站鸡尾酒体系（唯一维护入口）
- *
- * 保存本文件并刷新网站后，原料类别、标签、层级菜单、配方风味标签、
- * 杯型与来源会同步更新。ingredients 中 parentId 表示父级；kind 为 type 表示类别。
- * menus 控制所有两栏原料菜单的左栏和右栏，第三组数组为该分组的可选标签；
- * menuTags 单独记录这些标签的名称与归属，避免只有 ID 而无法在页面中显示。
- * 已上线条目请尽量保留 ID，只修改 name；新增条目时 ID 必须全局唯一。
+ * 全站唯一的内置目录与内置标签。
+ * ingredients 只包含固定的一级菜单、二级菜单和内置标签；具体原料由 data/ingredient-details.json 维护。
+ * menus 的每项依次为：一级菜单 ID、二级菜单 ID、直接属于一级菜单的标签 ID。
+ * menuTags 的 parentId 可以指向一级或二级菜单；一级菜单标签自动适用于其全部二级菜单。
+ * 已上线 ID 不得随意更改。新增或调整内置目录时，同时运行 npm test 验证全部 IBA 配方。
  */
 window.MIX_TAXONOMY = {
   "ingredients": [
@@ -23,7 +21,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "bourbon",
@@ -38,7 +37,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "rye",
@@ -53,7 +53,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "scotch",
@@ -68,7 +69,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "blended-scotch",
@@ -83,7 +85,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "islay",
@@ -98,7 +101,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "canadian-whiskey",
@@ -111,7 +115,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "irish-whiskey",
@@ -126,7 +131,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "japanese-whiskey",
@@ -139,7 +145,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "gin",
@@ -154,7 +161,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "london-dry",
@@ -169,7 +177,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "plymouth-gin",
@@ -182,7 +191,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "navy-strength-gin",
@@ -195,7 +205,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "old-tom",
@@ -210,7 +221,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "modern-gin",
@@ -223,7 +235,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "rum",
@@ -238,7 +251,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "light-rum",
@@ -253,7 +267,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "dark-rum",
@@ -268,7 +283,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "gold-rum",
@@ -283,7 +299,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "aged-rum",
@@ -298,7 +315,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "agricole",
@@ -313,7 +331,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "spiced-rum",
@@ -326,7 +345,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "overproof-rum",
@@ -341,7 +361,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "tequila",
@@ -356,7 +377,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "blanco-tequila",
@@ -369,7 +391,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "gold-tequila",
@@ -382,7 +405,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "reposado-tequila",
@@ -395,7 +419,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "anejo-tequila",
@@ -408,7 +433,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "vodka",
@@ -423,7 +449,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "neutral-vodka",
@@ -436,7 +463,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "flavored-vodka",
@@ -449,7 +477,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "baijiu",
@@ -462,7 +491,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "soju",
@@ -475,7 +505,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "shochu",
@@ -488,7 +519,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "brandy-root",
@@ -501,7 +533,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "brandy",
@@ -516,7 +549,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "fruit-brandy",
@@ -529,7 +563,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "beer",
@@ -544,7 +579,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "pale-ale",
@@ -559,7 +595,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "ipa",
@@ -575,7 +612,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "stout",
@@ -590,7 +628,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "porter",
@@ -605,7 +644,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "abbey-beer",
@@ -620,7 +660,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "sour-beer",
@@ -635,7 +676,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "wheat-beer",
@@ -650,7 +692,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "lager",
@@ -665,7 +708,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "wine",
@@ -680,7 +724,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "red-wine",
@@ -695,7 +740,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "white-wine",
@@ -711,7 +757,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "rose-wine",
@@ -726,7 +773,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "sparkling",
@@ -741,7 +789,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "champagne",
@@ -756,7 +805,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "prosecco",
@@ -771,7 +821,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "cava",
@@ -786,7 +837,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "ice-wine",
@@ -801,7 +853,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "vermouth",
@@ -816,7 +869,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "sweet-vermouth",
@@ -832,7 +886,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "dry-vermouth",
@@ -847,7 +902,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "bianco-vermouth",
@@ -862,7 +918,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "port-sherry",
@@ -878,7 +935,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "ruby-port",
@@ -893,7 +951,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "rose-port",
@@ -908,7 +967,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "white-port",
@@ -923,7 +983,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "aged-port",
@@ -938,7 +999,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "tawny-port",
@@ -953,7 +1015,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "fino-sherry",
@@ -968,7 +1031,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "manzanilla-sherry",
@@ -983,7 +1047,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "amontillado-sherry",
@@ -996,7 +1061,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "palo-cortado-sherry",
@@ -1011,7 +1077,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "oloroso-sherry",
@@ -1026,7 +1093,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "cream-sherry",
@@ -1041,7 +1109,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "pedro-ximenez-sherry",
@@ -1056,7 +1125,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "liqueur-root",
@@ -1069,7 +1139,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "liqueur",
@@ -1084,7 +1155,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "other-alcohol",
@@ -1097,7 +1169,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "aperitif",
@@ -1112,7 +1185,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "amaro",
@@ -1127,7 +1201,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "bitters",
@@ -1142,7 +1217,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "liquid-materials",
@@ -1155,7 +1231,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "soda-root",
@@ -1170,7 +1247,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "syrup",
@@ -1185,7 +1263,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "juice",
@@ -1200,7 +1279,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "other-liquid",
@@ -1213,7 +1293,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "solid-materials",
@@ -1226,7 +1307,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "fruit-vegetable",
@@ -1239,7 +1321,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "seasoning",
@@ -1254,7 +1337,8 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
     },
     {
       "id": "other-food",
@@ -1267,20 +1351,684 @@ window.MIX_TAXONOMY = {
       "image": "",
       "tags": [],
       "matchParent": true,
-      "customized": false
+      "customized": false,
+      "builtIn": true
+    },
+    {
+      "id": "cuban-rum",
+      "name": "古巴朗姆",
+      "category": "朗姆酒",
+      "parentId": "rum",
+      "brand": "",
+      "aliases": [
+        "Cuban Rum"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "jamaican-rum",
+      "name": "牙买加朗姆",
+      "category": "朗姆酒",
+      "parentId": "rum",
+      "brand": "",
+      "aliases": [
+        "Jamaican Rum"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "demerara-rum",
+      "name": "德梅拉拉朗姆",
+      "category": "朗姆酒",
+      "parentId": "rum",
+      "brand": "",
+      "aliases": [
+        "Demerara Rum"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "martinique-rum",
+      "name": "马提尼克朗姆",
+      "category": "朗姆酒",
+      "parentId": "rum",
+      "brand": "",
+      "aliases": [],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "puerto-rico-rum",
+      "name": "波多黎各朗姆",
+      "category": "朗姆酒",
+      "parentId": "rum",
+      "brand": "",
+      "aliases": [
+        "Puerto Rican Rum"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "cachaca",
+      "name": "卡莎萨朗姆",
+      "category": "朗姆酒",
+      "parentId": "rum",
+      "brand": "",
+      "aliases": [
+        "Cachaca",
+        "Cachaça"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "cognac",
+      "name": "干邑",
+      "category": "白兰地",
+      "parentId": "brandy",
+      "brand": "",
+      "aliases": [
+        "Cognac"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "pisco",
+      "name": "皮斯科",
+      "category": "白兰地",
+      "parentId": "brandy",
+      "brand": "",
+      "aliases": [
+        "Pisco"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "absinthe",
+      "name": "苦艾酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Absinthe"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "cacao-liqueur",
+      "name": "可可利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Cacao Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "coffee-liqueur",
+      "name": "咖啡利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Coffee Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "cream-liqueur",
+      "name": "奶油利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Cream Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "orange-liqueur",
+      "name": "橙味利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Orange Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "cherry-liqueur",
+      "name": "樱桃利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Cherry Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "passion-liqueur",
+      "name": "百香果利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Passion Fruit Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "herbal-liqueur",
+      "name": "草本利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Herbal Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "pear-liqueur",
+      "name": "梨子利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Pear Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "honey-liqueur",
+      "name": "蜂蜜利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Honey Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "mint-liqueur",
+      "name": "薄荷利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Mint Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "mure",
+      "name": "黑莓利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Crème de Mûre"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "banana-liqueur",
+      "name": "香蕉利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Banana Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "violette",
+      "name": "紫罗兰利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Crème de Violette"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "grapefruit-liqueur",
+      "name": "西柚利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Grapefruit Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "peach-liqueur",
+      "name": "桃子利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Peach Liqueur"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "amaretto",
+      "name": "杏仁利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Amaretto"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "soda",
+      "name": "苏打水",
+      "category": "气泡水",
+      "parentId": "soda-root",
+      "brand": "",
+      "aliases": [
+        "Soda Water"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
+    {
+      "id": "tonic",
+      "name": "汤力水",
+      "category": "气泡水",
+      "parentId": "soda-root",
+      "brand": "",
+      "aliases": [
+        "Tonic Water"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
     }
   ],
   "menuTags": [
-    {"id": "cuban-rum", "name": "古巴朗姆", "parentId": "rum", "aliases": ["Cuban Rum"]},
-    {"id": "jamaican-rum", "name": "牙买加朗姆", "parentId": "rum", "aliases": ["Jamaican Rum"]},
-    {"id": "demerara-rum", "name": "德梅拉拉朗姆", "parentId": "rum", "aliases": ["Demerara Rum"]},
-    {"id": "martinique-rum", "name": "马提尼克朗姆", "parentId": "rum", "aliases": []},
-    {"id": "puerto-rico-rum", "name": "波多黎各朗姆", "parentId": "rum", "aliases": ["Puerto Rican Rum"]},
-    {"id": "cachaca", "name": "卡莎萨朗姆", "parentId": "rum", "aliases": ["Cachaca", "Cachaça"]},
-    {"id": "cognac", "name": "干邑", "parentId": "brandy-root", "aliases": ["Cognac"]},
-    {"id": "pisco", "name": "皮斯科", "parentId": "brandy-root", "aliases": ["Pisco"]},
-    {"id": "soda", "name": "苏打水", "parentId": "soda-root", "aliases": ["Soda"]},
-    {"id": "tonic", "name": "汤力水", "parentId": "soda-root", "aliases": ["Tonic"]}
+    {
+      "id": "cuban-rum",
+      "name": "古巴朗姆",
+      "parentId": "rum",
+      "aliases": [
+        "Cuban Rum"
+      ]
+    },
+    {
+      "id": "jamaican-rum",
+      "name": "牙买加朗姆",
+      "parentId": "rum",
+      "aliases": [
+        "Jamaican Rum"
+      ]
+    },
+    {
+      "id": "demerara-rum",
+      "name": "德梅拉拉朗姆",
+      "parentId": "rum",
+      "aliases": [
+        "Demerara Rum"
+      ]
+    },
+    {
+      "id": "martinique-rum",
+      "name": "马提尼克朗姆",
+      "parentId": "rum",
+      "aliases": []
+    },
+    {
+      "id": "puerto-rico-rum",
+      "name": "波多黎各朗姆",
+      "parentId": "rum",
+      "aliases": [
+        "Puerto Rican Rum"
+      ]
+    },
+    {
+      "id": "cachaca",
+      "name": "卡莎萨朗姆",
+      "parentId": "rum",
+      "aliases": [
+        "Cachaca",
+        "Cachaça"
+      ]
+    },
+    {
+      "id": "cognac",
+      "name": "干邑",
+      "parentId": "brandy",
+      "aliases": [
+        "Cognac"
+      ]
+    },
+    {
+      "id": "pisco",
+      "name": "皮斯科",
+      "parentId": "brandy",
+      "aliases": [
+        "Pisco"
+      ]
+    },
+    {
+      "id": "absinthe",
+      "name": "苦艾酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Absinthe"
+      ]
+    },
+    {
+      "id": "cacao-liqueur",
+      "name": "可可利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Cacao Liqueur"
+      ]
+    },
+    {
+      "id": "coffee-liqueur",
+      "name": "咖啡利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Coffee Liqueur"
+      ]
+    },
+    {
+      "id": "cream-liqueur",
+      "name": "奶油利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Cream Liqueur"
+      ]
+    },
+    {
+      "id": "orange-liqueur",
+      "name": "橙味利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Orange Liqueur"
+      ]
+    },
+    {
+      "id": "cherry-liqueur",
+      "name": "樱桃利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Cherry Liqueur"
+      ]
+    },
+    {
+      "id": "passion-liqueur",
+      "name": "百香果利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Passion Fruit Liqueur"
+      ]
+    },
+    {
+      "id": "herbal-liqueur",
+      "name": "草本利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Herbal Liqueur"
+      ]
+    },
+    {
+      "id": "pear-liqueur",
+      "name": "梨子利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Pear Liqueur"
+      ]
+    },
+    {
+      "id": "honey-liqueur",
+      "name": "蜂蜜利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Honey Liqueur"
+      ]
+    },
+    {
+      "id": "mint-liqueur",
+      "name": "薄荷利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Mint Liqueur"
+      ]
+    },
+    {
+      "id": "mure",
+      "name": "黑莓利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Crème de Mûre"
+      ]
+    },
+    {
+      "id": "banana-liqueur",
+      "name": "香蕉利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Banana Liqueur"
+      ]
+    },
+    {
+      "id": "violette",
+      "name": "紫罗兰利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Crème de Violette"
+      ]
+    },
+    {
+      "id": "grapefruit-liqueur",
+      "name": "西柚利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Grapefruit Liqueur"
+      ]
+    },
+    {
+      "id": "peach-liqueur",
+      "name": "桃子利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Peach Liqueur"
+      ]
+    },
+    {
+      "id": "amaretto",
+      "name": "杏仁利口酒",
+      "parentId": "liqueur",
+      "aliases": [
+        "Amaretto"
+      ]
+    },
+    {
+      "id": "soda",
+      "name": "苏打水",
+      "parentId": "soda-root",
+      "aliases": [
+        "Soda Water"
+      ]
+    },
+    {
+      "id": "tonic",
+      "name": "汤力水",
+      "parentId": "soda-root",
+      "aliases": [
+        "Tonic Water"
+      ]
+    }
   ],
   "menus": [
     [
@@ -1355,10 +2103,7 @@ window.MIX_TAXONOMY = {
         "brandy",
         "fruit-brandy"
       ],
-      [
-        "cognac",
-        "pisco"
-      ]
+      []
     ],
     [
       "beer",

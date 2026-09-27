@@ -16,7 +16,7 @@ module.exports=async function({page,stored,go,stock}){
  assert.deepEqual(await page.locator('#pantry-directory [data-material-nav]').evaluateAll(nodes=>nodes.map(node=>node.textContent.replace(/\s/g,''))),['金酒›','朗姆酒›','伏特加›','威士忌›','龙舌兰›','白兰地›']);
  await page.locator('#pantry-directory [data-material-nav=gin]').click();
  await page.locator('#pantry-directory .material-card [data-material-nav=london-dry]').click();
- assert.equal(await page.locator('#pantry-directory [data-pantry=beefeater]').count(),1);
+ assert.equal(await page.locator('#pantry-directory [data-pantry=beefeater]').count(),0);
  assert.equal(await page.locator('#pantry-directory [data-pantry=london-dry]').count(),1);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await page.screenshot({path:path.resolve(__dirname,'../../mixbook-pantry-hierarchy-mobile.png'),fullPage:false});
@@ -60,7 +60,7 @@ module.exports=async function({page,stored,go,stock}){
  assert.equal((await stored()).ingredients.some(i=>i.name==='取消后不保存的产品'),false);
  console.log('PASS cancelling pantry discards newly created catalog records and stock');
 
- assert.equal((await stored()).ingredients.some(i=>i.id==='laphroaig-10'),true);
+ assert.equal((await stored()).ingredients.some(i=>i.id==='lagavulin-16'),true);
  await go('recipes');await page.locator('[data-action=new]').click();await page.locator('#recipe-form [name=name]').fill('测试烟熏尼格罗尼');
  await row(0).locator('[data-choose-material]').click();
  assert.equal(await page.locator('#material-dialog .dialog-top').innerText(),'选择原料');
@@ -71,23 +71,23 @@ module.exports=async function({page,stored,go,stock}){
  assert.equal(await page.locator('#material-dialog .type-drawers [role=tab]').count(),14);
  assert.ok((await page.locator('#material-dialog .type-drawers [role=tab]').allTextContents()).includes('金酒'));
  assert.ok(await page.locator('#material-dialog .type-options .material-choice').count()>0);
- await page.locator('#material-dialog [data-material-search]').pressSequentially('拉弗格');
- assert.equal(await page.locator('#material-dialog [data-material-select=laphroaig-10]').count(),1,await page.locator('#material-dialog').innerText());
+ await page.locator('#material-dialog [data-material-search]').pressSequentially('乐加维林');
+ assert.equal(await page.locator('#material-dialog [data-material-select=lagavulin-16]').count(),1,await page.locator('#material-dialog').innerText());
  assert.equal(await page.evaluate(()=>{const el=document.querySelector('#material-dialog');return el.scrollWidth<=el.clientWidth+1}),true);
  await page.screenshot({path:path.resolve(__dirname,'../../mixbook-recipe-picker-mobile.png'),fullPage:false});
- await page.locator('#material-dialog [data-material-select=laphroaig-10]').click();
+ await page.locator('#material-dialog [data-material-select=lagavulin-16]').click();
  await row(0).locator('[name=amount]').fill('30');
  assert.equal(await row(0).locator('[data-add-alternative]').count(),0);
  assert.equal(await row(0).locator('[data-action=reveal-specific]').evaluate(el=>getComputedStyle(el).color),await page.evaluate(()=>{const el=document.createElement('span');el.style.color='var(--muted)';document.body.append(el);const color=getComputedStyle(el).color;el.remove();return color}));
  await row(0).locator('[data-action=reveal-specific]').click();
  await page.screenshot({path:path.resolve(__dirname,'../../mixbook-specific-material-mobile.png'),fullPage:false});
- for(const [n,id]of [[1,'vermouth'],[2,'campari']]){await page.locator('[data-add-row=ingredients]').click();await pick(n,id);await row(n).locator('[name=amount]').fill('30')}
- assert.equal(await row(1).locator('[data-choose-material] strong').innerText(),'红味美思');
+ for(const [n,id]of [[1,'sweet-vermouth'],[2,'campari']]){await page.locator('[data-add-row=ingredients]').click();await pick(n,id);await row(n).locator('[name=amount]').fill('30')}
+ assert.equal(await row(1).locator('[data-choose-material] strong').innerText(),'甜味美思');
  assert.equal(await row(2).locator('[data-choose-material] strong').innerText(),'金巴利');
  await page.locator('#recipe-form [name=steps]').fill('加冰搅拌，滤入杯中。');
  await page.locator('#recipe-form button[type=submit]').click();await page.waitForSelector('#detail-dialog[open]');
  d=await stored();const smoke=d.recipes.find(r=>r.name==='测试烟熏尼格罗尼');
- assert.deepEqual(smoke.ingredients.map(i=>i.id),['laphroaig-10','vermouth','campari']);
+ assert.deepEqual(smoke.ingredients.map(i=>i.id),['lagavulin-16','sweet-vermouth','campari']);
  assert.deepEqual(smoke.ingredients[0].alternatives,[]);
  await page.locator(`[data-edit="${smoke.id}"]`).click();
  assert.equal(await row(0).locator('[data-add-alternative]').count(),0);
@@ -99,7 +99,7 @@ module.exports=async function({page,stored,go,stock}){
  assert.deepEqual((await stored()).recipes.find(r=>r.id===smoke.id).versions[0].ingredients[0].alternatives,[]);
  console.log('PASS recipe category/product selection, subdued specific-material action, edit round-trip and versions');
 
- await closeDetail();await go('pantry');await page.locator('[data-action=pantry-edit]').click();await stock('ardbeg-10');
+ await closeDetail();await go('pantry');await page.locator('[data-action=pantry-edit]').click();await stock('jamaican-dark');
  await page.locator('[data-action=pantry-save]').click();await page.locator('[data-action=pantry-cancel]').click();await page.waitForSelector('[data-action=pantry-edit]');await go('recipes');
  await page.locator('#recipe-search').fill('测试烟熏');await page.locator(`[data-detail="${smoke.id}"].card-main`).click();
  assert.match(await page.locator('#detail-dialog .detail-status').innerText(),/还差 1 种材料/);

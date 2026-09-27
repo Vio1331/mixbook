@@ -1,0 +1,25 @@
+{
+  "migrations": {
+    "vermouth": {
+      "name": "甜红味美思"
+    },
+    "orange-liqueur": {
+      "name": "橙味利口酒（大类）"
+    },
+    "tequila": {
+      "name": "龙舌兰酒"
+    },
+    "mezcal": {
+      "parentId": "spirit"
+    },
+    "cachaca": {
+      "parentId": "spirit"
+    },
+    "aguardiente": {
+      "parentId": "spirit"
+    }
+  },
+  "removals": {
+    "tequila-agave": "tequila"
+  }
+}

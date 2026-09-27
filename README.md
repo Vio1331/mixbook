@@ -81,14 +81,16 @@ python3 -m http.server 8000
 |---|---|
 | `index.html` / `styles.css` | 页面入口与桌面、手机布局 |
 | `app.js` | 编辑界面、库存草稿、存储、GitHub 同步 |
-| `cocktail-system.js` | **全站鸡尾酒体系的唯一维护入口**：原料类别、产品、标签、父子层级、两栏菜单、风味标签、杯型与来源；`menus` 每项的第三个数组引用 `menuTags` 中单独记录的标签；保存后刷新网站即同步 |
+| `cocktail-system.js` | **全站内置目录与内置标签的唯一维护入口**：固定的一级菜单、二级菜单、标签归属、两栏菜单、风味标签、杯型与来源 |
 | `materials.js` | 酒柜与配方共用的分级材料浏览器 |
 | `core.js` | 校验、材料层级、迁移、匹配与合并 |
-| `seed.js` | 102 条目录与 197 条材料定义 |
-| `data/recipes.tsv` / `data/ingredients.tsv` | 可维护源数据，竖线分隔 |
-| `data/material-catalog.json` | 酒款官方来源、别名、匹配边界与保守迁移规则 |
-| `data/sources.json` / `data/categories.json` | 官方来源与分类索引 |
-| `scripts/build-catalog.py` | 重建目录，无需联网 |
+| `seed.js` | 自动生成的 102 条内置配方与完整材料目录；请勿手改 |
+| `data/recipes.tsv` | 内置 IBA 配方源数据，竖线分隔 |
+| `data/ingredient-details.json` | 配方使用的具体材料名称；每项必须直属一个二级菜单 |
+| `data/catalog-migrations.json` | 旧目录 ID 的保守迁移规则 |
+| `data/sources.json` | IBA 官方来源索引 |
+| `docs/ingredient-directory.md` | 当前一级菜单、二级菜单与内置标签的可读清单 |
+| `scripts/build-catalog.py` / `scripts/audit-catalog.py` | 重建目录并审计两级目录、标签和全部内置配方，无需联网 |
 | `assets/cocktails/` | IBA 酒谱配图；由配方的 `image` 字段固定引用 |
 | `sw.js` / `manifest.webmanifest` | 离线缓存与主屏幕应用 |
 | `tests/` | 核心、启动、浏览器及模拟同步验证 |
@@ -104,7 +106,9 @@ python3 -m http.server 8000
 ## 验证
 
 ```bash
-node --test tests/core.test.cjs tests/materials.test.cjs tests/startup.test.cjs
+python3 scripts/build-catalog.py
+python3 scripts/audit-catalog.py
+node --test tests/core.test.cjs tests/materials.test.cjs tests/hierarchy.test.cjs tests/startup.test.cjs
 ```
 
 浏览器测试单独运行 `tests/browser.test.cjs`，使用 Playwright / Chromium，自带仅供测试的本地 HTTP 服务。可用 `PLAYWRIGHT_PATH`、`TEST_NODE_MODULES`、`CHROMIUM_PATH` 指定已安装依赖。测试不连接真实 GitHub 数据仓库。
