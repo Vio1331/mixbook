@@ -237,3 +237,9 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .glass-option .glass-svg-highball,.glass-option .glass-svg-collins{width:28px}
 .glass-option .glass-svg-cocktail,.glass-option .glass-svg-martini,.glass-option .glass-svg-margarita,.glass-option .glass-svg-coupe,.glass-option .glass-svg-champagne,.glass-option .glass-svg-wine,.glass-option .glass-svg-goblet,.glass-option .glass-svg-snifter{transform:translateY(1px)}
 @media(max-width:760px){.glass-option .glass-svg{width:28px;height:28px}.glass-option .glass-svg-shot{width:23px}.glass-option .glass-svg-highball,.glass-option .glass-svg-collins{width:26px}}
+
+/* Keep every recipe material control on the same input typography and vertical rhythm. */
+.specific-material-editor input[data-specific-name]{height:auto;padding:11px 13px;font-size:.92rem;font-weight:400;line-height:1.65}
+
+/* The two cascade columns share an exact row track so categories cannot drift out of alignment. */
+.type-drawers button,.type-options label span,.type-options .material-choice{height:44px;min-height:44px;padding:0 12px;line-height:1.45}
