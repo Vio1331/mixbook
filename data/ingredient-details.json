@@ -348,11 +348,11 @@
     },
     {
       "id": "luxardo-maraschino",
-      "name": "卢萨朵马拉斯奇诺",
+      "name": "路萨朵",
       "parentId": "liqueur",
       "brand": "Luxardo",
       "aliases": [
-        "Maraschino Luxardo"
+        "Luxardo"
       ],
       "image": "",
       "matchParent": true
