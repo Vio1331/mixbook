@@ -1,66 +1,6 @@
 {
   "ingredients": [
     {
-      "id": "dry-gin",
-      "name": "干金酒",
-      "parentId": "modern-gin",
-      "brand": "",
-      "aliases": [
-        "Dry Gin",
-        "干型金酒"
-      ],
-      "image": "gin",
-      "matchParent": true
-    },
-    {
-      "id": "sloe-gin",
-      "name": "黑刺李金酒",
-      "parentId": "modern-gin",
-      "brand": "",
-      "aliases": [
-        "Sloe Gin",
-        "黑刺李利口酒"
-      ],
-      "image": "",
-      "matchParent": false
-    },
-    {
-      "id": "beefeater",
-      "name": "必富达伦敦干金酒",
-      "parentId": "london-dry",
-      "brand": "Beefeater",
-      "aliases": [
-        "Beefeater London Dry Gin"
-      ],
-      "image": "gin",
-      "matchParent": true
-    },
-    {
-      "id": "monkey47-dry",
-      "name": "猴王 47 黑森林干金酒",
-      "parentId": "modern-gin",
-      "brand": "Monkey 47",
-      "aliases": [
-        "Monkey 47 Schwarzwald Dry Gin",
-        "猴王47干金酒",
-        "黑森林干金酒"
-      ],
-      "image": "gin",
-      "matchParent": true
-    },
-    {
-      "id": "monkey47-sloe",
-      "name": "猴王 47 黑刺李金酒",
-      "parentId": "modern-gin",
-      "brand": "Monkey 47",
-      "aliases": [
-        "Monkey 47 Schwarzwald Sloe Gin",
-        "猴王47黑刺李"
-      ],
-      "image": "",
-      "matchParent": true
-    },
-    {
       "id": "cuban-white",
       "name": "古巴白朗姆",
       "parentId": "light-rum",
@@ -115,19 +55,6 @@
       "tags": [
         "jamaican-rum"
       ]
-    },
-    {
-      "id": "havana-7",
-      "name": "哈瓦那俱乐部 7 年",
-      "parentId": "dark-rum",
-      "brand": "Havana Club",
-      "aliases": [
-        "Havana Club 7 Años",
-        "哈瓦那7年",
-        "哈瓦那俱乐部7年黑朗姆"
-      ],
-      "image": "aged-rum",
-      "matchParent": true
     },
     {
       "id": "blackstrap-rum",
@@ -243,32 +170,6 @@
       "matchParent": true
     },
     {
-      "id": "laphroaig-10",
-      "name": "拉弗格 10 年",
-      "parentId": "islay",
-      "brand": "Laphroaig",
-      "aliases": [
-        "Laphroaig 10 Year Old",
-        "拉弗格10年",
-        "拉弗格十年"
-      ],
-      "image": "whiskey",
-      "matchParent": true
-    },
-    {
-      "id": "ardbeg-10",
-      "name": "阿贝 10 年",
-      "parentId": "islay",
-      "brand": "Ardbeg",
-      "aliases": [
-        "Ardbeg Ten Years Old",
-        "阿贝10年",
-        "阿贝十年"
-      ],
-      "image": "whiskey",
-      "matchParent": true
-    },
-    {
       "id": "mezcal",
       "name": "梅斯卡尔",
       "parentId": "blanco-tequila",
@@ -324,41 +225,6 @@
       "matchParent": true
     },
     {
-      "id": "martini-rosso",
-      "name": "马天尼 Rosso 甜红味美思",
-      "parentId": "sweet-vermouth",
-      "brand": "Martini",
-      "aliases": [
-        "Martini Rosso"
-      ],
-      "image": "vermouth",
-      "matchParent": true
-    },
-    {
-      "id": "dolin-rouge",
-      "name": "杜林 Rouge 甜红味美思",
-      "parentId": "sweet-vermouth",
-      "brand": "Dolin",
-      "aliases": [
-        "Dolin Rouge"
-      ],
-      "image": "vermouth",
-      "matchParent": true
-    },
-    {
-      "id": "cocchi-storico",
-      "name": "好奇 Storico 都灵甜味美思",
-      "parentId": "sweet-vermouth",
-      "brand": "Cocchi",
-      "aliases": [
-        "Cocchi Storico Vermouth di Torino",
-        "好奇红味美思",
-        "Cocchi Torino"
-      ],
-      "image": "vermouth",
-      "matchParent": true
-    },
-    {
       "id": "cinzano-rosso",
       "name": "仙山露 Rosso 甜红味美思",
       "parentId": "sweet-vermouth",
@@ -367,17 +233,6 @@
         "Cinzano Rosso"
       ],
       "image": "vermouth",
-      "matchParent": true
-    },
-    {
-      "id": "bitter-aperitif",
-      "name": "苦味开胃酒",
-      "parentId": "liqueur",
-      "brand": "",
-      "aliases": [
-        "Bitter Aperitif"
-      ],
-      "image": "",
       "matchParent": true
     },
     {
@@ -425,17 +280,6 @@
       "matchParent": true
     },
     {
-      "id": "fernet",
-      "name": "菲奈特苦味利口酒",
-      "parentId": "amaro",
-      "brand": "",
-      "aliases": [
-        "Fernet"
-      ],
-      "image": "",
-      "matchParent": true
-    },
-    {
       "id": "fernet-branca",
       "name": "菲奈特布兰卡",
       "parentId": "amaro",
@@ -475,34 +319,6 @@
       ]
     },
     {
-      "id": "dry-curacao",
-      "name": "干型库拉索橙酒",
-      "parentId": "liqueur",
-      "brand": "",
-      "aliases": [
-        "Dry Curacao"
-      ],
-      "image": "orange-liqueur",
-      "matchParent": true,
-      "tags": [
-        "orange-liqueur"
-      ]
-    },
-    {
-      "id": "blue-curacao",
-      "name": "蓝橙利口酒",
-      "parentId": "liqueur",
-      "brand": "",
-      "aliases": [
-        "Blue Curacao"
-      ],
-      "image": "blue-curacao",
-      "matchParent": true,
-      "tags": [
-        "orange-liqueur"
-      ]
-    },
-    {
       "id": "cointreau",
       "name": "君度橙酒",
       "parentId": "liqueur",
@@ -511,34 +327,6 @@
         "Cointreau"
       ],
       "image": "cointreau",
-      "matchParent": true,
-      "tags": [
-        "orange-liqueur"
-      ]
-    },
-    {
-      "id": "bols-blue",
-      "name": "波士蓝橙利口酒",
-      "parentId": "liqueur",
-      "brand": "Bols",
-      "aliases": [
-        "Bols Blue Curacao"
-      ],
-      "image": "blue-curacao",
-      "matchParent": true,
-      "tags": [
-        "orange-liqueur"
-      ]
-    },
-    {
-      "id": "cognac-orange",
-      "name": "干邑橙味利口酒",
-      "parentId": "liqueur",
-      "brand": "",
-      "aliases": [
-        "Cognac Orange Liqueur"
-      ],
-      "image": "orange-liqueur",
       "matchParent": true,
       "tags": [
         "orange-liqueur"
@@ -557,17 +345,6 @@
       "tags": [
         "orange-liqueur"
       ]
-    },
-    {
-      "id": "maraschino",
-      "name": "马拉斯奇诺樱桃利口酒",
-      "parentId": "liqueur",
-      "brand": "",
-      "aliases": [
-        "Maraschino"
-      ],
-      "image": "",
-      "matchParent": true
     },
     {
       "id": "luxardo-maraschino",
@@ -708,17 +485,6 @@
       "matchParent": true
     },
     {
-      "id": "hazelnut-liqueur",
-      "name": "榛子利口酒",
-      "parentId": "liqueur",
-      "brand": "",
-      "aliases": [
-        "Hazelnut Liqueur"
-      ],
-      "image": "",
-      "matchParent": true
-    },
-    {
       "id": "frangelico",
       "name": "榛子弗朗格里科",
       "parentId": "liqueur",
@@ -799,34 +565,12 @@
       "matchParent": true
     },
     {
-      "id": "allspice-liqueur",
-      "name": "多香果利口酒",
-      "parentId": "liqueur",
-      "brand": "",
-      "aliases": [
-        "Allspice Dram"
-      ],
-      "image": "",
-      "matchParent": true
-    },
-    {
       "id": "st-elizabeth",
       "name": "圣伊丽莎白多香果酒",
       "parentId": "liqueur",
       "brand": "St. Elizabeth",
       "aliases": [
         "Allspice Saint Elizabeth"
-      ],
-      "image": "",
-      "matchParent": true
-    },
-    {
-      "id": "anise-liqueur",
-      "name": "茴香利口酒",
-      "parentId": "liqueur",
-      "brand": "",
-      "aliases": [
-        "Anise Liqueur"
       ],
       "image": "",
       "matchParent": true
@@ -843,17 +587,6 @@
       "matchParent": true
     },
     {
-      "id": "aromatized-wine",
-      "name": "加香葡萄酒",
-      "parentId": "liqueur",
-      "brand": "",
-      "aliases": [
-        "Aromatized Wine"
-      ],
-      "image": "dry-vermouth",
-      "matchParent": true
-    },
-    {
       "id": "lillet",
       "name": "利莱白",
       "parentId": "liqueur",
@@ -862,29 +595,6 @@
         "Lillet Blanc"
       ],
       "image": "dry-vermouth",
-      "matchParent": true
-    },
-    {
-      "id": "cocchi-americano",
-      "name": "好奇美国佬 Americano",
-      "parentId": "liqueur",
-      "brand": "Cocchi",
-      "aliases": [
-        "Cocchi Americano",
-        "好奇美国佬"
-      ],
-      "image": "dry-vermouth",
-      "matchParent": true
-    },
-    {
-      "id": "sherry",
-      "name": "雪莉酒",
-      "parentId": "fino-sherry",
-      "brand": "",
-      "aliases": [
-        "Sherry"
-      ],
-      "image": "",
       "matchParent": true
     },
     {
@@ -971,17 +681,6 @@
       "brand": "",
       "aliases": [
         "Worcestershire Sauce"
-      ],
-      "image": "",
-      "matchParent": true
-    },
-    {
-      "id": "hot-sauce",
-      "name": "辣椒汁",
-      "parentId": "seasoning",
-      "brand": "",
-      "aliases": [
-        "Hot Sauce"
       ],
       "image": "",
       "matchParent": true
@@ -1532,17 +1231,6 @@
       "brand": "",
       "aliases": [
         "Passion Fruit"
-      ],
-      "image": "",
-      "matchParent": true
-    },
-    {
-      "id": "peach",
-      "name": "桃子",
-      "parentId": "fruit-vegetable",
-      "brand": "",
-      "aliases": [
-        "Peach"
       ],
       "image": "",
       "matchParent": true
