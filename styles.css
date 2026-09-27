@@ -224,10 +224,13 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .material-structure .specific-kind .specific-kind-thumb{position:absolute;z-index:-1;top:3px;bottom:3px;left:3px;width:29px;border-radius:999px;background:#fff;box-shadow:0 1px 4px #2223;transition:transform .16s ease}
 .material-structure .specific-kind:has(input[value=tag]:checked) .specific-kind-thumb{transform:translateX(33px)}
 .material-structure .specific-kind label{position:relative;display:grid;place-items:center;padding:0;border-radius:999px;color:#686e78;font-size:.8rem;font-weight:650;line-height:1;cursor:pointer}
+.material-structure .specific-kind label>span:not(.sr-only){transform:translateY(1px)}
 .material-structure .specific-kind label:has(input:checked){color:var(--ink);background:transparent}
 .material-structure .specific-kind input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
 .material-structure .specific-kind label:has(input:focus-visible){outline:2px solid #ed8b77;outline-offset:1px}
 .specific-material-editor input[data-specific-name]{height:38px}
+.recipe-material-dropdown input[data-type-search]{font-weight:400}
+#editor-garnishes .ingredient-edit-row{margin:0;padding:10px 0;border:0;border-radius:0}
 @media(max-width:760px){.material-structure .specific-material-editor{grid-template-columns:68px minmax(0,1fr)}}
 
 /* Every glass uses the same visual box and baseline; only genuinely narrow shapes scale down. */
