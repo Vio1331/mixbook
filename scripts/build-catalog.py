@@ -140,7 +140,7 @@ for line in (root/'data/recipes.tsv').read_text().splitlines():
 assert len(recipes)==len(facts)==102
 assert len({r['id'] for r in recipes})==102
 options=dict(glasses=sorted({r['glass'] for r in recipes}),tags=sorted({t for r in recipes for t in r['tags']}),sources=['IBA · 难忘经典','IBA · 当代经典','IBA · 新时代'])
-d=dict(schemaVersion=3,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-25-pantry-taxonomy-v10',ingredientMigrations=materials['migrations'],ingredientRemovals=materials.get('removals',{}))
+d=dict(schemaVersion=3,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-27-fixed-images-v12',ingredientMigrations=materials['migrations'],ingredientRemovals=materials.get('removals',{}))
 (root/'seed.js').write_text('/* IBA recipe facts checked 2026-09-21. See data/sources.json. */\nwindow.MIX_SEED='+json.dumps(d,ensure_ascii=False,separators=(',',':'))+';\n/* cocktail-system.js is the editable source of truth for the shared taxonomy. */\nif(window.MIX_TAXONOMY){window.MIX_SEED.ingredients=[...window.MIX_SEED.ingredients.filter(i=>!window.MIX_TAXONOMY.ingredients.some(x=>x.id===i.id)),...window.MIX_TAXONOMY.ingredients];window.MIX_SEED.options={...window.MIX_SEED.options,...window.MIX_TAXONOMY.recipe};}\n')
 (root/'data/sources.json').write_text(json.dumps(dict(checkedAt='2026-09-21',index='https://iba-world.com/cocktails/all-cocktails/',count=102,editorialNote='杯形按官网方法选择一个允许选项；IBA 三个系列分别记为来源词条。风味标签为本站描述，中文步骤为重新表述。',recipes=[{k:x[k] for k in ['slug','name','url']} for x in facts.values()]),ensure_ascii=False,indent=2))
 print(len(items),'ingredients;',len(recipes),'recipes;',sum(bool(r['image']) for r in recipes),'photos')
