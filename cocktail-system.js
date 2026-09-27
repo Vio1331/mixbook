@@ -1591,6 +1591,23 @@ window.MIX_TAXONOMY = {
       "builtInTag": true,
       "builtIn": true
     },
+        {
+      "id": "maraschino",
+      "name": "马拉斯奇诺樱桃利口酒",
+      "category": "利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Maraschino"
+      ],
+      "kind": "type",
+      "image": "",
+      "tags": [],
+      "matchParent": true,
+      "customized": false,
+      "builtInTag": true,
+      "builtIn": true
+    },
     {
       "id": "passion-liqueur",
       "name": "百香果利口酒",
