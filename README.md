@@ -35,9 +35,9 @@
 
 ## 配图
 
-`assets/cocktails/` 目前留空，等待上传新图片。图片无需写入酒谱数据：文件名只要与配方编号（例如 `negroni`）、英文名（例如 `Negroni`）或中文名一致，页面就会自动显示。支持 `.webp`、`.png`、`.jpg`、`.jpeg` 和 `.avif`；推荐使用 WebP。找不到匹配文件时显示对应杯型占位图。
+102 张 IBA 配图保存在 `assets/cocktails/`，并由 `seed.js` 中每份配方的 `image` 字段固定引用上传时的 WebP 文件名。页面不再按配方编号、中英文名或其他扩展名自动试探。如需调整 IBA 配方，编辑 `data/recipes.tsv`，然后运行 `python3 scripts/build-catalog.py` 重新生成 `seed.js`。
 
-文件名匹配区分大小写；英文名中的空格和标点应原样保留。浏览器会依次尝试配方中保存的图片名、配方编号、英文名和中文名，因此新增的个人配方也适用同一规则。
+已上传的文件名不需要修改；日后增加其他酒谱配图时，需同时明确写入该配方的 `image` 字段。
 
 ## 升级现有 GitHub Pages
 
@@ -89,7 +89,7 @@ python3 -m http.server 8000
 | `data/material-catalog.json` | 酒款官方来源、别名、匹配边界与保守迁移规则 |
 | `data/sources.json` / `data/categories.json` | 官方来源与分类索引 |
 | `scripts/build-catalog.py` | 重建目录，无需联网 |
-| `assets/cocktails/` | 酒谱配图；按配方编号、英文名或中文名自动匹配 |
+| `assets/cocktails/` | IBA 酒谱配图；由配方的 `image` 字段固定引用 |
 | `sw.js` / `manifest.webmanifest` | 离线缓存与主屏幕应用 |
 | `tests/` | 核心、启动、浏览器及模拟同步验证 |
 

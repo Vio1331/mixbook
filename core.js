@@ -6,7 +6,7 @@ function fail(s){throw Error(s)}
 function text(s,n=2000){return typeof s==='string'&&s.length<=n?s:fail('文本字段无效或过长。')}
 function list(a,n=100){return Array.isArray(a)&&a.length<=10000&&a.every(x=>typeof x==='string'&&x.length<=n)?[...new Set(a)]:fail('选项列表无效。')}
 function safeId(s){return typeof s==='string'&&/^[a-zA-Z0-9_-]{1,200}$/.test(s)&&!['__proto__','constructor','prototype'].includes(s)}
-function image(s){return !s?'':safeId(s)?s:fail('图片标识无效。')}
+function image(s){return !s?'':typeof s==='string'&&s.length<=200&&!/[\\/\u0000-\u001f\u007f]/.test(s)&&!['.','..'].includes(s)?s:fail('图片标识无效。')}
 function unique(a,label){if(!Array.isArray(a)||a.length>10000)fail(label+'结构无效。');const ids=new Set();for(const v of a){if(!v||!safeId(v.id)||ids.has(v.id))fail(label+'编号无效或重复。');ids.add(v.id)}return ids}
 function validate(input){
  if(!input||![1,2,3,4].includes(input.schemaVersion))fail('数据版本不兼容，请更新网页。');const v1=input.schemaVersion===1,ids=unique(input.ingredients,'材料'),rids=unique(input.recipes,'酒谱');

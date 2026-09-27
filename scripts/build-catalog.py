@@ -1,8 +1,13 @@
 """Build the static catalog from reviewed, editable factual recipe records."""
 import json
+import re
+import unicodedata
 from pathlib import Path
 root=Path(__file__).resolve().parent.parent
 facts={x['slug']:x for x in json.loads((root/'data/iba-source-facts.json').read_text())['records']} if (root/'data/iba-source-facts.json').exists() else {x['slug']:x for x in json.loads((root/'data/sources.json').read_text())['recipes']}
+cocktail_images={p.stem for p in (root/'assets/cocktails').glob('*.webp')}
+def image_key(value):
+ return re.sub(r'[^a-z0-9]','',unicodedata.normalize('NFKD',value).encode('ascii','ignore').decode().lower())
 items=[]
 for line in (root/'data/ingredients.tsv').read_text().splitlines():
  if not line or line.startswith('#'):continue
@@ -124,7 +129,12 @@ for line in (root/'data/recipes.tsv').read_text().splitlines():
  p=line.split('|');assert len(p)==10,(len(p),line)
  slug,name,base,glass,method,flavors,formula,garnish,steps,subject=p
  assert slug in facts,slug
- image=''
+ # IBA images are assigned once by uploaded filename. The application must not
+ # guess another asset from a recipe id or a translated name at runtime.
+ expected=facts[slug]['name']
+ matches=[filename for filename in cocktail_images if image_key(filename)==image_key(expected)]
+ assert len(matches)==1,(slug,expected,matches)
+ image=matches[0]
  tags=list(filter(None,flavors.split(',')))
  recipes.append(dict(id='iba-'+slug,name=name,en=facts[slug]['name'],base=base,glass=glass,method=method,tags=tags,ingredients=rows(formula),garnishes=rows(garnish),steps=[steps],notes=notes.get(slug,''),source=facts[slug]['url'],versions=[],parentId='iba-'+parents[slug] if slug in parents else '',sourceName='IBA · '+('难忘经典' if slug in U else '当代经典' if slug in T else '新时代'),catalog=True,sample=False,image=image,createdAt='2026-09-21T00:00:00.000Z',updatedAt='2026-09-21T00:00:00.000Z'))
 assert len(recipes)==len(facts)==102
