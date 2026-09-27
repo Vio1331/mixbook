@@ -137,3 +137,13 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .specific-material-editor{display:grid;grid-template-columns:auto minmax(120px,1fr) auto;align-items:center;gap:9px;margin-top:8px;padding:10px;border-radius:8px;background:#f7f8fa}
 .specific-material-editor[hidden]{display:none}.specific-kind{display:flex;gap:8px;font-size:.8rem}.specific-kind label{display:flex;align-items:center;gap:4px}.specific-material-editor input[type=text]{min-width:0;width:100%;padding:7px 9px}.specific-material-editor input[type=text]:disabled{color:#8b919b;background:#e8eaee;cursor:not-allowed}
 @media(max-width:760px){.specific-material-editor{grid-template-columns:1fr auto}.specific-kind{grid-column:1/-1}.recipe-name-row{grid-template-columns:1fr 1fr!important}.garnish-material{grid-template-columns:1fr 1fr}.garnish-material .btn{grid-column:1/-1}.garnish-amount{grid-template-columns:1fr 1fr auto 38px}}
+
+/* Recipe rows expose their saved structure: menu on the left, precise value on the right. */
+.material-structure{display:grid;grid-template-columns:minmax(150px,.9fr) minmax(240px,1.4fr);gap:10px;align-items:start}
+.material-structure .specific-material-editor{display:grid;grid-template-columns:minmax(110px,1fr) auto;margin:0;padding:0;background:transparent}
+.material-structure .specific-kind{align-self:stretch;gap:0;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fff}
+.material-structure .specific-kind label{padding:0 9px;cursor:pointer}
+.material-structure .specific-kind label:has(input:checked){color:var(--accent);background:var(--accent-light)}
+.material-structure .specific-kind input{width:14px;height:14px}
+.material-amount-row{margin-top:9px!important;grid-template-columns:minmax(80px,1fr) minmax(80px,1fr) auto 38px}
+@media(max-width:760px){.material-structure{grid-template-columns:1fr}.material-structure .specific-material-editor{grid-template-columns:minmax(100px,1fr) auto}.material-structure .specific-kind{grid-column:auto}.material-amount-row{grid-template-columns:minmax(60px,1fr) minmax(60px,1fr) auto 34px}}
