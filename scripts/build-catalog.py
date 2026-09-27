@@ -1,6 +1,5 @@
 """Build the static catalog from reviewed, editable factual recipe records."""
 import json
-import hashlib
 from pathlib import Path
 root=Path(__file__).resolve().parent.parent
 facts={x['slug']:x for x in json.loads((root/'data/iba-source-facts.json').read_text())['records']} if (root/'data/iba-source-facts.json').exists() else {x['slug']:x for x in json.loads((root/'data/sources.json').read_text())['recipes']}
@@ -125,16 +124,13 @@ for line in (root/'data/recipes.tsv').read_text().splitlines():
  p=line.split('|');assert len(p)==10,(len(p),line)
  slug,name,base,glass,method,flavors,formula,garnish,steps,subject=p
  assert slug in facts,slug
- image=slug if (root/f'assets/cocktails/{slug}.webp').exists() or slug=='negroni' else ''
+ image=''
  tags=list(filter(None,flavors.split(',')))
  recipes.append(dict(id='iba-'+slug,name=name,en=facts[slug]['name'],base=base,glass=glass,method=method,tags=tags,ingredients=rows(formula),garnishes=rows(garnish),steps=[steps],notes=notes.get(slug,''),source=facts[slug]['url'],versions=[],parentId='iba-'+parents[slug] if slug in parents else '',sourceName='IBA · '+('难忘经典' if slug in U else '当代经典' if slug in T else '新时代'),catalog=True,sample=False,image=image,createdAt='2026-09-21T00:00:00.000Z',updatedAt='2026-09-21T00:00:00.000Z'))
 assert len(recipes)==len(facts)==102
 assert len({r['id'] for r in recipes})==102
 options=dict(glasses=sorted({r['glass'] for r in recipes}),tags=sorted({t for r in recipes for t in r['tags']}),sources=['IBA · 难忘经典','IBA · 当代经典','IBA · 新时代'])
 d=dict(schemaVersion=3,ingredients=items,recipes=recipes,pantry={},favorites={},options=options,catalogVersion='iba-2026-09-25-pantry-taxonomy-v10',ingredientMigrations=materials['migrations'],ingredientRemovals=materials.get('removals',{}))
-photo_map=json.loads((root/'data/photo-map.json').read_text())
-photo_meta={p['slug']:{'revision':p['assetSha256'][:12],'number':p['number'],'note':p['note']} for p in photo_map['photos']}
-photo_meta['negroni']={'revision':hashlib.sha256((root/'assets/negroni.webp').read_bytes()).hexdigest()[:12],'note':''}
-(root/'seed.js').write_text('/* IBA recipe facts checked 2026-09-21. See data/sources.json. */\nwindow.MIX_SEED='+json.dumps(d,ensure_ascii=False,separators=(',',':'))+';\n/* cocktail-system.js is the editable source of truth for the shared taxonomy. */\nif(window.MIX_TAXONOMY){window.MIX_SEED.ingredients=[...window.MIX_SEED.ingredients.filter(i=>!window.MIX_TAXONOMY.ingredients.some(x=>x.id===i.id)),...window.MIX_TAXONOMY.ingredients];window.MIX_SEED.options={...window.MIX_SEED.options,...window.MIX_TAXONOMY.recipe};}\nwindow.MIX_PHOTOS='+json.dumps(photo_meta,ensure_ascii=False,separators=(',',':'))+';\n')
+(root/'seed.js').write_text('/* IBA recipe facts checked 2026-09-21. See data/sources.json. */\nwindow.MIX_SEED='+json.dumps(d,ensure_ascii=False,separators=(',',':'))+';\n/* cocktail-system.js is the editable source of truth for the shared taxonomy. */\nif(window.MIX_TAXONOMY){window.MIX_SEED.ingredients=[...window.MIX_SEED.ingredients.filter(i=>!window.MIX_TAXONOMY.ingredients.some(x=>x.id===i.id)),...window.MIX_TAXONOMY.ingredients];window.MIX_SEED.options={...window.MIX_SEED.options,...window.MIX_TAXONOMY.recipe};}\n')
 (root/'data/sources.json').write_text(json.dumps(dict(checkedAt='2026-09-21',index='https://iba-world.com/cocktails/all-cocktails/',count=102,editorialNote='杯形按官网方法选择一个允许选项；IBA 三个系列分别记为来源词条。风味标签为本站描述，中文步骤为重新表述。',recipes=[{k:x[k] for k in ['slug','name','url']} for x in facts.values()]),ensure_ascii=False,indent=2))
 print(len(items),'ingredients;',len(recipes),'recipes;',sum(bool(r['image']) for r in recipes),'photos')
