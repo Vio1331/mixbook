@@ -9,30 +9,44 @@
  const pantryCategoryIcon=id=>pantryIcons[id]||'bottle';
  const glassPaths={
   cocktail:'<path d="M3.5 4h17L12 13 3.5 4Zm8.5 9v7m-5 0h10"/>',
+  martini:'<path d="M4 4h16l-8 10L4 4Zm2.5 3h11M12 14v6m-4 0h8"/>',
+  margarita:'<path d="M3 5h18m-16 0 3 5h8l3-5M8 10c0 2 1.8 3.5 4 3.5S16 12 16 10m-4 3.5V20m-4 0h8"/>',
   coupe:'<path d="M4 6c.5 4 3.4 6 8 6s7.5-2 8-6H4Zm8 6v8m-5 0h10"/>',
-  flute:'<path d="M7 3h10l-1.2 9a3.8 3.8 0 0 1-7.6 0L7 3Zm5 13v4m-4 0h8"/>',
+  champagne:'<path d="M7 3h10l-1.2 9a3.8 3.8 0 0 1-7.6 0L7 3Zm2 5h6m-3 8v4m-4 0h8"/>',
   wine:'<path d="M6.5 3h11l-1 7a4.5 4.5 0 0 1-9 0l-1-7ZM12 15v5m-4 0h8"/>',
   highball:'<path d="M6 3h12l-1 18H7L6 3Zm1 4h10"/>',
+  collins:'<path d="M7 2h10l-.7 19H7.7L7 2Zm1 14h8M9 5h6"/>',
   rocks:'<path d="M5 7h14l-1 14H6L5 7Zm1 4h12"/>',
   hurricane:'<path d="M7 3h10c0 4-2.5 5-2.5 8s2 4 1.5 6H8c-.5-2 1.5-3 1.5-6S7 7 7 3Zm5 14v3m-4 0h8"/>',
   goblet:'<path d="M5 4h14l-1 6a6 6 0 0 1-12 0L5 4Zm7 12v4m-4 0h8"/>',
-  mug:'<path d="M5 5h11v16H6L5 5Zm11 3h2a3 3 0 0 1 0 6h-2"/>',
+  copper:'<path d="M5 6h11l-1 15H7L5 6Zm11 3h2.5a2.5 2.5 0 0 1 0 5H16M8 3h5"/>',
+  irish:'<path d="M7 5h9v11a4.5 4.5 0 0 1-9 0V5Zm9 3h2a2.5 2.5 0 0 1 0 5h-2M9 5V3h5v2m-2 15v1"/>',
   julep:'<path d="M6 4h12l-1 17H7L6 4Zm-1 0h14M7 8h10"/>',
   tiki:'<path d="M6 3h12l-1 18H7L6 3Zm2 4 2 2m6-2-2 2m-5 5h6m-7 3 2 2m6-2-2 2"/>',
+  shot:'<path d="M7 7h10l-1 14H8L7 7Zm1.5 4h7"/>',
+  beer:'<path d="M5 5h11v16H6L5 5Zm11 3h2a3 3 0 0 1 0 6h-2M7 9h7m-5 3v6m3-6v6"/>',
+  snifter:'<path d="M5 4h14l-2 8a5.2 5.2 0 0 1-10 0L5 4Zm2 6h10m-5 7v3m-4 0h8"/>',
   glass:'<path d="M5 5h14l-1 16H6L5 5Zm1 5h12"/>'
  };
  const glassTypes=[
-  {name:'马天尼杯',kind:'cocktail',match:/马天尼|鸡尾酒杯/},
+  {name:'鸡尾酒杯',kind:'cocktail',match:/鸡尾酒杯/},
+  {name:'马天尼杯',kind:'martini',match:/马天尼/},
+  {name:'玛格丽特杯',kind:'margarita',match:/玛格丽特/},
   {name:'碟形杯',kind:'coupe',match:/碟形|高脚碗/},
-  {name:'香槟笛杯',kind:'flute',match:/香槟|笛/},
+  {name:'香槟杯',kind:'champagne',match:/香槟|笛/},
   {name:'葡萄酒杯',kind:'wine',match:/葡萄酒/},
   {name:'古典杯',kind:'rocks',match:/古典|平底|大号杯/},
-  {name:'高球杯',kind:'highball',match:/海波|柯林斯|高杯|细长高杯/},
+  {name:'高球杯',kind:'highball',match:/海波|高球|高杯/},
+  {name:'柯林杯',kind:'collins',match:/柯林/},
   {name:'高脚杯',kind:'goblet',match:/Copo|高脚杯/},
   {name:'飓风杯',kind:'hurricane',match:/飓风/},
-  {name:'马克杯',kind:'mug',match:/铜|咖啡/},
+  {name:'铜杯',kind:'copper',match:/铜杯/},
+  {name:'爱尔兰咖啡杯',kind:'irish',match:/咖啡杯/},
   {name:'朱利普杯',kind:'julep',match:/朱利普/},
-  {name:'Tiki 杯',kind:'tiki',match:/Tiki|陶/}
+  {name:'提基杯',kind:'tiki',match:/Tiki|提基|陶/},
+  {name:'子弹杯',kind:'shot',match:/子弹/},
+  {name:'啤酒杯',kind:'beer',match:/啤酒杯/},
+  {name:'白兰地杯',kind:'snifter',match:/白兰地杯/}
  ];
  function glassType(name=''){return glassTypes.find(type=>type.match.test(name))}
  function glassKind(name=''){return glassType(name)?.kind||'glass'}
@@ -111,7 +125,7 @@
  function closeDialog(el){el.close();dialogFocus.get(el)?.focus?.()}
  function safeLink(v){try{const u=new URL(v);return u.protocol==='https:'?u.href:''}catch{return ''}}
  function detailRows(rows){return rows.map(x=>{const owned=C.matches(x,env.data),sub=owned.length&&!C.have({...x,alternatives:[]},env.data);return `<div class="ingredient-row ${owned.length?'have':''}">${icon(owned.length?'check':'minus')}<span>${esc(recipeIngredientName(x.id))}${x.optional?' <small>可选</small>':''}${x.alternatives?.length?`<small class="owned-match">可替代：${x.alternatives.map(id=>esc(ingredientName(id))).join('、')}</small>`:''}${owned.length?`<small class="owned-match">${sub?'使用替代品':'酒柜'}：${owned.map(i=>esc(i.name)).join('、')}</small>`:''}</span><span class="amount">${esc(x.amount)} ${esc(x.unit)}</span></div>`}).join('')}
- function openDetail(id,version=''){const base=env.data.recipes.find(r=>r.id===id);if(!base)return;const v=base.versions.find(x=>x.id===version),r=v?{...base,...v,id:base.id}:base;selectedVersion=v?.id||'';const parent=env.data.recipes.find(x=>x.id===base.parentId),children=env.data.recipes.filter(x=>x.parentId===id),editable=!base.catalog;const el=$('#detail-dialog');el.dataset.recipe=id;el.innerHTML=`<div class="dialog-top"><span>配方详情</span><button class="icon-button" data-close="detail-dialog" aria-label="关闭详情">${icon('close')}</button></div><div class="detail-body"><div class="detail-hero"><div><div class="eyebrow">来源 · ${esc(base.sourceName||'未填写')}</div><h2>${esc(base.name)}</h2><p class="recipe-en">${esc(base.en)}</p><div class="detail-facts"><span><small>杯形</small>${esc(base.glass||'未填写')}</span><span><small>基酒</small>${esc(base.base||'未填写')}</span><span><small>调制方式</small>${esc(base.method||'未填写')}</span></div><div class="detail-meta">${base.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div>${photo(base,'detail-photo')}</div><div class="version-tabs" aria-label="比例版本"><button class="chip ${!v?'active':''}" data-version="" data-recipe="${esc(id)}" aria-pressed="${!v}">${base.customized?'基础比例 · 已调整':'基础比例'}</button>${base.versions.map(x=>`<button class="chip ${v?.id===x.id?'active':''}" data-version="${esc(x.id)}" data-recipe="${esc(id)}" aria-pressed="${v?.id===x.id}">${esc(x.name)}</button>`).join('')}${editable?`<button class="chip" data-add-version="${esc(id)}">${icon('plus')}添加比例</button>`:''}</div>${v?`<p class="hint">${esc(v.name)}${v.author?' · '+esc(v.author):''}${editable?`<button class="link-button" data-edit-version="${esc(v.id)}" data-recipe="${esc(id)}">编辑此比例</button>`:''}</p>`:''}<div class="row wrap detail-status">${matchLabel(r)}</div><div class="detail-columns"><section><h3>调酒材料</h3>${detailRows(r.ingredients)}<h3 class="garnish-heading">装饰 Garnish</h3>${r.garnishes.length?detailRows(r.garnishes):'<p class="hint">无需装饰</p>'}</section><section><h3>调制步骤</h3><ol class="method-steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></section></div>${r.notes?`<section class="notes-box"><h3>${v?'此比例笔记':'配方笔记'}</h3><p>${esc(r.notes)}</p></section>`:''}<section class="related-recipes"><h3>本体与变体</h3>${parent?`<p class="hint">本体：<button class="link-button" data-detail="${esc(parent.id)}">${esc(parent.name)}</button></p>`:''}<div class="chips">${children.map(x=>`<button class="chip" data-detail="${esc(x.id)}">${esc(x.name)}</button>`).join('')}<button class="chip" data-variant="${esc(id)}">${icon('plus')}从这杯创建变体</button></div></section><p class="source-line">${safeLink(base.source)?`配方参考：<a href="${esc(safeLink(base.source))}" target="_blank" rel="noopener noreferrer">查看原文</a>`:esc(base.source||'个人配方')}</p></div><div class="dialog-actions"><button class="icon-button left ${env.data.favorites[id]?'is-favorite':''}" data-favorite="${esc(id)}" aria-label="收藏此配方">${icon('heart')}</button>${editable?`<button class="btn danger" data-delete="${esc(id)}">删除</button>`:'<span class="hint">内置配方不可编辑</span>'}<button class="btn" data-duplicate="${esc(id)}">复制</button>${editable?`<button class="btn primary" data-edit="${esc(id)}">编辑配方</button>`:''}</div>`;if(!el.open)showDialog(el)}
+ function openDetail(id,version=''){const base=env.data.recipes.find(r=>r.id===id);if(!base)return;const v=base.versions.find(x=>x.id===version),r=v?{...base,...v,id:base.id}:base;selectedVersion=v?.id||'';const parent=env.data.recipes.find(x=>x.id===base.parentId),children=env.data.recipes.filter(x=>x.parentId===id),editable=!base.catalog;const el=$('#detail-dialog');el.dataset.recipe=id;el.innerHTML=`<div class="dialog-top"><span>配方详情</span><button class="icon-button" data-close="detail-dialog" aria-label="关闭详情">${icon('close')}</button></div><div class="detail-body"><div class="detail-hero"><div><div class="eyebrow">来源 · ${esc(base.sourceName||'未填写')}</div><h2>${esc(base.name)}</h2><p class="recipe-en">${esc(base.en)}</p><div class="detail-facts"><span>杯形 · ${esc(base.glass||'未填写')}</span><span>基酒 · ${esc(base.base||'未填写')}</span><span>调制方式 · ${esc(base.method||'未填写')}</span></div><div class="detail-meta">${base.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></div>${photo(base,'detail-photo')}</div><div class="version-tabs" aria-label="比例版本"><button class="chip ${!v?'active':''}" data-version="" data-recipe="${esc(id)}" aria-pressed="${!v}">${base.customized?'基础比例 · 已调整':'基础比例'}</button>${base.versions.map(x=>`<button class="chip ${v?.id===x.id?'active':''}" data-version="${esc(x.id)}" data-recipe="${esc(id)}" aria-pressed="${v?.id===x.id}">${esc(x.name)}</button>`).join('')}${editable?`<button class="chip" data-add-version="${esc(id)}">${icon('plus')}添加比例</button>`:''}</div>${v?`<p class="hint">${esc(v.name)}${v.author?' · '+esc(v.author):''}${editable?`<button class="link-button" data-edit-version="${esc(v.id)}" data-recipe="${esc(id)}">编辑此比例</button>`:''}</p>`:''}<div class="row wrap detail-status">${matchLabel(r)}</div><div class="detail-columns"><section><h3>调酒材料</h3>${detailRows(r.ingredients)}<h3 class="garnish-heading">装饰 Garnish</h3>${r.garnishes.length?detailRows(r.garnishes):'<p class="hint">无需装饰</p>'}</section><section><h3>调制步骤</h3><ol class="method-steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></section></div>${r.notes?`<section class="notes-box"><h3>${v?'此比例笔记':'配方笔记'}</h3><p>${esc(r.notes)}</p></section>`:''}<section class="related-recipes"><h3>本体与变体</h3>${parent?`<p class="hint">本体：<button class="link-button" data-detail="${esc(parent.id)}">${esc(parent.name)}</button></p>`:''}<div class="chips">${children.map(x=>`<button class="chip" data-detail="${esc(x.id)}">${esc(x.name)}</button>`).join('')}<button class="chip" data-variant="${esc(id)}">${icon('plus')}从这杯创建变体</button></div></section><p class="source-line">${safeLink(base.source)?`配方参考：<a href="${esc(safeLink(base.source))}" target="_blank" rel="noopener noreferrer">查看原文</a>`:esc(base.source||'个人配方')}</p></div><div class="dialog-actions"><button class="icon-button left ${env.data.favorites[id]?'is-favorite':''}" data-favorite="${esc(id)}" aria-label="收藏此配方">${icon('heart')}</button>${editable?`<button class="btn danger" data-delete="${esc(id)}">删除</button>`:'<span class="hint">内置配方不可编辑</span>'}<button class="btn" data-duplicate="${esc(id)}">复制</button>${editable?`<button class="btn primary" data-edit="${esc(id)}">编辑配方</button>`:''}</div>`;if(!el.open)showDialog(el)}
  function optionsFor(k){return [...new Set([...editorDraft.options[k],...env.data.recipes.flatMap(r=>k==='glasses'?[r.glass]:k==='sources'?[r.sourceName]:r[k]||[])])].filter(Boolean)}
  function glassOptions(value){return {current:value,values:[...new Set([...(window.MIX_TAXONOMY?.recipe?.glasses||editorDraft.options.glasses),value])].filter(Boolean)}}
  function optionPicker(k,label,value){const single=k==='glasses'||k==='sources',glass=k==='glasses'?glassOptions(value):null,choice=v=>k==='glasses'?`<label class="glass-option" title="${esc(v)}"><input type="radio" name="glasses" value="${esc(v)}" ${glass.current===v?'checked':''}><span class="glass-option-icon">${glassIcon(v)}</span><span class="glass-option-name">${esc(v)}</span></label>`:`<label class="chip pick-chip"><input type="${single?'radio':'checkbox'}" name="${k}" value="${esc(v)}" ${(single?value===v:value.includes(v))?'checked':''}>${esc(v||'未填写')}</label>`;return `<fieldset class="option-picker ${k==='glasses'?'glass-picker':''}" data-options="${k}"><legend>${label}</legend><div class="chips">${[...(k==='sources'?['']:[]),...(glass?glass.values:optionsFor(k))].map(choice).join('')}<button class="chip add-chip" type="button" data-reveal-option="${k}">${icon('plus')}新增</button><span class="inline-option-add" hidden><input type="text" maxlength="${k==='sources'?200:60}" data-new-option="${k}" placeholder="新增${label}" aria-label="新增${label}"><button class="chip add-chip" type="button" data-add-option="${k}">添加</button></span></div></fieldset>`}

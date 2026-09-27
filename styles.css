@@ -153,11 +153,11 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 
 /* Detail identity: provenance leads; practical facts and tags form a tidy second line. */
 .detail-hero{align-items:flex-start}
-.detail-hero .eyebrow{margin-bottom:7px;color:var(--muted)}
+.detail-hero .eyebrow{margin-bottom:7px;color:var(--accent)}
 .detail-hero .recipe-en{margin-bottom:14px}
 .detail-facts{display:flex;flex-wrap:wrap;gap:6px 18px;margin-bottom:11px;color:var(--ink);font-size:.82rem}
 .detail-facts>span{display:flex;align-items:baseline;gap:5px;white-space:nowrap}
-.detail-facts small{color:var(--muted);font-size:.72rem}
+.detail-facts small{color:inherit;font-size:inherit}
 .detail-meta{gap:6px}
 
 /* Recipe materials are rows, not nested cards: selection first, optional precision second. */
