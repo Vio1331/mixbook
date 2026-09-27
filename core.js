@@ -10,7 +10,7 @@ function image(s){return !s?'':typeof s==='string'&&s.length<=200&&!/[\\/\u0000-
 function unique(a,label){if(!Array.isArray(a)||a.length>10000)fail(label+'结构无效。');const ids=new Set();for(const v of a){if(!v||!safeId(v.id)||ids.has(v.id))fail(label+'编号无效或重复。');ids.add(v.id)}return ids}
 function validate(input){
  if(!input||![1,2,3,4].includes(input.schemaVersion))fail('数据版本不兼容，请更新网页。');const v1=input.schemaVersion===1,ids=unique(input.ingredients,'材料'),rids=unique(input.recipes,'酒谱');
- const ingredients=input.ingredients.map(i=>({id:i.id,name:text(i.name,100)||fail('材料需要名称。'),category:text(i.category,50),aliases:list(i.aliases,100),kind:i.kind==='product'?'product':'type',parentId:text(i.parentId||'',200),brand:text(i.brand||'',100),image:image(i.image),tags:list(i.tags||[],200),matchParent:i.matchParent===undefined?true:typeof i.matchParent==='boolean'?i.matchParent:fail('材料匹配边界无效。'),customized:i.customized===true}));
+ const ingredients=input.ingredients.map(i=>({id:i.id,name:text(i.name,100)||fail('材料需要名称。'),category:text(i.category,50),aliases:list(i.aliases,100),kind:i.kind==='product'?'product':'type',parentId:text(i.parentId||'',200),brand:text(i.brand||'',100),image:image(i.image),tags:list(i.tags||[],200),matchParent:i.matchParent===undefined?true:typeof i.matchParent==='boolean'?i.matchParent:fail('材料匹配边界无效。'),customized:i.customized===true,builtIn:i.builtIn===true,builtInTag:i.builtInTag===true}));
  const dict=new Map(ingredients.map(i=>[i.id,i]));
  function treeCheck(a){const d=new Map(a.map(x=>[x.id,x]));for(const i of a){let p=i;const seen=new Set([i.id]);while(p.parentId){if(!d.has(p.parentId)||seen.has(p.parentId))fail('关联关系无效或形成循环。');seen.add(p.parentId);p=d.get(p.parentId)}}}
  treeCheck(ingredients);
@@ -54,11 +54,11 @@ function merge(base,local,remote){[base,local,remote]=[base,local,remote].map(va
  const ids=new Set(out.ingredients.map(i=>i.id)),rids=new Set(out.recipes.map(r=>r.id));out.pantryItems=out.pantryItems.filter(i=>i.matches.every(id=>ids.has(id))&&i.tags.every(id=>ids.has(id)));for(const id of Object.keys(out.favorites))if(!rids.has(id))delete out.favorites[id];for(const r of out.recipes){if(r.parentId&&!rids.has(r.parentId))r.parentId='';for(const x of [...r.ingredients,...r.garnishes,...r.versions.flatMap(v=>[...v.ingredients,...v.garnishes])])if(!ids.has(x.id))conflicts.push('missing-ingredient:'+x.id)}return{data:out,conflicts:[...new Set(conflicts)]};
 }
 function installCatalog(input,catalog){
- const d=validate(input),c=validate(catalog);if(d.catalogVersion===c.catalogVersion){for(const r of c.recipes){const existing=d.recipes.find(x=>x.id===r.id);if(existing?.catalog&&!existing.image)existing.image=r.image}return d}
- const installed=!!d.catalogVersion;
+ const d=validate(input),c=validate(catalog),installed=!!d.catalogVersion,sameCatalog=d.catalogVersion===c.catalogVersion;
  for(const [removed,replacement]of Object.entries(catalog.ingredientRemovals||{})){
   for(const r of d.recipes)for(const x of [...r.ingredients,...r.garnishes,...r.versions.flatMap(v=>[...v.ingredients,...v.garnishes])]){if(x.id===removed)x.id=replacement;x.alternatives=(x.alternatives||[]).map(id=>id===removed?replacement:id).filter((id,n,a)=>id!==x.id&&a.indexOf(id)===n)}
   for(const i of d.pantryItems){i.matches=i.matches.map(id=>id===removed?replacement:id).filter((id,n,a)=>a.indexOf(id)===n);i.tags=i.tags.map(id=>id===removed?replacement:id).filter((id,n,a)=>a.indexOf(id)===n)}
+  for(const i of d.ingredients){if(i.parentId===removed)i.parentId=replacement;i.tags=(i.tags||[]).map(id=>id===removed?replacement:id).filter((id,n,a)=>id!==i.id&&a.indexOf(id)===n)}
   d.ingredients=d.ingredients.filter(i=>i.id!==removed);
  }
  for(const i of c.ingredients){const old=d.ingredients.find(x=>x.id===i.id);if(!old)d.ingredients.push(clone(i));else if(!old.customized){const migration=catalog.ingredientMigrations?.[i.id];if(migration)for(const [key,value]of Object.entries(migration))if(['name','parentId','category','kind','brand','matchParent'].includes(key)&&old[key]===value)old[key]=i[key];if(c.catalogVersion.includes('pantry-taxonomy'))for(const key of ['name','parentId','category','kind','matchParent'])old[key]=i[key];if(old.category==='利口酒与味美思'&&i.category==='利口酒')old.category=i.category;if(!old.parentId&&!old.image&&input.schemaVersion===1)Object.assign(old,{parentId:i.parentId,kind:i.kind,brand:i.brand,image:i.image});old.aliases=[...new Set([...old.aliases,...i.aliases])];old.tags=clone(i.tags)}}
@@ -66,10 +66,10 @@ function installCatalog(input,catalog){
   const existing=d.recipes.find(x=>x.id===r.id);
   if(existing){
    const raw=input.recipes.find(x=>x.id===r.id);
-   // This catalog revision changes metadata only. Keep personal formulas, notes and versions.
-   if(raw.sourceName===undefined)existing.sourceName=r.sourceName;
-   if(!existing.customized){existing.base=r.base;existing.tags=[...new Set([...existing.tags,...r.tags])]}
-   if(existing.catalog&&!existing.image)existing.image=r.image;
+   // Refresh untouched built-in recipes directly from catalog.js, even when its version string is unchanged.
+   // Personal edits and user-created ratio versions remain local user data.
+   if(!existing.customized&&sameCatalog){const versions=existing.versions,createdAt=existing.createdAt,updatedAt=existing.updatedAt;Object.assign(existing,clone(r),{versions,createdAt,updatedAt})}
+   else{if(raw.sourceName===undefined)existing.sourceName=r.sourceName;if(!existing.customized){existing.base=r.base;existing.tags=[...new Set([...existing.tags,...r.tags])]};if(existing.catalog&&!existing.image)existing.image=r.image}
    continue;
   }
   // A catalog already installed on this device may have deliberate recipe deletions.
