@@ -54,8 +54,7 @@ function merge(base,local,remote){[base,local,remote]=[base,local,remote].map(va
  const ids=new Set(out.ingredients.map(i=>i.id)),rids=new Set(out.recipes.map(r=>r.id));out.pantryItems=out.pantryItems.filter(i=>i.matches.every(id=>ids.has(id))&&i.tags.every(id=>ids.has(id)));for(const id of Object.keys(out.favorites))if(!rids.has(id))delete out.favorites[id];for(const r of out.recipes){if(r.parentId&&!rids.has(r.parentId))r.parentId='';for(const x of [...r.ingredients,...r.garnishes,...r.versions.flatMap(v=>[...v.ingredients,...v.garnishes])])if(!ids.has(x.id))conflicts.push('missing-ingredient:'+x.id)}return{data:out,conflicts:[...new Set(conflicts)]};
 }
 function installCatalog(input,catalog){
- const d=validate(input),c=validate(catalog);if(d.catalogVersion===c.catalogVersion){for(const r of c.recipes){const existing=d.recipes.find(x=>x.id===r.id);if(existing?.catalog&&!existing.image)existing.image=r.image}return d}
- const installed=!!d.catalogVersion;
+ const d=validate(input),c=validate(catalog),installed=!!d.catalogVersion,sameCatalog=d.catalogVersion===c.catalogVersion;
  for(const [removed,replacement]of Object.entries(catalog.ingredientRemovals||{})){
   for(const r of d.recipes)for(const x of [...r.ingredients,...r.garnishes,...r.versions.flatMap(v=>[...v.ingredients,...v.garnishes])]){if(x.id===removed)x.id=replacement;x.alternatives=(x.alternatives||[]).map(id=>id===removed?replacement:id).filter((id,n,a)=>id!==x.id&&a.indexOf(id)===n)}
   for(const i of d.pantryItems){i.matches=i.matches.map(id=>id===removed?replacement:id).filter((id,n,a)=>a.indexOf(id)===n);i.tags=i.tags.map(id=>id===removed?replacement:id).filter((id,n,a)=>a.indexOf(id)===n)}
@@ -67,10 +66,10 @@ function installCatalog(input,catalog){
   const existing=d.recipes.find(x=>x.id===r.id);
   if(existing){
    const raw=input.recipes.find(x=>x.id===r.id);
-   // This catalog revision changes metadata only. Keep personal formulas, notes and versions.
-   if(raw.sourceName===undefined)existing.sourceName=r.sourceName;
-   if(!existing.customized){existing.base=r.base;existing.tags=[...new Set([...existing.tags,...r.tags])]}
-   if(existing.catalog&&!existing.image)existing.image=r.image;
+   // Refresh untouched built-in recipes directly from catalog.js, even when its version string is unchanged.
+   // Personal edits and user-created ratio versions remain local user data.
+   if(!existing.customized&&sameCatalog){const versions=existing.versions,createdAt=existing.createdAt,updatedAt=existing.updatedAt;Object.assign(existing,clone(r),{versions,createdAt,updatedAt})}
+   else{if(raw.sourceName===undefined)existing.sourceName=r.sourceName;if(!existing.customized){existing.base=r.base;existing.tags=[...new Set([...existing.tags,...r.tags])]};if(existing.catalog&&!existing.image)existing.image=r.image}
    continue;
   }
   // A catalog already installed on this device may have deliberate recipe deletions.
