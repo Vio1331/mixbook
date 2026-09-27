@@ -7,7 +7,9 @@ function get(){
  const value=root.MIX_TAXONOMY?.menus||[];
  if(!valid(value))throw Error('cocktail-system.js 的 menus 层级格式无效。');
  const tagIds=new Set((root.MIX_TAXONOMY?.menuTags||[]).map(tag=>tag.id));
- const missing=value.flatMap(row=>row[2]||[]).filter(id=>!tagIds.has(id));
+ const ingredientIds=new Set((root.MIX_TAXONOMY?.ingredients||[]).map(i=>i.id));
+ const referenced=new Set(value.flatMap(row=>[...(row[2]||[]),...(root.MIX_TAXONOMY?.menuTags||[]).filter(tag=>tag.parentId===row[0]||row[1].includes(tag.parentId)).map(tag=>tag.id)]));
+ const missing=[...referenced].filter(id=>!tagIds.has(id)||!ingredientIds.has(id));
  if(missing.length)throw Error(`cocktail-system.js 缺少菜单标签记录：${[...new Set(missing)].join('、')}`);
  return clone(value).map(row=>[row[0],[...row[1]],[...(row[2]||[])],{...(row[3]||{})}]);
 }

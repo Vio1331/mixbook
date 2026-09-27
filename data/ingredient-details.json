@@ -1,0 +1,1716 @@
+{
+  "ingredients": [
+    {
+      "id": "dry-gin",
+      "name": "干金酒",
+      "parentId": "modern-gin",
+      "brand": "",
+      "aliases": [
+        "Dry Gin",
+        "干型金酒"
+      ],
+      "image": "gin",
+      "matchParent": true
+    },
+    {
+      "id": "sloe-gin",
+      "name": "黑刺李金酒",
+      "parentId": "modern-gin",
+      "brand": "",
+      "aliases": [
+        "Sloe Gin",
+        "黑刺李利口酒"
+      ],
+      "image": "",
+      "matchParent": false
+    },
+    {
+      "id": "beefeater",
+      "name": "必富达伦敦干金酒",
+      "parentId": "london-dry",
+      "brand": "Beefeater",
+      "aliases": [
+        "Beefeater London Dry Gin"
+      ],
+      "image": "gin",
+      "matchParent": true
+    },
+    {
+      "id": "monkey47-dry",
+      "name": "猴王 47 黑森林干金酒",
+      "parentId": "modern-gin",
+      "brand": "Monkey 47",
+      "aliases": [
+        "Monkey 47 Schwarzwald Dry Gin",
+        "猴王47干金酒",
+        "黑森林干金酒"
+      ],
+      "image": "gin",
+      "matchParent": true
+    },
+    {
+      "id": "monkey47-sloe",
+      "name": "猴王 47 黑刺李金酒",
+      "parentId": "modern-gin",
+      "brand": "Monkey 47",
+      "aliases": [
+        "Monkey 47 Schwarzwald Sloe Gin",
+        "猴王47黑刺李"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "cuban-white",
+      "name": "古巴白朗姆",
+      "parentId": "light-rum",
+      "brand": "",
+      "aliases": [
+        "White Cuban Ron"
+      ],
+      "image": "rum",
+      "matchParent": true,
+      "tags": [
+        "cuban-rum"
+      ]
+    },
+    {
+      "id": "jamaican-gold",
+      "name": "牙买加金朗姆",
+      "parentId": "gold-rum",
+      "brand": "",
+      "aliases": [
+        "Gold Jamaican Rum"
+      ],
+      "image": "aged-rum",
+      "matchParent": true,
+      "tags": [
+        "jamaican-rum"
+      ]
+    },
+    {
+      "id": "jamaican-dark",
+      "name": "牙买加深色朗姆",
+      "parentId": "dark-rum",
+      "brand": "",
+      "aliases": [
+        "Jamaican Dark Rum"
+      ],
+      "image": "aged-rum",
+      "matchParent": true,
+      "tags": [
+        "jamaican-rum"
+      ]
+    },
+    {
+      "id": "jamaican-overproof",
+      "name": "牙买加高酒精度白朗姆",
+      "parentId": "overproof-rum",
+      "brand": "",
+      "aliases": [
+        "Jamaica Overproof White Rum"
+      ],
+      "image": "rum",
+      "matchParent": true,
+      "tags": [
+        "jamaican-rum"
+      ]
+    },
+    {
+      "id": "havana-7",
+      "name": "哈瓦那俱乐部 7 年",
+      "parentId": "dark-rum",
+      "brand": "Havana Club",
+      "aliases": [
+        "Havana Club 7 Años",
+        "哈瓦那7年",
+        "哈瓦那俱乐部7年黑朗姆"
+      ],
+      "image": "aged-rum",
+      "matchParent": true
+    },
+    {
+      "id": "blackstrap-rum",
+      "name": "黑糖蜜朗姆",
+      "parentId": "light-rum",
+      "brand": "",
+      "aliases": [
+        "Blackstrap Rum"
+      ],
+      "image": "aged-rum",
+      "matchParent": true
+    },
+    {
+      "id": "martinique-molasses",
+      "name": "马提尼克糖蜜朗姆",
+      "parentId": "light-rum",
+      "brand": "",
+      "aliases": [
+        "Martinique Molasses Rhum"
+      ],
+      "image": "aged-rum",
+      "matchParent": true
+    },
+    {
+      "id": "puerto-rico-gold",
+      "name": "波多黎各金朗姆",
+      "parentId": "gold-rum",
+      "brand": "",
+      "aliases": [
+        "Gold Puerto Rican Rum"
+      ],
+      "image": "aged-rum",
+      "matchParent": true,
+      "tags": [
+        "puerto-rico-rum"
+      ]
+    },
+    {
+      "id": "goslings",
+      "name": "高斯林黑朗姆",
+      "parentId": "light-rum",
+      "brand": "Goslings",
+      "aliases": [
+        "Goslings Rum"
+      ],
+      "image": "aged-rum",
+      "matchParent": true
+    },
+    {
+      "id": "havana-profundo",
+      "name": "哈瓦那俱乐部 Profundo",
+      "parentId": "light-rum",
+      "brand": "Havana Club",
+      "aliases": [
+        "Ron Profundo Havana Club"
+      ],
+      "image": "aged-rum",
+      "matchParent": true
+    },
+    {
+      "id": "havana-smoky",
+      "name": "哈瓦那俱乐部 Smoky",
+      "parentId": "light-rum",
+      "brand": "Havana Club",
+      "aliases": [
+        "Ron Smoky Havana Club"
+      ],
+      "image": "aged-rum",
+      "matchParent": true
+    },
+    {
+      "id": "citron-vodka",
+      "name": "柑橘伏特加",
+      "parentId": "flavored-vodka",
+      "brand": "",
+      "aliases": [
+        "Vodka Citron"
+      ],
+      "image": "vodka",
+      "matchParent": true
+    },
+    {
+      "id": "vanilla-vodka",
+      "name": "香草伏特加",
+      "parentId": "flavored-vodka",
+      "brand": "",
+      "aliases": [
+        "Vanilla Vodka"
+      ],
+      "image": "vodka",
+      "matchParent": true
+    },
+    {
+      "id": "smirnoff",
+      "name": "斯米诺伏特加",
+      "parentId": "neutral-vodka",
+      "brand": "Smirnoff",
+      "aliases": [
+        "Smirnoff Vodka"
+      ],
+      "image": "vodka",
+      "matchParent": true
+    },
+    {
+      "id": "lagavulin-16",
+      "name": "乐加维林 16 年",
+      "parentId": "islay",
+      "brand": "Lagavulin",
+      "aliases": [
+        "Lagavulin 16y"
+      ],
+      "image": "whiskey",
+      "matchParent": true
+    },
+    {
+      "id": "laphroaig-10",
+      "name": "拉弗格 10 年",
+      "parentId": "islay",
+      "brand": "Laphroaig",
+      "aliases": [
+        "Laphroaig 10 Year Old",
+        "拉弗格10年",
+        "拉弗格十年"
+      ],
+      "image": "whiskey",
+      "matchParent": true
+    },
+    {
+      "id": "ardbeg-10",
+      "name": "阿贝 10 年",
+      "parentId": "islay",
+      "brand": "Ardbeg",
+      "aliases": [
+        "Ardbeg Ten Years Old",
+        "阿贝10年",
+        "阿贝十年"
+      ],
+      "image": "whiskey",
+      "matchParent": true
+    },
+    {
+      "id": "mezcal",
+      "name": "梅斯卡尔",
+      "parentId": "blanco-tequila",
+      "brand": "",
+      "aliases": [
+        "Mezcal"
+      ],
+      "image": "tequila",
+      "matchParent": true
+    },
+    {
+      "id": "espadin",
+      "name": "Espadín 梅斯卡尔",
+      "parentId": "blanco-tequila",
+      "brand": "",
+      "aliases": [
+        "Espadin Mezcal"
+      ],
+      "image": "tequila",
+      "matchParent": true
+    },
+    {
+      "id": "calvados",
+      "name": "卡尔瓦多斯苹果白兰地",
+      "parentId": "fruit-brandy",
+      "brand": "",
+      "aliases": [
+        "Calvados"
+      ],
+      "image": "brandy",
+      "matchParent": true
+    },
+    {
+      "id": "aguardiente",
+      "name": "古巴甘蔗烈酒",
+      "parentId": "light-rum",
+      "brand": "",
+      "aliases": [
+        "Cuban Aguardiente"
+      ],
+      "image": "rum",
+      "matchParent": true
+    },
+    {
+      "id": "grappa",
+      "name": "白格拉帕",
+      "parentId": "brandy",
+      "brand": "",
+      "aliases": [
+        "White Smooth Grappa"
+      ],
+      "image": "brandy",
+      "matchParent": true
+    },
+    {
+      "id": "martini-rosso",
+      "name": "马天尼 Rosso 甜红味美思",
+      "parentId": "sweet-vermouth",
+      "brand": "Martini",
+      "aliases": [
+        "Martini Rosso"
+      ],
+      "image": "vermouth",
+      "matchParent": true
+    },
+    {
+      "id": "dolin-rouge",
+      "name": "杜林 Rouge 甜红味美思",
+      "parentId": "sweet-vermouth",
+      "brand": "Dolin",
+      "aliases": [
+        "Dolin Rouge"
+      ],
+      "image": "vermouth",
+      "matchParent": true
+    },
+    {
+      "id": "cocchi-storico",
+      "name": "好奇 Storico 都灵甜味美思",
+      "parentId": "sweet-vermouth",
+      "brand": "Cocchi",
+      "aliases": [
+        "Cocchi Storico Vermouth di Torino",
+        "好奇红味美思",
+        "Cocchi Torino"
+      ],
+      "image": "vermouth",
+      "matchParent": true
+    },
+    {
+      "id": "cinzano-rosso",
+      "name": "仙山露 Rosso 甜红味美思",
+      "parentId": "sweet-vermouth",
+      "brand": "Cinzano",
+      "aliases": [
+        "Cinzano Rosso"
+      ],
+      "image": "vermouth",
+      "matchParent": true
+    },
+    {
+      "id": "bitter-aperitif",
+      "name": "苦味开胃酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Bitter Aperitif"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "campari",
+      "name": "金巴利",
+      "parentId": "aperitif",
+      "brand": "Campari",
+      "aliases": [
+        "Bitter Campari"
+      ],
+      "image": "campari",
+      "matchParent": true
+    },
+    {
+      "id": "aperol",
+      "name": "阿佩罗",
+      "parentId": "aperitif",
+      "brand": "Aperol",
+      "aliases": [
+        "Aperol"
+      ],
+      "image": "aperol",
+      "matchParent": true
+    },
+    {
+      "id": "nonino",
+      "name": "诺尼诺阿玛罗",
+      "parentId": "amaro",
+      "brand": "Nonino",
+      "aliases": [
+        "Amaro Nonino"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "cynar",
+      "name": "西那尔洋蓟利口酒",
+      "parentId": "amaro",
+      "brand": "Cynar",
+      "aliases": [
+        "Cynar"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "fernet",
+      "name": "菲奈特苦味利口酒",
+      "parentId": "amaro",
+      "brand": "",
+      "aliases": [
+        "Fernet"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "fernet-branca",
+      "name": "菲奈特布兰卡",
+      "parentId": "amaro",
+      "brand": "Fernet Branca",
+      "aliases": [
+        "Fernet Branca"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "triple-sec",
+      "name": "三重橙酒 Triple Sec",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Triple Sec"
+      ],
+      "image": "orange-liqueur",
+      "matchParent": true,
+      "tags": [
+        "orange-liqueur"
+      ]
+    },
+    {
+      "id": "curacao",
+      "name": "库拉索橙酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Orange Curacao"
+      ],
+      "image": "orange-liqueur",
+      "matchParent": true,
+      "tags": [
+        "orange-liqueur"
+      ]
+    },
+    {
+      "id": "dry-curacao",
+      "name": "干型库拉索橙酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Dry Curacao"
+      ],
+      "image": "orange-liqueur",
+      "matchParent": true,
+      "tags": [
+        "orange-liqueur"
+      ]
+    },
+    {
+      "id": "blue-curacao",
+      "name": "蓝橙利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Blue Curacao"
+      ],
+      "image": "blue-curacao",
+      "matchParent": true,
+      "tags": [
+        "orange-liqueur"
+      ]
+    },
+    {
+      "id": "cointreau",
+      "name": "君度橙酒",
+      "parentId": "liqueur",
+      "brand": "Cointreau",
+      "aliases": [
+        "Cointreau"
+      ],
+      "image": "cointreau",
+      "matchParent": true,
+      "tags": [
+        "orange-liqueur"
+      ]
+    },
+    {
+      "id": "bols-blue",
+      "name": "波士蓝橙利口酒",
+      "parentId": "liqueur",
+      "brand": "Bols",
+      "aliases": [
+        "Bols Blue Curacao"
+      ],
+      "image": "blue-curacao",
+      "matchParent": true,
+      "tags": [
+        "orange-liqueur"
+      ]
+    },
+    {
+      "id": "cognac-orange",
+      "name": "干邑橙味利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Cognac Orange Liqueur"
+      ],
+      "image": "orange-liqueur",
+      "matchParent": true,
+      "tags": [
+        "orange-liqueur"
+      ]
+    },
+    {
+      "id": "grand-marnier",
+      "name": "柑曼怡",
+      "parentId": "liqueur",
+      "brand": "Grand Marnier",
+      "aliases": [
+        "Grand Marnier"
+      ],
+      "image": "orange-liqueur",
+      "matchParent": true,
+      "tags": [
+        "orange-liqueur"
+      ]
+    },
+    {
+      "id": "maraschino",
+      "name": "马拉斯奇诺樱桃利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Maraschino"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "luxardo-maraschino",
+      "name": "卢萨朵马拉斯奇诺",
+      "parentId": "liqueur",
+      "brand": "Luxardo",
+      "aliases": [
+        "Maraschino Luxardo"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "luxardo-cherry",
+      "name": "卢萨朵 Sangue Morlacco",
+      "parentId": "liqueur",
+      "brand": "Luxardo",
+      "aliases": [
+        "Cherry Sangue Morlacco"
+      ],
+      "image": "",
+      "matchParent": true,
+      "tags": [
+        "cherry-liqueur"
+      ]
+    },
+    {
+      "id": "apricot-brandy",
+      "name": "杏子白兰地",
+      "parentId": "fruit-brandy",
+      "brand": "",
+      "aliases": [
+        "Apricot Brandy"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "peach-brandy",
+      "name": "桃白兰地",
+      "parentId": "fruit-brandy",
+      "brand": "",
+      "aliases": [
+        "Peach Brandy"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "peach-schnapps",
+      "name": "桃味甜酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Peach Schnapps"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "kahlua",
+      "name": "甘露咖啡利口酒",
+      "parentId": "liqueur",
+      "brand": "Kahlua",
+      "aliases": [
+        "Kahlúa"
+      ],
+      "image": "coffee-liqueur",
+      "matchParent": true,
+      "tags": [
+        "coffee-liqueur"
+      ]
+    },
+    {
+      "id": "cacao-brown",
+      "name": "深色可可利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Crème de Cacao Brown"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "cacao-white",
+      "name": "白可可利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Crème de Cacao White"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "menthe-green",
+      "name": "绿薄荷利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Crème de Menthe Green"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "menthe-white",
+      "name": "白薄荷利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Crème de Menthe White"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "cassis",
+      "name": "黑加仑利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Crème de Cassis"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "raspberry-liqueur",
+      "name": "覆盆子利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Raspberry Liqueur"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "hazelnut-liqueur",
+      "name": "榛子利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Hazelnut Liqueur"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "frangelico",
+      "name": "榛子弗朗格里科",
+      "parentId": "liqueur",
+      "brand": "Frangelico",
+      "aliases": [
+        "Frangelico"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "chartreuse-green",
+      "name": "绿查特酒",
+      "parentId": "liqueur",
+      "brand": "Chartreuse",
+      "aliases": [
+        "Green Chartreuse"
+      ],
+      "image": "chartreuse",
+      "matchParent": true,
+      "tags": [
+        "herbal-liqueur"
+      ]
+    },
+    {
+      "id": "chartreuse-yellow",
+      "name": "黄查特酒",
+      "parentId": "liqueur",
+      "brand": "Chartreuse",
+      "aliases": [
+        "Yellow Chartreuse"
+      ],
+      "image": "",
+      "matchParent": true,
+      "tags": [
+        "herbal-liqueur"
+      ]
+    },
+    {
+      "id": "benedictine",
+      "name": "廊酒",
+      "parentId": "liqueur",
+      "brand": "Bénédictine",
+      "aliases": [
+        "DOM Bénédictine",
+        "D.O.M.廊酒",
+        "DOM廊酒"
+      ],
+      "image": "",
+      "matchParent": true,
+      "tags": [
+        "herbal-liqueur"
+      ]
+    },
+    {
+      "id": "drambuie",
+      "name": "杜林标威士忌利口酒",
+      "parentId": "liqueur",
+      "brand": "Drambuie",
+      "aliases": [
+        "Drambuie"
+      ],
+      "image": "",
+      "matchParent": true,
+      "tags": [
+        "herbal-liqueur"
+      ]
+    },
+    {
+      "id": "falernum",
+      "name": "法勒南香料甜酒",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Falernum"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "allspice-liqueur",
+      "name": "多香果利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Allspice Dram"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "st-elizabeth",
+      "name": "圣伊丽莎白多香果酒",
+      "parentId": "liqueur",
+      "brand": "St. Elizabeth",
+      "aliases": [
+        "Allspice Saint Elizabeth"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "anise-liqueur",
+      "name": "茴香利口酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Anise Liqueur"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "pernod",
+      "name": "潘诺茴香酒",
+      "parentId": "liqueur",
+      "brand": "Pernod",
+      "aliases": [
+        "Pernod"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "aromatized-wine",
+      "name": "加香葡萄酒",
+      "parentId": "liqueur",
+      "brand": "",
+      "aliases": [
+        "Aromatized Wine"
+      ],
+      "image": "dry-vermouth",
+      "matchParent": true
+    },
+    {
+      "id": "lillet",
+      "name": "利莱白",
+      "parentId": "liqueur",
+      "brand": "Lillet",
+      "aliases": [
+        "Lillet Blanc"
+      ],
+      "image": "dry-vermouth",
+      "matchParent": true
+    },
+    {
+      "id": "cocchi-americano",
+      "name": "好奇美国佬 Americano",
+      "parentId": "liqueur",
+      "brand": "Cocchi",
+      "aliases": [
+        "Cocchi Americano",
+        "好奇美国佬"
+      ],
+      "image": "dry-vermouth",
+      "matchParent": true
+    },
+    {
+      "id": "sherry",
+      "name": "雪莉酒",
+      "parentId": "fino-sherry",
+      "brand": "",
+      "aliases": [
+        "Sherry"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "amontillado",
+      "name": "阿蒙蒂亚雪莉",
+      "parentId": "amontillado-sherry",
+      "brand": "",
+      "aliases": [
+        "Amontillado"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "palo-cortado",
+      "name": "帕罗科塔多雪莉",
+      "parentId": "palo-cortado-sherry",
+      "brand": "",
+      "aliases": [
+        "Palo Cortado"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "aromatic-bitters",
+      "name": "芳香苦精",
+      "parentId": "bitters",
+      "brand": "",
+      "aliases": [
+        "Aromatic Bitters"
+      ],
+      "image": "bitters",
+      "matchParent": true
+    },
+    {
+      "id": "angostura",
+      "name": "安高天娜芳香苦精",
+      "parentId": "bitters",
+      "brand": "Angostura",
+      "aliases": [
+        "Angostura Bitters"
+      ],
+      "image": "angostura",
+      "matchParent": true
+    },
+    {
+      "id": "peychauds",
+      "name": "佩肖氏苦精",
+      "parentId": "bitters",
+      "brand": "Peychaud's",
+      "aliases": [
+        "Peychaud’s Bitters"
+      ],
+      "image": "peychauds",
+      "matchParent": true
+    },
+    {
+      "id": "orange-bitters",
+      "name": "橙味苦精",
+      "parentId": "bitters",
+      "brand": "",
+      "aliases": [
+        "Orange Bitters"
+      ],
+      "image": "bitters",
+      "matchParent": true
+    },
+    {
+      "id": "amargo-bitters",
+      "name": "Amargo 苦精",
+      "parentId": "seasoning",
+      "brand": "",
+      "aliases": [
+        "Amargo Bitters"
+      ],
+      "image": "bitters",
+      "matchParent": true
+    },
+    {
+      "id": "worcestershire",
+      "name": "伍斯特酱",
+      "parentId": "seasoning",
+      "brand": "",
+      "aliases": [
+        "Worcestershire Sauce"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "hot-sauce",
+      "name": "辣椒汁",
+      "parentId": "seasoning",
+      "brand": "",
+      "aliases": [
+        "Hot Sauce"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "tabasco",
+      "name": "塔巴斯科辣椒汁",
+      "parentId": "seasoning",
+      "brand": "Tabasco",
+      "aliases": [
+        "Tabasco"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "salt",
+      "name": "盐",
+      "parentId": "seasoning",
+      "brand": "",
+      "aliases": [
+        "Salt"
+      ],
+      "image": "salt",
+      "matchParent": true
+    },
+    {
+      "id": "celery-salt",
+      "name": "芹菜盐",
+      "parentId": "seasoning",
+      "brand": "",
+      "aliases": [
+        "Celery Salt"
+      ],
+      "image": "salt",
+      "matchParent": true
+    },
+    {
+      "id": "pepper",
+      "name": "黑胡椒",
+      "parentId": "seasoning",
+      "brand": "",
+      "aliases": [
+        "Pepper"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "orange-flower",
+      "name": "橙花水",
+      "parentId": "seasoning",
+      "brand": "",
+      "aliases": [
+        "Orange Flower Water"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "vanilla-extract",
+      "name": "香草精",
+      "parentId": "seasoning",
+      "brand": "",
+      "aliases": [
+        "Vanilla Extract"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "lime",
+      "name": "青柠汁",
+      "parentId": "juice",
+      "brand": "",
+      "aliases": [
+        "Fresh Lime Juice"
+      ],
+      "image": "lime-juice",
+      "matchParent": true
+    },
+    {
+      "id": "lemon",
+      "name": "柠檬汁",
+      "parentId": "juice",
+      "brand": "",
+      "aliases": [
+        "Fresh Lemon Juice"
+      ],
+      "image": "lemon-juice",
+      "matchParent": true
+    },
+    {
+      "id": "orange-juice",
+      "name": "鲜橙汁",
+      "parentId": "juice",
+      "brand": "",
+      "aliases": [
+        "Fresh Orange Juice"
+      ],
+      "image": "orange-juice",
+      "matchParent": true
+    },
+    {
+      "id": "pineapple-juice",
+      "name": "菠萝汁",
+      "parentId": "juice",
+      "brand": "",
+      "aliases": [
+        "Fresh Pineapple Juice"
+      ],
+      "image": "pineapple-juice",
+      "matchParent": true
+    },
+    {
+      "id": "grapefruit-juice",
+      "name": "葡萄柚汁",
+      "parentId": "juice",
+      "brand": "",
+      "aliases": [
+        "Grapefruit Juice"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "cranberry",
+      "name": "蔓越莓汁",
+      "parentId": "juice",
+      "brand": "",
+      "aliases": [
+        "Cranberry Juice"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "tomato",
+      "name": "番茄汁",
+      "parentId": "juice",
+      "brand": "",
+      "aliases": [
+        "Tomato Juice"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "cane-juice",
+      "name": "甘蔗汁",
+      "parentId": "juice",
+      "brand": "",
+      "aliases": [
+        "Sugar Cane Juice"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "peach-puree",
+      "name": "白桃果泥",
+      "parentId": "juice",
+      "brand": "",
+      "aliases": [
+        "White Peach Puree"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "passion-puree",
+      "name": "百香果泥",
+      "parentId": "juice",
+      "brand": "",
+      "aliases": [
+        "Passion Fruit Puree"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "cola",
+      "name": "可乐",
+      "parentId": "other-liquid",
+      "brand": "",
+      "aliases": [
+        "Cola"
+      ],
+      "image": "cola",
+      "matchParent": true
+    },
+    {
+      "id": "ginger-beer",
+      "name": "姜汁啤酒",
+      "parentId": "other-liquid",
+      "brand": "",
+      "aliases": [
+        "Ginger Beer"
+      ],
+      "image": "ginger-beer",
+      "matchParent": true
+    },
+    {
+      "id": "ginger-ale",
+      "name": "干姜水",
+      "parentId": "other-liquid",
+      "brand": "",
+      "aliases": [
+        "Ginger Ale"
+      ],
+      "image": "ginger-beer",
+      "matchParent": true
+    },
+    {
+      "id": "grapefruit-soda",
+      "name": "粉红葡萄柚汽水",
+      "parentId": "other-liquid",
+      "brand": "",
+      "aliases": [
+        "Pink Grapefruit Soda"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "water",
+      "name": "饮用水",
+      "parentId": "other-liquid",
+      "brand": "",
+      "aliases": [
+        "Water"
+      ],
+      "image": "soda",
+      "matchParent": true
+    },
+    {
+      "id": "sugar",
+      "name": "细砂糖",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Superfine Sugar"
+      ],
+      "image": "sugar",
+      "matchParent": true
+    },
+    {
+      "id": "cane-sugar",
+      "name": "白蔗糖",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "White Cane Sugar"
+      ],
+      "image": "sugar",
+      "matchParent": true
+    },
+    {
+      "id": "sugar-cube",
+      "name": "方糖",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Sugar Cube"
+      ],
+      "image": "sugar",
+      "matchParent": true
+    },
+    {
+      "id": "powdered-sugar",
+      "name": "糖粉",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Powdered Sugar"
+      ],
+      "image": "sugar",
+      "matchParent": true
+    },
+    {
+      "id": "vanilla-sugar",
+      "name": "香草糖",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Vanilla Sugar"
+      ],
+      "image": "sugar",
+      "matchParent": true
+    },
+    {
+      "id": "honey",
+      "name": "蜂蜜",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Honey"
+      ],
+      "image": "honey",
+      "matchParent": true
+    },
+    {
+      "id": "honey-syrup",
+      "name": "蜂蜜糖浆",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Honey Syrup Honey Mix"
+      ],
+      "image": "honey",
+      "matchParent": true
+    },
+    {
+      "id": "monin-honey",
+      "name": "莫林蜂蜜糖浆",
+      "parentId": "other-food",
+      "brand": "Monin",
+      "aliases": [
+        "Monin Honey Syrup"
+      ],
+      "image": "honey",
+      "matchParent": true
+    },
+    {
+      "id": "demerara-syrup",
+      "name": "德梅拉拉糖浆",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Demerara Syrup"
+      ],
+      "image": "syrup",
+      "matchParent": true
+    },
+    {
+      "id": "raspberry-syrup",
+      "name": "覆盆子糖浆",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Raspberry Syrup"
+      ],
+      "image": "grenadine",
+      "matchParent": true
+    },
+    {
+      "id": "grenadine",
+      "name": "红石榴糖浆",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Grenadine Syrup"
+      ],
+      "image": "grenadine",
+      "matchParent": true
+    },
+    {
+      "id": "passion-syrup",
+      "name": "百香果糖浆",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Passion Fruit Syrup"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "orgeat",
+      "name": "杏仁糖浆",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Orgeat Syrup"
+      ],
+      "image": "orgeat",
+      "matchParent": true
+    },
+    {
+      "id": "agave-nectar",
+      "name": "龙舌兰糖浆",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Agave Nectar"
+      ],
+      "image": "honey",
+      "matchParent": true
+    },
+    {
+      "id": "elderflower-cordial",
+      "name": "接骨木花果露",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Elderflower Cordial"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "chamomile-cordial",
+      "name": "洋甘菊果露",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Chamomile Cordial"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "honey-chamomile",
+      "name": "蜂蜜洋甘菊混合液",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Honey Chamomile Mix"
+      ],
+      "image": "honey",
+      "matchParent": true
+    },
+    {
+      "id": "donns-mix",
+      "name": "Donn’s Mix",
+      "parentId": "syrup",
+      "brand": "",
+      "aliases": [
+        "Donn’s Mix"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "cream",
+      "name": "鲜奶油",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Fresh Cream"
+      ],
+      "image": "cream",
+      "matchParent": true
+    },
+    {
+      "id": "coconut-cream",
+      "name": "椰子奶油",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Coconut Cream"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "egg-white",
+      "name": "蛋清",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Egg White"
+      ],
+      "image": "egg",
+      "matchParent": true
+    },
+    {
+      "id": "egg-yolk",
+      "name": "蛋黄",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Egg Yolk"
+      ],
+      "image": "egg",
+      "matchParent": true
+    },
+    {
+      "id": "espresso",
+      "name": "浓缩咖啡",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Espresso"
+      ],
+      "image": "coffee",
+      "matchParent": true
+    },
+    {
+      "id": "coffee",
+      "name": "热黑咖啡",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Hot Coffee"
+      ],
+      "image": "coffee",
+      "matchParent": true
+    },
+    {
+      "id": "orange",
+      "name": "鲜橙",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Orange"
+      ],
+      "image": "orange",
+      "matchParent": true
+    },
+    {
+      "id": "lemon-fruit",
+      "name": "鲜柠檬",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Lemon"
+      ],
+      "image": "lemon",
+      "matchParent": true
+    },
+    {
+      "id": "lime-fruit",
+      "name": "鲜青柠",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Lime"
+      ],
+      "image": "lime",
+      "matchParent": true
+    },
+    {
+      "id": "pineapple",
+      "name": "菠萝",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Pineapple"
+      ],
+      "image": "pineapple",
+      "matchParent": true
+    },
+    {
+      "id": "passion-fruit",
+      "name": "百香果",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Passion Fruit"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "peach",
+      "name": "桃子",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Peach"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "mint",
+      "name": "薄荷",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Mint"
+      ],
+      "image": "mint",
+      "matchParent": true
+    },
+    {
+      "id": "basil",
+      "name": "意大利罗勒",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Italian Basil"
+      ],
+      "image": "basil",
+      "matchParent": true
+    },
+    {
+      "id": "ginger",
+      "name": "鲜姜",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Ginger Gengibre"
+      ],
+      "image": "ginger",
+      "matchParent": true
+    },
+    {
+      "id": "candied-ginger",
+      "name": "糖渍姜片",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Candied Ginger"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "cherry",
+      "name": "鸡尾酒樱桃",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Cocktail Maraschino Cherry"
+      ],
+      "image": "cherry",
+      "matchParent": true
+    },
+    {
+      "id": "raspberry",
+      "name": "覆盆子",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Raspberry"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "blackberry",
+      "name": "黑莓",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Blackberry"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "berries",
+      "name": "新鲜莓果",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Berries"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "grapes",
+      "name": "白葡萄",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "White Grapes"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "olive",
+      "name": "绿橄榄",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Green Olive"
+      ],
+      "image": "olive",
+      "matchParent": true
+    },
+    {
+      "id": "celery",
+      "name": "芹菜",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Celery"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "chili",
+      "name": "红辣椒",
+      "parentId": "fruit-vegetable",
+      "brand": "",
+      "aliases": [
+        "Red Chili Pepper"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "nutmeg",
+      "name": "肉豆蔻",
+      "parentId": "seasoning",
+      "brand": "",
+      "aliases": [
+        "Nutmeg"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "cloves",
+      "name": "丁香",
+      "parentId": "seasoning",
+      "brand": "",
+      "aliases": [
+        "Cloves"
+      ],
+      "image": "",
+      "matchParent": true
+    },
+    {
+      "id": "coffee-beans",
+      "name": "咖啡豆",
+      "parentId": "other-food",
+      "brand": "",
+      "aliases": [
+        "Coffee Beans"
+      ],
+      "image": "coffee",
+      "matchParent": true
+    }
+  ]
+}

@@ -13,5 +13,6 @@ test('没有数据库权限时也能打开试用界面，清楚提示临时会�
  assert.ok(elements.get('#app').innerHTML.includes('我的酒谱'));
  assert.ok(elements.get('#recipe-results').innerHTML.includes('尼格罗尼'));
  assert.ok(elements.get('#recipe-results').innerHTML.includes('还差 3 种材料'));
+ assert.ok(elements.get('#app').innerHTML.includes('隐藏内置配方'));
  assert.ok(events.click&&events.change&&events.submit);
 });
