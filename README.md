@@ -1,4 +1,4 @@
-# 喝了么 v0.3.0
+# 喝了么 v1.0.0
 
 个人鸡尾酒记录工具，使用纯 HTML / CSS / JavaScript，可直接部署到 GitHub Pages。
 
