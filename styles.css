@@ -297,3 +297,14 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
  .detail-hero .fact-row{grid-template-columns:max-content max-content minmax(0,1fr)}
  .detail-hero .fact-label{text-align:left}
 }
+
+/* Keep pantry cards level while allowing two-line names, and emphasize their category artwork. */
+.bottle-card h3{display:-webkit-box;min-height:3em;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.bottle-card p{margin-top:4px}
+.bottle-placeholder svg{width:104px;height:104px}
+
+/* Base spirit and preparation choices use the same visual language as glass choices. */
+.recipe-icon-picker .chips{display:flex;align-items:stretch;flex-wrap:wrap}
+.recipe-icon-picker .recipe-icon-option{width:92px;min-height:76px}
+.recipe-icon-picker .recipe-icon-option svg{display:block;width:30px;height:30px;stroke-width:1.6}
+@media(max-width:760px){.bottle-placeholder svg{width:86px;height:86px}.recipe-icon-picker .recipe-icon-option{width:calc(33.333% - 5px);min-height:70px}.recipe-icon-picker .recipe-icon-option svg{width:28px;height:28px}}
