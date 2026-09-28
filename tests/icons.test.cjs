@@ -27,17 +27,17 @@ test('固体材料篮子没有顶部饰线且中间横线延伸至篮边',()=>{
 test('调制方式图标移除多余线条并修正调酒动作',()=>{
  assert.equal(icon('shake'),'<path d="M7 3h10l-1 4 2 4-3 10H9L6 11l2-4-1-4Zm1 4h8M7 12h10"/>');
  assert.equal(icon('stir'),'<path d="M6 8h12l-1 13H7L6 8Zm.2 4h11.6M15 3l-4 15"/>');
- assert.equal(icon('muddle'),'<path d="M6 9h12l-1 12H7L6 9Zm.3 4h11.4"/><path d="m16 3-5.8 13.1m-1.1-.5 2.8 1.3-1.2 2.5-2.8-1.3 1.2-2.5Z"/>');
+ assert.equal(icon('muddle'),'<path d="M6 9h12l-1 12H7L6 9Zm.3 4h11.4"/><path d="M12 3v13m-1.5 0h3v3h-3v-3Z"/>');
  assert.equal(icon('blend'),'<path d="M7 3h10l-1 11H8L7 3Zm2 11h6l2 7H7l2-7Z"/>');
- assert.match(icon('roll'),/M8 14c1\.5 2\.7 3\.4 4 6 4/);
+ assert.equal(icon('roll'),'<path d="M3 4h6l-1 8H4L3 4Zm12 8h6l-1 8h-4l-1-8Z"/><path d="M10 7h4m-2-2 2 2-2 2M14 17h-4m2 2-2-2 2-2"/>');
 });
 
-test('多种烈酒使用底部对齐且前后叠放的标准瓶形',()=>{
+test('多种烈酒使用前后遮挡且大小明显不同的标准瓶形',()=>{
  const value=icon('multiSpirits');
- assert.equal((value.match(/<path/g)||[]).length,2);
- assert.match(value,/M5 7h4/);
- assert.match(value,/M13 5h4/);
- assert.equal((value.match(/v8/g)||[]).length,2);
+ const standard='M9 3h6m-5 0v5l-3 4v8h10v-8l-3-4V3M7 14h10';
+ assert.equal((value.match(new RegExp(standard,'g'))||[]).length,2);
+ assert.match(value,/<g transform="translate\(6 5\) scale\(\.65\)">/);
+ assert.match(value,new RegExp(`<path d="${standard}" fill="white"/>$`));
 });
 
 test('详情页在英文名称下以三个图标展示配方特征',()=>{
@@ -46,4 +46,9 @@ test('详情页在英文名称下以三个图标展示配方特征',()=>{
  assert.match(app,/\$\{glassIcon\(base\.glass\)\}/);
  assert.match(app,/\$\{icon\(baseIcons\[base\.base\]\|\|'bottle'\)\}/);
  assert.match(app,/\$\{icon\(methodIcons\[base\.method\]\|\|'shake'\)\}/);
+ assert.equal((app.match(/tabindex="0" data-label=/g)||[]).length,3);
+});
+
+test('其他烈酒沿用标准瓶形并在瓶内显示三个点',()=>{
+ assert.equal(icon('otherSpirits'),'<path d="M9 3h6m-5 0v5l-3 4v8h10v-8l-3-4V3M7 14h10"/><path d="M9.5 17h.1m2.4 0h.1m2.4 0h.1"/>');
 });
