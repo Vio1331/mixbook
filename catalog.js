@@ -404,34 +404,7 @@ window.MIX_CATALOG = {
     {"id":"iba-whiskey-sour","name":"威士忌酸","en":"Whiskey Sour","base":"威士忌","glass":"古典杯","method":"摇和","tags":["酸甜","柑橘"],"ingredients":[{"id":"bourbon","amount":"45","unit":"ml","optional":false},{"id":"lemon","amount":"25","unit":"ml","optional":false},{"id":"syrup","amount":"20","unit":"ml","optional":false},{"id":"egg-white","amount":"少许","unit":"滴","optional":true}],"garnishes":[{"id":"orange","amount":"半","unit":"片","optional":false},{"id":"cherry","amount":"1","unit":"颗","optional":false}],"steps":["材料加冰充分摇匀。","滤入科布勒杯。","如选择加冰饮用。","滤入装冰古典杯。","用蛋清时充分摇出泡沫。"],"notes":"可用科布勒杯不加冰，或古典杯加冰；本条杯形选择后者。装饰亦可按官网改用橙皮。","source":"https://iba-world.com/iba-cocktail/whiskey-sour/","versions":[],"parentId":"","sourceName":"IBA · 难忘经典","catalog":true,"sample":false,"image":"Whiskey-Sour","createdAt":"2026-09-21T00:00:00.000Z","updatedAt":"2026-09-21T00:00:00.000Z"},
     {"id":"iba-white-lady","name":"白色佳人","en":"White Lady","base":"金酒","glass":"鸡尾酒杯","method":"摇和","tags":["酸甜","柑橘"],"ingredients":[{"id":"gin","amount":"40","unit":"ml","optional":false},{"id":"triple-sec","amount":"30","unit":"ml","optional":false},{"id":"lemon","amount":"20","unit":"ml","optional":false}],"garnishes":[],"steps":["材料加冰充分摇匀。","滤入预冷鸡尾酒杯。"],"notes":"","source":"https://iba-world.com/iba-cocktail/white-lady/","versions":[],"parentId":"","sourceName":"IBA · 难忘经典","catalog":true,"sample":false,"image":"White-Lady","createdAt":"2026-09-21T00:00:00.000Z","updatedAt":"2026-09-21T00:00:00.000Z"},
     {"id":"iba-zombie","name":"僵尸","en":"Zombie","base":"朗姆酒","glass":"高杯","method":"搅打","tags":["热带"],"ingredients":[{"id":"jamaican-dark","amount":"45","unit":"ml","optional":false},{"id":"puerto-rico-gold","amount":"45","unit":"ml","optional":false},{"id":"demerara-rum","amount":"30","unit":"ml","optional":false},{"id":"lime","amount":"20","unit":"ml","optional":false},{"id":"falernum","amount":"15","unit":"ml","optional":false},{"id":"donns-mix","amount":"15","unit":"ml","optional":false},{"id":"grenadine","amount":"1","unit":"茶匙","optional":false},{"id":"angostura","amount":"1","unit":"dash","optional":false},{"id":"pernod","amount":"6","unit":"滴","optional":false}],"garnishes":[{"id":"mint","amount":"1","unit":"枝","optional":false}],"steps":["将材料与 170 克碎冰放入搅拌机。","短暂脉冲搅打后倒入高杯。"],"notes":"Donn’s Mix：2 份新鲜黄葡萄柚汁与 1 份肉桂糖浆。","source":"https://iba-world.com/iba-cocktail/zombie/","versions":[],"parentId":"","sourceName":"IBA · 当代经典","catalog":true,"sample":false,"image":"Zombie","createdAt":"2026-09-21T00:00:00.000Z","updatedAt":"2026-09-21T00:00:00.000Z"}
-  ],
-  "pantryItems": [],
-  "favorites": {},
-  "ingredientMigrations": {
-    "vermouth": {
-      "name": "甜红味美思"
-    },
-    "orange-liqueur": {
-      "name": "橙味利口酒（大类）"
-    },
-    "tequila": {
-      "name": "龙舌兰酒"
-    },
-    "mezcal": {
-      "parentId": "spirit"
-    },
-    "cachaca": {
-      "parentId": "spirit"
-    },
-    "aguardiente": {
-      "parentId": "spirit"
-    }
-  },
-  "ingredientRemovals": {
-    "tequila-agave": "tequila",
-    "rum-all": "rum",
-    "vermouth": "sweet-vermouth"
-  }
+  ]
  };
 // 以下只是让程序读取上面的同一份数据，不需要维护。
 window.MIX_CATALOG.menuTags = window.MIX_CATALOG.ingredients
