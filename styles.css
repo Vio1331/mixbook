@@ -316,3 +316,11 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .detail-characteristics>span{position:relative}
 .detail-characteristics>span::after{content:attr(data-label);position:absolute;z-index:3;left:50%;top:calc(100% + 7px);padding:5px 8px;border-radius:6px;background:var(--ink);color:#fff;font-size:.72rem;line-height:1;white-space:nowrap;opacity:0;pointer-events:none;transform:translate(-50%,-3px);transition:opacity .15s,transform .15s}
 .detail-characteristics>span:hover::after,.detail-characteristics>span:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+
+/* Give long instructions room to breathe and keep recipe characteristics together. */
+.recipe-steps-field textarea{min-height:150px;resize:vertical}
+.recipe-choice-row{align-items:start;gap:18px}
+.recipe-choice-row .recipe-choice{min-width:0;margin-top:22px}
+.recipe-choice-row .chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.recipe-choice-row .glass-option{width:auto;min-width:0}
+@media(max-width:760px){.editor-body .recipe-choice-row{grid-template-columns:1fr;gap:0}.recipe-choice-row .recipe-choice{margin-top:18px}}
