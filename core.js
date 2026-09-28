@@ -73,7 +73,7 @@ function installCatalog(input,catalog){
    // Refresh untouched built-in recipes directly from catalog.js, even when its version string is unchanged.
    // Personal edits and user-created ratio versions remain local user data.
    if(!existing.customized&&sameCatalog){const versions=existing.versions,createdAt=existing.createdAt,updatedAt=existing.updatedAt;Object.assign(existing,clone(r),{versions,createdAt,updatedAt})}
-   else{if(raw.sourceName===undefined)existing.sourceName=r.sourceName;if(!existing.customized){existing.base=r.base;existing.tags=[...new Set([...existing.tags,...r.tags])]};if(existing.catalog&&!existing.image)existing.image=r.image}
+   else{if(raw.sourceName===undefined)existing.sourceName=r.sourceName;if(!existing.customized){existing.base=r.base;existing.glass=r.glass;existing.tags=[...new Set([...existing.tags,...r.tags])]};if(existing.catalog&&!existing.image)existing.image=r.image}
    continue;
   }
   // A catalog already installed on this device may have deliberate recipe deletions.
