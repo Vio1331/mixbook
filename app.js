@@ -288,7 +288,7 @@
  case'add-inline-pantry-tag':{const form=b.closest('form'),input=form.elements.newTagName,name=input.value.trim();if(!name)break;const draft=pantryBottleDraft(form),rootId=String(new FormData(form).get('rootId')||'');if(draft.newTags.some(x=>C.norm(x)===C.norm(name))||pantryContext(rootId).tags.some(x=>C.norm(x.name)===C.norm(name))){$('#item-error').textContent='标签名称不能重复。';break}draft.newTags.push(name);openPantryBottleForm(itemId,rootId,draft);break}
  case'reveal-inline-pantry-tag':{b.hidden=true;const wrap=b.nextElementSibling;wrap.hidden=false;wrap.querySelector('input').focus();break}
  case'reset-pantry-bottle':openPantryBottleForm(itemId);break;
- case'delete-pantry-bottle':if(await confirmChoice('删除这条酒柜记录？','记录会彻底从酒柜删除；酒谱和分类目录不会改变。')==='yes'){const id=itemId;if(await update(d=>{d.pantryItems=d.pantryItems.filter(i=>i.id!==id)})){closeDialog($('#item-dialog'));renderPantry();updateHeader();scheduleSync();toast('酒柜记录已删除。')}}break;
+ case'delete-pantry-bottle':if(await confirmChoice('删除这条酒柜记录？','记录会彻底从酒柜删除，该操作不可撤销。')==='yes'){const id=itemId;if(await update(d=>{d.pantryItems=d.pantryItems.filter(i=>i.id!==id)})){closeDialog($('#item-dialog'));renderPantry();updateHeader();scheduleSync();toast('酒柜记录已删除。')}}break;
  case'pantry-edit':if(syncBusy){toast('请等待同步完成。');break}pantryDraft=C.clone(env.data);pantryQ='';render();break;
  case'pantry-cancel':pantryDraft=null;pantryQ='';render();scheduleSync();break;
  case'pantry-save':{if(await update(d=>{d.pantryItems=C.clone(pantryDraft.pantryItems);d.ingredients=C.clone(pantryDraft.ingredients)})){pantryDraft=C.clone(env.data);pantryBrowser.data=pantryDraft;pantryBrowser.render();updateHeader();scheduleSync(true);toast('酒柜已保存。')}break}
