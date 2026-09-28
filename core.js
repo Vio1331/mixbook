@@ -24,7 +24,11 @@ function validate(input){
  unique(rawPantry,'酒柜记录');const pantryItems=rawPantry.map(i=>({id:i.id,name:text(i.name,100)||fail('酒柜记录需要名称。'),brand:text(i.brand||'',100),category:text(i.category||'',50),image:image(i.image),matches:list(i.matches||[],200),tags:list(i.tags||[],200)}));
  for(const i of pantryItems)if(!i.matches.length||i.matches.some(id=>!ids.has(id))||i.tags.some(id=>!ids.has(id)))fail('酒柜记录的分类无效。');
  const options={};for(const k of ['glasses','tags','sources'])options[k]=list(input.options?.[k]||[],k==='sources'?200:100);
- return{schemaVersion:4,recipes,ingredients,pantryItems,favorites:flags(input.favorites,rids),options,catalogVersion:text(input.catalogVersion||'',100)};
+ // Catalog files only describe built-in content and may omit user-state sections.
+ // Keep rejecting malformed values when the section is present, but treat an
+ // omitted favorites map the same way as the already-optional pantryItems list.
+ const favorites=input.favorites===undefined?{}:input.favorites;
+ return{schemaVersion:4,recipes,ingredients,pantryItems,favorites:flags(favorites,rids),options,catalogVersion:text(input.catalogVersion||'',100)};
 }
 function ingredientPath(id,data){const d=new Map(data.ingredients.map(i=>[i.id,i])),out=[],seen=new Set();let i=d.get(id);while(i&&!seen.has(i.id)){out.unshift(i);seen.add(i.id);i=d.get(i.parentId)}return out}
 function needsProduct(i,data){return i.kind==='type'&&ingredientPath(i.id,data).some(x=>x.id==='alcohol'||x.id==='bitters')}
