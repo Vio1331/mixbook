@@ -217,7 +217,7 @@ window.MIX_CATALOG = {
     {"id":"peach-brandy","name":"桃白兰地","parentId":"fruit-brandy","brand":"","aliases":["Peach Brandy"],"image":"","matchParent":true,"category":"水果白兰地","kind":"product","tags":[],"customized":false},
     {"id":"peach-schnapps","name":"桃味甜酒","parentId":"liqueur","brand":"","aliases":["Peach Schnapps"],"image":"","matchParent":true,"category":"利口酒","kind":"product","tags":[],"customized":false},
     {"id":"kahlua","name":"甘露咖啡利口酒","parentId":"liqueur","brand":"Kahlua","aliases":["Kahlúa"],"image":"","matchParent":true,"tags":["coffee-liqueur"],"category":"利口酒","kind":"product","customized":false},
-    {"id":"cacao-brown","name":"深色可可利口酒","parentId":"liqueur","brand":"","aliases":["Crème de Cacao Brown"],"image":"","matchParent":true,"category":"利口酒","kind":"product","tags":[],"customized":false},
+    {"id":"cacao-brown","name":"深色可可利口酒","parentId":"liqueur","brand":"","aliases":["Crème de Cacao Brown"],"image":"","matchParent":true,"category":"利口酒","kind":"product","tags":[],"customized":false,"builtInTag":true,"builtIn":true},
     {"id":"cacao-white","name":"白可可利口酒","parentId":"liqueur","brand":"","aliases":["Crème de Cacao White"],"image":"","matchParent":true,"category":"利口酒","kind":"product","tags":[],"customized":false},
     {"id":"menthe-green","name":"绿薄荷利口酒","parentId":"liqueur","brand":"","aliases":["Crème de Menthe Green"],"image":"","matchParent":true,"category":"利口酒","kind":"product","tags":[],"customized":false},
     {"id":"menthe-white","name":"白薄荷利口酒","parentId":"liqueur","brand":"","aliases":["Crème de Menthe White"],"image":"","matchParent":true,"category":"利口酒","kind":"product","tags":[],"customized":false},
