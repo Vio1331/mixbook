@@ -143,7 +143,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 /* Recipe rows expose their saved structure: menu on the left, precise value on the right. */
 .material-structure{display:grid;grid-template-columns:minmax(150px,.9fr) minmax(240px,1.4fr);gap:10px;align-items:start}
 .material-structure .specific-material-editor{display:grid;grid-template-columns:minmax(110px,1fr) auto;margin:0;padding:0;background:transparent}
-.material-structure .specific-kind{align-self:stretch;gap:0;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fff}
+.material-structure .specific-kind{align-self:center;gap:0;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fff}
 .material-structure .specific-kind label{padding:0 9px;cursor:pointer}
 .material-structure .specific-kind label:has(input:checked){color:var(--accent);background:var(--accent-light)}
 .material-structure .specific-kind input{width:14px;height:14px}
