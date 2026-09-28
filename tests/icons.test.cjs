@@ -32,12 +32,13 @@ test('调制方式图标移除多余线条并修正调酒动作',()=>{
  assert.equal(icon('roll'),'<path d="M3 4h6l-1 8H4L3 4Zm12 8h6l-1 8h-4l-1-8Z"/><path d="M10 7h4m-2-2 2 2-2 2M14 17h-4m2 2-2-2 2-2"/>');
 });
 
-test('多种烈酒使用前后遮挡且大小明显不同的标准瓶形',()=>{
+test('多种烈酒使用三个并列且轮廓完整的酒瓶',()=>{
  const value=icon('multiSpirits');
- const standard='M9 3h6m-5 0v5l-3 4v8h10v-8l-3-4V3M7 14h10';
- assert.equal((value.match(new RegExp(standard,'g'))||[]).length,2);
- assert.match(value,/<g transform="translate\(6 5\) scale\(\.65\)">/);
- assert.match(value,new RegExp(`<path d="${standard}" fill="white"/>$`));
+ assert.equal((value.match(/<path /g)||[]).length,3);
+ assert.match(value,/M3 7h4M4 7v4/);
+ assert.match(value,/M10 3h4m-3 0v6/);
+ assert.match(value,/M17 7h4m-3 0v4/);
+ assert.doesNotMatch(value,/transform=|fill=/);
 });
 
 test('详情页在英文名称下以三个图标展示配方特征',()=>{
