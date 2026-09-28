@@ -267,3 +267,17 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
  .detail-hero .detail-meta{margin-bottom:6px}
 }
 .detail-hero .detail-photo{align-self:flex-end}
+
+/* Keep the compact recipe facts immediately to the photo's left, rather than under the title. */
+.detail-hero .detail-identity{align-self:flex-start}
+.detail-hero .detail-visual{display:flex;align-items:flex-end;align-self:stretch;gap:12px;flex:0 0 auto}
+.detail-hero .detail-facts{align-self:flex-end;margin:0 0 2px}
+.detail-hero .fact-dot{color:var(--accent);font-weight:700}
+.detail-hero .detail-photo{align-self:flex-end}
+
+@media(max-width:760px){
+ .detail-hero{gap:12px}
+ .detail-hero .detail-visual{gap:8px}
+ .detail-hero .fact-row{grid-template-columns:max-content max-content minmax(0,1fr)}
+ .detail-hero .fact-label{text-align:left}
+}
