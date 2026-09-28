@@ -270,7 +270,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 
 /* Keep the compact recipe facts immediately to the photo's left, rather than under the title. */
 .detail-hero .detail-identity{align-self:flex-start}
-.detail-hero .detail-visual{display:flex;align-items:flex-end;align-self:stretch;gap:12px;flex-shrink:0}
+.detail-hero .detail-visual{display:flex;align-items:flex-end;align-self:stretch;gap:12px;flex:0 0 auto}
 .detail-hero .detail-facts{align-self:flex-end;margin:0 0 2px}
 .detail-hero .fact-dot{color:var(--accent);font-weight:700}
 .detail-hero .detail-photo{align-self:flex-end}
