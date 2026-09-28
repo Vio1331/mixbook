@@ -23,3 +23,27 @@ test('龙舌兰目录 ID 映射到龙舌兰图标',()=>{
 test('固体材料篮子没有顶部饰线且中间横线延伸至篮边',()=>{
  assert.equal(icon('solid'),'<path d="M5 11h14l-2 9H7l-2-9Zm2 0c0-3 2-5 5-5s5 2 5 5"/><path d="M6 15h12"/>');
 });
+
+test('调制方式图标移除多余线条并修正调酒动作',()=>{
+ assert.equal(icon('shake'),'<path d="M7 3h10l-1 4 2 4-3 10H9L6 11l2-4-1-4Zm1 4h8M7 12h10"/>');
+ assert.equal(icon('stir'),'<path d="M6 8h12l-1 13H7L6 8Zm.2 4h11.6M15 3l-4 15"/>');
+ assert.equal(icon('muddle'),'<path d="M6 9h12l-1 12H7L6 9Zm.3 4h11.4"/><path d="m16 3-5.8 13.1m-1.1-.5 2.8 1.3-1.2 2.5-2.8-1.3 1.2-2.5Z"/>');
+ assert.equal(icon('blend'),'<path d="M7 3h10l-1 11H8L7 3Zm2 11h6l2 7H7l2-7Z"/>');
+ assert.match(icon('roll'),/M8 14c1\.5 2\.7 3\.4 4 6 4/);
+});
+
+test('多种烈酒使用底部对齐且前后叠放的标准瓶形',()=>{
+ const value=icon('multiSpirits');
+ assert.equal((value.match(/<path/g)||[]).length,2);
+ assert.match(value,/M5 7h4/);
+ assert.match(value,/M13 5h4/);
+ assert.equal((value.match(/v8/g)||[]).length,2);
+});
+
+test('详情页在英文名称下以三个图标展示配方特征',()=>{
+ assert.match(app,/<p class="recipe-en">\$\{esc\(base\.en\)\}<\/p><div class="detail-characteristics"/);
+ assert.doesNotMatch(app,/class="detail-facts"/);
+ assert.match(app,/\$\{glassIcon\(base\.glass\)\}/);
+ assert.match(app,/\$\{icon\(baseIcons\[base\.base\]\|\|'bottle'\)\}/);
+ assert.match(app,/\$\{icon\(methodIcons\[base\.method\]\|\|'shake'\)\}/);
+});
