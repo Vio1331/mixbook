@@ -221,8 +221,8 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .continue-input svg{transition:transform .16s ease}
 .material-structure .specific-material-editor{grid-template-columns:68px minmax(130px,1fr)}
 .material-structure .specific-kind{position:relative;display:grid;grid-template-columns:1fr 1fr;width:68px;height:36px;padding:3px;border:0;border-radius:999px;background:#e8eaee;overflow:hidden;isolation:isolate}
-.material-structure .specific-kind .specific-kind-thumb{position:absolute;z-index:-1;top:3px;bottom:3px;left:3px;width:29px;border-radius:999px;background:#fff;box-shadow:0 1px 4px #2223;transition:transform .16s ease}
-.material-structure .specific-kind:has(input[value=tag]:checked) .specific-kind-thumb{transform:translateX(33px)}
+.material-structure .specific-kind .specific-kind-thumb{position:absolute;z-index:-1;top:3px;bottom:3px;left:3.5px;width:30px;border-radius:999px;background:#fff;box-shadow:0 1px 4px #2223;transition:transform .16s ease}
+.material-structure .specific-kind:has(input[value=tag]:checked) .specific-kind-thumb{transform:translateX(31px)}
 .material-structure .specific-kind label{position:relative;display:grid;place-items:center;padding:0;border-radius:999px;color:#686e78;font-size:.8rem;font-weight:650;line-height:1;cursor:pointer}
 .material-structure .specific-kind label>span:not(.sr-only){transform:translateY(1px)}
 .material-structure .specific-kind label:has(input:checked){color:var(--ink);background:transparent}
@@ -246,3 +246,24 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 
 /* The two cascade columns share an exact row track so categories cannot drift out of alignment. */
 .type-drawers button,.type-options label span,.type-options .material-choice{height:44px;min-height:44px;padding:0 12px;line-height:1.45}
+
+/* The name/tag switch is one circular, edge-to-edge hit target. */
+.material-structure .specific-kind{cursor:pointer}
+.material-structure .specific-kind label{pointer-events:none}
+.material-structure .specific-kind label>span:not(.sr-only){display:grid;width:100%;height:100%;place-items:center;transform:none}
+.material-structure .specific-kind input{pointer-events:none}
+.material-structure .specific-kind:focus-visible{outline:3px solid #ed8b77;outline-offset:2px}
+
+/* Keep recipe facts beside the photo, bottom-aligned, with one natural text space around the dot. */
+.detail-hero .detail-identity{align-self:stretch;display:flex;min-width:0;flex:1;flex-direction:column}
+.detail-hero .detail-facts{display:grid;width:max-content;max-width:100%;gap:2px;margin:auto 0 0;color:var(--muted);font-size:.75rem;line-height:1.55}
+.detail-hero .fact-row{display:grid;grid-template-columns:4em max-content minmax(0,1fr);align-items:baseline;column-gap:.25em}
+.detail-hero .fact-label{text-align:right;color:inherit}
+.detail-hero .fact-dot{color:inherit;font-weight:400;text-align:center}
+.detail-hero .detail-meta{margin:0 0 8px}
+
+@media(max-width:760px){
+ .detail-hero .detail-facts{font-size:.7rem}
+ .detail-hero .detail-meta{margin-bottom:6px}
+}
+.detail-hero .detail-photo{align-self:flex-end}
