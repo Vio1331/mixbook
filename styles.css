@@ -254,6 +254,22 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .material-structure .specific-kind input{pointer-events:none}
 .material-structure .specific-kind:focus-visible{outline:3px solid #ed8b77;outline-offset:2px}
 
+/* Recipe rows stay fully expanded and use the same composed menus throughout. */
+#editor-ingredients .material-structure,#editor-garnishes .material-structure{grid-template-columns:190px minmax(250px,1fr) auto}
+.material-structure .specific-material-editor{grid-column:2}
+.material-structure .material-amount-row{grid-column:3}
+.specific-input-wrap{position:relative;min-width:0}
+.specific-options{position:absolute;z-index:14;top:calc(100% + 6px);left:0;right:0;max-height:220px;overflow-y:auto;padding:7px;background:#fff;border:1px solid var(--line);border-radius:9px;box-shadow:0 12px 28px #24242424}
+.specific-options[hidden]{display:none}
+.specific-options button{display:block;width:100%;min-height:40px;padding:9px 11px;border-radius:7px;color:var(--ink);font:inherit;font-size:.86rem;text-align:left}
+.specific-options button:hover,.specific-options button:focus-visible{background:#f2f2f2;color:var(--accent)}
+.row-alternative{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:7px}
+.row-alternative .alternative-list{display:flex;gap:6px;padding:0}
+.row-alternative .chip{display:inline-flex;align-items:center;gap:5px}
+.row-alternative [data-remove-alternative]{color:var(--muted);font-size:1rem;line-height:1}
+.alternative-add{font-size:.75rem!important;color:var(--muted)!important;font-weight:400}
+@media(max-width:760px){#editor-ingredients .material-structure,#editor-garnishes .material-structure{grid-template-columns:1fr}.material-structure .specific-material-editor,.material-structure .material-amount-row{grid-column:1/-1}}
+
 /* Keep recipe facts beside the photo, bottom-aligned, with one natural text space around the dot. */
 .detail-hero .detail-identity{align-self:stretch;display:flex;min-width:0;flex:1;flex-direction:column}
 .detail-hero .detail-facts{display:grid;width:max-content;max-width:100%;gap:2px;margin:auto 0 0;color:var(--muted);font-size:.75rem;line-height:1.55}
