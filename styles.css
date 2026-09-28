@@ -322,3 +322,14 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .recipe-choice-row{align-items:start;gap:18px}
 .recipe-choice-row .recipe-choice{min-width:0;margin-top:22px}
 @media(max-width:760px){.editor-body .recipe-choice-row{grid-template-columns:1fr;gap:0}.recipe-choice-row .recipe-choice{margin-top:18px}}
+
+/* Recipe cards use the same compact column rhythm as pantry material cards. */
+.result-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+.catalog-photo{aspect-ratio:1;object-position:center 60%}
+.recipe-card .card-main{min-height:0;padding:12px 14px 11px}
+.recipe-card .card-main h3,.recipe-card .card-main .recipe-en{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recipe-card .card-main h3{font-size:clamp(.72rem,1vw,.95rem);line-height:1.45;margin:0}
+.recipe-card .card-main .recipe-en{font-size:clamp(.68rem,.9vw,.85rem);line-height:1.4;margin:2px 0 0}
+.recipe-card .card-bottom{padding:6px 7px 6px 14px}
+@media(max-width:1150px){.result-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:760px){.result-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.recipe-card .card-main{padding:11px 10px 10px}.recipe-card .card-main h3{font-size:.82rem}.recipe-card .card-main .recipe-en{font-size:.72rem}}
