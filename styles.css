@@ -383,3 +383,11 @@ input,select,textarea,.btn,.chip,.panel,.recipe-card,.bottle-card,.pantry-summar
  .search-submit{padding-inline:14px}
  .filter-rail>.filter-block~.filter-block,.filter-rail>.favorite-choice:first-of-type{padding-top:18px}
 }
+
+/* Give both browsing sidebars a comfortable inset and keep filter tags quiet. */
+.filter-rail,.pantry-sidebar{padding:22px;border-right:0;border-radius:12px}
+.filter-rail .chips{gap:10px 8px}
+.filter-rail .chip,.pantry-tags .chip{padding:7px 12px;border:0;border-radius:10px;background:var(--surface-soft);color:var(--ink);line-height:1.4}
+.filter-rail .chip:hover,.pantry-tags .chip:hover{background:color-mix(in srgb,var(--surface-soft) 82%,var(--ink));color:var(--ink)}
+.filter-rail .chip.active,.pantry-tags .chip.active{background:color-mix(in srgb,var(--surface-soft) 88%,var(--ink));color:var(--ink);font-weight:600}
+@media(max-width:760px){.filter-rail,.pantry-sidebar{padding:18px}}
