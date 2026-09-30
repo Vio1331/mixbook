@@ -342,3 +342,44 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:1px soli
 .btn,.chip,.recipe-card,.bottle-card{transition:border-color .16s ease,background-color .16s ease,color .16s ease,box-shadow .16s ease,transform .16s ease}
 @media(max-width:760px){.results-summary{margin:-2px 0 12px}.brand small{display:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.chip,.recipe-card,.bottle-card{transition:none}}
+
+/*
+ * COLOR PALETTE
+ * Edit the variables below to retheme the site. The first set is the light
+ * palette; the dark overrides are used by the system preference and toggle.
+ */
+:root{--surface:#fff;--surface-soft:#f2f3f5;--overlay:#fffc;--input-bg:#fff;--shadow:#22252b18;color-scheme:light}
+:root[data-theme=dark]{--bg:#111317;--paper:#1b1e24;--ink:#edf0f4;--muted:#a5abb6;--line:#343943;--card-hover-border:#626b79;--accent:#f06a52;--accent-light:#3a211e;--green:#73c9a7;--green-light:#17352c;--one:#e0a467;--one-light:#382a1d;--surface:#1b1e24;--surface-soft:#252932;--overlay:#17191ded;--input-bg:#20242b;--shadow:#0008;color-scheme:dark}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){--bg:#111317;--paper:#1b1e24;--ink:#edf0f4;--muted:#a5abb6;--line:#343943;--card-hover-border:#626b79;--accent:#f06a52;--accent-light:#3a211e;--green:#73c9a7;--green-light:#17352c;--one:#e0a467;--one-light:#382a1d;--surface:#1b1e24;--surface-soft:#252932;--overlay:#17191ded;--input-bg:#20242b;--shadow:#0008;color-scheme:dark}}
+
+body{background:var(--bg);color:var(--ink)}
+.topbar{background:var(--overlay)}
+input,select,textarea,.btn,.chip,.panel,.recipe-card,.bottle-card,.pantry-summary,.ingredient-tile,.specific-options,.dialog-top,.dialog-actions,.sync-overlay-card,dialog{background:var(--input-bg);color:var(--ink)}
+.empty,.filter-rail,.pantry-sidebar{background:color-mix(in srgb,var(--surface) 88%,transparent)}
+.nav-count,.avatar,.tag,.status-box,.notes-box,.detail-characteristics>span,.material-structure .specific-kind{background:var(--surface-soft)}
+.btn:hover,.icon-button:hover,.specific-options button:hover,.specific-options button:focus-visible,.type-column label:hover span,.base-filter-list .filter-choice:hover{background:var(--surface-soft);color:var(--ink)}
+.card-bottom{border-top-color:var(--line)}
+.photo-placeholder{background:linear-gradient(145deg,var(--surface-soft),var(--surface));color:var(--muted)}
+.bottle-placeholder{background:var(--surface-soft)}
+.theme-toggle{margin-left:auto;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.top-status{margin-left:0}
+
+/* Search only runs when this form is submitted. */
+.recipe-search-form{display:flex;align-items:center;gap:8px;flex:1;max-width:500px}
+.recipe-search-form .search-field{max-width:none}
+.search-submit{min-height:45px}
+
+/* Keep all quantity/unit labels, including garnishes, on one line. */
+.ingredient-row .amount{max-width:none;min-width:max-content;white-space:nowrap;word-break:keep-all}
+
+/* Visually separate each major recipe-filter section. */
+.filter-rail>.filter-block~.filter-block,.filter-rail>.favorite-choice:first-of-type{border-top:1px solid var(--line);padding-top:22px}
+.filter-rail>.favorite-choice:first-of-type{margin-top:-4px}
+
+@media(max-width:760px){
+ .theme-toggle{margin-left:auto}.top-status{display:none}
+ .recipe-search-form{flex-basis:100%;max-width:none}
+ .recipe-search-form .search-field{flex:1}
+ .search-submit{padding-inline:14px}
+ .filter-rail>.filter-block~.filter-block,.filter-rail>.favorite-choice:first-of-type{padding-top:18px}
+}
