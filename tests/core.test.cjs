@@ -534,3 +534,12 @@ test("自定义图片链接只允许 HTTPS，不允许可执行或内嵌协议",
   d.recipes[0].photoUrl = "https://example.com/a.png";
   assert.equal(C.validate(d).recipes[0].photoUrl, d.recipes[0].photoUrl);
 });
+test("显示名称不能把已选择的另一品牌改成指定产品，旧通用记录可按名称识别", () => {
+  const d = data();
+  own(d, "grand-marnier");
+  d.pantryItems[0].name = "君度";
+  assert.equal(C.have({ id: "cointreau" }, d), false);
+  own(d, "liqueur");
+  d.pantryItems[0].name = "君度";
+  assert.equal(C.have({ id: "cointreau" }, d), true);
+});

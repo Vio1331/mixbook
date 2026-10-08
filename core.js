@@ -354,6 +354,10 @@
     const identity = [r.name, ...r.aliases].map(norm).includes(norm(item.name));
     if (
       identity &&
+      (item.matches || []).every((id) => {
+        const selected = data.ingredients.find((i) => i.id === id);
+        return selected?.kind === "type" || selected?.customized;
+      }) &&
       (!r.parentId ||
         (item.matches || []).some((id) => satisfies(id, r.parentId, data)))
     )
