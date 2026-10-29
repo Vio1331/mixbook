@@ -290,8 +290,27 @@
       catalogVersion: text(input.catalogVersion || "", 100),
     };
   }
+  // An index lives for one synchronous operation only. Drafts are mutable, so a
+  // permanent WeakMap cache could return stale names, parents or pantry matches.
+  const indexes = new Map();
+  function indexed(data, action) {
+    if (indexes.has(data)) return action();
+    indexes.set(data, {
+      ingredients: new Map(data.ingredients.map((i) => [i.id, i])),
+      paths: new Map(),
+      matches: new Map(),
+      satisfies: new Map(),
+    });
+    try { return action(); }
+    finally { indexes.delete(data); }
+  }
+  function ingredientIndex(data) {
+    return indexes.get(data)?.ingredients || new Map(data.ingredients.map((i) => [i.id, i]));
+  }
   function ingredientPath(id, data) {
-    const d = new Map(data.ingredients.map((i) => [i.id, i])),
+    const cache = indexes.get(data)?.paths;
+    if (cache?.has(id)) return cache.get(id);
+    const d = ingredientIndex(data),
       out = [],
       seen = new Set();
     let i = d.get(id);
@@ -300,6 +319,7 @@
       seen.add(i.id);
       i = d.get(i.parentId);
     }
+    cache?.set(id, out);
     return out;
   }
   function needsProduct(i, data) {
@@ -311,7 +331,8 @@
     );
   }
   function materialText(i, data) {
-    const d = new Map(data.ingredients.map((x) => [x.id, x]));
+    if (!i) return "";
+    const d = ingredientIndex(data);
     return norm(
       [
         ...ingredientPath(i.id, data),
@@ -324,7 +345,7 @@
   // Membership and substitution are deliberately separate. A product's descriptive
   // tags never make every other product bearing the same tag interchangeable.
   function categorySatisfies(owned, required, data) {
-    const d = new Map(data.ingredients.map((i) => [i.id, i]));
+    const d = ingredientIndex(data);
     let item = d.get(owned);
     const seen = new Set();
     while (item && !seen.has(item.id)) {
@@ -336,8 +357,14 @@
     return false;
   }
   function satisfies(owned, required, data) {
-    const o = data.ingredients.find((i) => i.id === owned),
-      r = data.ingredients.find((i) => i.id === required);
+    const cache = indexes.get(data)?.satisfies, key = owned + ":" + required;
+    if (cache?.has(key)) return cache.get(key);
+    const result = satisfiesUncached(owned, required, data);
+    cache?.set(key, result);
+    return result;
+  }
+  function satisfiesUncached(owned, required, data) {
+    const d = ingredientIndex(data), o = d.get(owned), r = d.get(required);
     if (!o || !r) return false;
     if (o.id === r.id) return true;
     if (r.kind === "product") return false;
@@ -347,7 +374,7 @@
     );
   }
   function pantryMatchLevel(item, required, data) {
-    const r = data.ingredients.find((i) => i.id === required);
+    const d = ingredientIndex(data), r = d.get(required);
     if (!r) return Infinity;
     if ((item.matches || []).includes(required)) return 0;
     // Names/aliases support legacy independently named bottles, within their category.
@@ -355,7 +382,7 @@
     if (
       identity &&
       (item.matches || []).every((id) => {
-        const selected = data.ingredients.find((i) => i.id === id);
+        const selected = d.get(id);
         return selected?.kind === "type" || selected?.customized;
       }) &&
       (!r.parentId ||
@@ -370,6 +397,9 @@
     return Infinity;
   }
   function matches(row, data) {
+    const cache = indexes.get(data)?.matches,
+      key = JSON.stringify([row.id, ...(row.alternatives || [])]);
+    if (cache?.has(key)) return cache.get(key);
     const required = [row.id, ...(row.alternatives || [])];
     const ranked = data.pantryItems
       .map((item) => ({
@@ -381,9 +411,10 @@
         ),
       }))
       .filter((x) => Number.isFinite(x.level));
-    if (!ranked.length) return [];
-    const best = Math.min(...ranked.map((x) => x.level));
-    return ranked.filter((x) => x.level === best).map((x) => x.item);
+    const best = Math.min(...ranked.map((x) => x.level)),
+      result = ranked.filter((x) => x.level === best).map((x) => x.item);
+    cache?.set(key, result);
+    return result;
   }
   function have(row, data) {
     return matches(row, data).length > 0;
@@ -396,9 +427,10 @@
           .map((i) => [i.id + JSON.stringify(i.alternatives || []), i]),
       ).values(),
     ];
+    const missing = req.filter((i) => !have(i, data));
     return {
-      ready: req.every((i) => have(i, data)),
-      missing: req.filter((i) => !have(i, data)),
+      ready: !missing.length,
+      missing,
       substitutions: req.filter(
         (i) => have(i, data) && !have({ ...i, alternatives: [] }, data),
       ),
@@ -439,7 +471,7 @@
             ),
           ].join(" "),
         ),
-        m = match(r, data);
+        m = f.availability && f.availability !== "all" ? match(r, data) : null;
       return (
         terms.every((t) => hay.includes(t)) &&
         (!f.tags?.length || f.tags.some((t) => r.tags.includes(t))) &&
@@ -596,33 +628,47 @@
     return validate(d);
   }
 
+  const vulgarFractions = { '¼': '1/4', '½': '1/2', '¾': '3/4', '⅓': '1/3', '⅔': '2/3', '⅛': '1/8', '⅜': '3/8', '⅝': '5/8', '⅞': '7/8' };
+  function normalizedAmount(value) {
+    return String(value ?? '').trim()
+      .replace(/(\d)([¼½¾⅓⅔⅛⅜⅝⅞])/g, '$1 $2')
+      .replace(/[¼½¾⅓⅔⅛⅜⅝⅞]/g, (x) => vulgarFractions[x])
+      .normalize('NFKC').replace(/⁄/g, '/').replace(/−/g, '-').trim();
+  }
+  function numericAmount(value) {
+    const s = normalizedAmount(value);
+    if (s === '半') return 0.5;
+    const mixed = s.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+    if (mixed) return Number(mixed[1]) + Number(mixed[2]) / Number(mixed[3]);
+    const fraction = s.match(/^([+]?\d*\.?\d+)\s*\/\s*(\d*\.?\d+)$/);
+    if (fraction) return Number(fraction[1]) / Number(fraction[2]);
+    if (/^[+]?\d*\.?\d+$/.test(s)) return Number(s);
+    return null;
+  }
+  function amountParts(value) {
+    const s = normalizedAmount(value), range = s.match(/^(.+?)\s*[–—~～-]\s*(.+)$/);
+    return range ? range.slice(1).map(numericAmount) : [numericAmount(s)];
+  }
   function amountIssue(value) {
-    const s = String(value || "").trim();
-    if (!s) return "请填写用量，或填写“适量 / 补满”。";
-    if (/^[−-]\s*\d/.test(s)) return "用量不能为负数。";
-    if (/^(?:NaN|Infinity|∞)$/i.test(s)) return "请填写有效用量。";
-    if (/^[+]?\d+(?:\.\d+)?(?:\s*\/\s*\d+(?:\.\d+)?)?$/.test(s)) {
-      const [a, b] = s.split("/").map(Number);
-      if (b === 0 || a === 0) return "用量应大于零。";
-    }
-    return "";
+    const s = normalizedAmount(value);
+    if (!s) return '请填写用量，或填写“适量 / 补满”。';
+    if (/^[−-]\s*\d/.test(s)) return '用量不能为负数。';
+    if (/^(?:[+-]?NaN|[+-]?Infinity|∞)$/i.test(s)) return '请填写有效用量。';
+    const parts = amountParts(s);
+    if (parts.some((n) => n !== null && (!Number.isFinite(n) || n <= 0)))
+      return '用量应大于零，分母不能为零。';
+    if (parts.length === 2 && parts.every((n) => n !== null) && parts[0] > parts[1])
+      return '用量范围应从小到大。';
+    if (parts.some((n) => n === null) && /^[\d\s.+/–—~-]+$/.test(s))
+      return '用量格式无效，请使用数字、分数或范围。';
+    return '';
   }
   function scaleAmount(value, factor) {
-    const s = String(value || "").trim(),
-      number = (x) => {
-        const a = x.split("/").map(Number);
-        return a.length === 2 ? a[0] / a[1] : a[0];
-      },
-      fmt = (x) => String(Math.round(x * 1000) / 1000);
-    if (!Number.isFinite(factor) || factor <= 0) return s;
-    if (/^\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)?$/.test(s)) {
-      const n = number(s);
-      return Number.isFinite(n) ? fmt(n * factor) : s;
-    }
-    const range = s.match(/^(\d+(?:\.\d+)?)\s*[–—-]\s*(\d+(?:\.\d+)?)$/);
-    return range
-      ? fmt(Number(range[1]) * factor) + "–" + fmt(Number(range[2]) * factor)
-      : s;
+    const s = String(value ?? '').trim(), parts = amountParts(s);
+    if (!Number.isFinite(factor) || factor <= 0 || factor === 1 || amountIssue(s) || parts.some((n) => n === null)) return s;
+    const scaled = parts.map((n) => n * factor);
+    if (scaled.some((n) => !Number.isFinite(n))) return s;
+    return scaled.map((n) => String(Number(n.toFixed(3)))).join('–');
   }
 
   root.MixCore = {
@@ -635,16 +681,17 @@
     amountIssue,
     scaleAmount,
     validate,
-    match,
-    query,
+    match: (r, data) => indexed(data, () => match(r, data)),
+    query: (data, f) => indexed(data, () => query(data, f)),
     merge,
-    satisfies,
-    have,
-    matches,
+    satisfies: (owned, required, data) => indexed(data, () => satisfies(owned, required, data)),
+    have: (row, data) => indexed(data, () => have(row, data)),
+    matches: (row, data) => indexed(data, () => matches(row, data)),
     installCatalog,
-    ingredientPath,
+    ingredientPath: (id, data) => indexed(data, () => ingredientPath(id, data)),
     needsProduct,
-    materialText,
+    materialText: (i, data) => indexed(data, () => materialText(i, data)),
+    analyze: (data) => indexed(data, () => new Map(data.recipes.map((r) => [r.id, match(r, data)]))),
   };
   if (typeof module !== "undefined") module.exports = root.MixCore;
 })(typeof window !== "undefined" ? window : globalThis);
