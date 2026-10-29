@@ -1,25 +1,36 @@
-"""Audit the immutable two-level directory and every built-in recipe ingredient display form."""
+"""Audit catalog.js, navigation references and local recipe assets (no dependencies)."""
 import json
+import subprocess
 from pathlib import Path
-root=Path(__file__).resolve().parent.parent
-tax=json.loads((root/'cocktail-system.js').read_text().split('=',1)[1].strip().removesuffix(';'))
-seed=json.loads((root/'seed.js').read_text().split('=',1)[1].strip().removesuffix(';'))
-by={i['id']:i for i in seed['ingredients']};menus=tax['menus'];roots={m[0] for m in menus};pages={x for m in menus for x in m[1]};tags={t['id'] for t in tax['menuTags']}
-assert len(roots)==len(menus)
-assert not roots&pages and not roots&tags and not pages&tags
-for tag in tax['menuTags']:assert tag['parentId'] in roots|pages,tag
-for i in seed['ingredients']:
- if i['id'] in roots: assert not i['parentId'],i
- elif i['id'] in pages: assert i['parentId'] in roots,i
- elif i['id'] in tags: assert i['parentId'] in roots|pages,i
- else: assert i['kind']=='product' and i['parentId'] in pages,i
-recipe_refs=set()
-for recipe in seed['recipes']:
- for row in recipe['ingredients']+recipe['garnishes']:
-  recipe_refs.add(row['id']);recipe_refs.update(row.get('alternatives',[]))
-  assert row['id'] in by,(recipe['id'],row['id'])
-  item=by[row['id']]
-  assert item['id'] in roots|pages|tags or item['kind']=='product',(recipe['id'],item)
-concrete={i['id'] for i in seed['ingredients'] if i['id'] not in roots|pages|tags}
-assert concrete==recipe_refs-(roots|pages|tags),f'具体材料与内置配方引用不一致：多余 {sorted(concrete-recipe_refs)}；缺少 {sorted(recipe_refs-concrete-roots-pages-tags)}'
-print(f"OK: {len(menus)} 个一级菜单，{len(pages)} 个二级菜单，{len(tags)} 个内置标签，{len(seed['recipes'])} 个内置配方全部符合目录显示规则。")
+
+root = Path(__file__).resolve().parent.parent
+catalog = json.loads(subprocess.check_output([
+    'node', '-e', "const fs=require('fs'),vm=require('vm'),C=require('./core.js');const c={window:{}};vm.runInNewContext(fs.readFileSync('catalog.js','utf8'),c);const raw=c.window.MIX_CATALOG;process.stdout.write(JSON.stringify({...C.validate(raw),menus:raw.menus}));"
+], cwd=root, text=True))
+by = {i['id']: i for i in catalog['ingredients']}
+menus = catalog['menus']
+roots = {m[0] for m in menus}
+pages = {p for m in menus for p in m[1]}
+assert len(roots) == len(menus), '重复一级菜单'
+assert not roots & pages, '一级与二级菜单重叠'
+for root_id, children in menus:
+    assert root_id in by and by[root_id]['kind'] == 'type', root_id
+    assert not by[root_id]['parentId'], root_id
+    assert len(children) == len(set(children)), root_id
+    for child in children:
+        assert child in by, child
+        ancestor = by[child]['parentId']
+        while ancestor and ancestor != root_id:
+            ancestor = by[ancestor]['parentId']
+        assert ancestor == root_id, child
+# Some entries are both second-level navigation and selectable built-in tags.
+tags = [i for i in by.values() if i['builtInTag']]
+for tag in tags:
+    assert tag['parentId'] in roots | pages, tag['id']
+for recipe in catalog['recipes']:
+    for row in recipe['ingredients'] + recipe['garnishes']:
+        for reference in [row['id']] + row.get('alternatives', []):
+            assert reference in by, (recipe['id'], reference)
+    if recipe['image']:
+        assert (root/'assets'/'cocktails'/(recipe['image']+'.webp')).is_file(), f"缺少配图：{recipe['id']}"
+print(f"OK: {len(menus)} 个一级菜单，{len(pages)} 个二级菜单，{len(tags)} 个内置标签，{len(by)} 项原料，{len(catalog['recipes'])} 份配方；数据结构、引用与配图全部通过。")

@@ -1,6 +1,19 @@
-# 喝了么 v2.0.0
+# 喝了么 v2.1.0
 
 个人鸡尾酒记录工具，使用纯 HTML / CSS / JavaScript，可直接部署到 GitHub Pages。
+
+## v2.1 体验与可靠性更新
+
+- 酒柜快捷入口、可移除的筛选条件、准确区分空收藏和筛选无结果；收藏计数即时更新。
+- 手机筛选使用可关闭的底部面板，支持 Escape、焦点返回和横竖屏切换。
+- 支持全角数字、分数、带分数、半份与范围换算；粘贴支持“金酒３０ml”，无效行会留下供修正。
+- 搜索、原料匹配与可制作数量共用操作内索引；可变草稿不会命中旧缓存。
+- 配方保存防止重复提交；跨页面保存与导入会再次核对数据，避免覆盖确认期间的改动。
+- 详情图片优先加载，列表图片延迟加载；启动时间过长可重试。
+- 离线代码使用同一版本缓存；新版本准备完成后可点击更新。配方目录独立在线刷新，离线使用缓存。
+- 按 `/` 定位当前搜索框；筛选、收藏和调制过程中保留键盘焦点。
+
+逐项检查与验证记录见 `docs/quality-review.md`。
 
 ## v2 使用方式
 
@@ -105,7 +118,8 @@ python3 -m http.server 8000
 ## 验证
 
 ```bash
-node --test tests/core.test.cjs tests/materials.test.cjs tests/hierarchy.test.cjs tests/startup.test.cjs tests/icons.test.cjs
+node --test tests/*.test.cjs
+python3 scripts/audit-catalog.py
 ```
 
 浏览器回归需安装 Python Playwright 和 Chromium：
@@ -120,3 +134,11 @@ CHROMIUM_PATH=/usr/bin/chromium python3 tests/browser.test.py
 用户数据继续采用 `schemaVersion: 4`、原数据库和稳定编号。首次更新时在 IndexedDB 的 `backup-before-v2-ui` 键保留原记录；草稿同时写入 IndexedDB 与本机恢复缓存。旧版 JSON 导入保持兼容。修改内置目录不会覆盖用户已标记的自定义定义、配方版本与个人笔记。
 
 缓存只保证已经加载的配图可离线显示；外部 HTTPS 图片依赖网络。正常浏览器可持久保存，禁用本地存储时界面明确标记临时会话，并仍支持导出。
+
+## 发布代码更新
+
+这是无构建步骤的静态项目。发布时包含 `index.html`、`boot.js`、`app.js`、`core.js`、`catalog.js`、`hierarchy.js`、`styles.css`、`sw.js`、`manifest.webmanifest` 和 `assets/`。
+
+修改应用代码或样式时，同时更新 `sw.js` 中的缓存版本（本次为 `v2.1.0`），确保不同版本使用独立缓存。已打开的页面会在新缓存就绪后显示更新提示，点击更新前需要结束编辑或同步。仅调整 `catalog.js` 的内容不需要修改缓存版本；联网刷新会获取最新目录。
+
+缓存最多保留 120 张按需加载的图片。浏览器清理站点数据仍会删除本地记录，请使用导出或已配置的私有仓库同步保留备份。

@@ -23,10 +23,11 @@
     <script>
       try {
         const theme = localStorage.getItem("mixbook.theme");
-        if (theme) document.documentElement.dataset.theme = theme;
+        if (["light", "dark"].includes(theme)) document.documentElement.dataset.theme = theme;
       } catch (e) {}
     </script>
     <link rel="stylesheet" href="./styles.css" />
+    <script defer src="./boot.js"></script>
     <script defer src="./core.js"></script>
     <script defer src="./catalog.js"></script>
     <script defer src="./hierarchy.js"></script>
@@ -34,7 +35,20 @@
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
-    <div id="app"><div class="boot">正在打开喝了么…</div></div>
+    <div id="app">
+      <div class="boot" role="status" aria-live="polite">
+        <span class="boot-mark" aria-hidden="true">喝了么.</span>
+        <p id="boot-message">正在打开你的私人调酒手册…</p>
+        <div class="boot-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+        <button id="boot-retry" class="btn" hidden>重新加载</button>
+      </div>
+    </div>
+    <dialog id="filter-dialog" class="filter-dialog" aria-label="筛选与分类"></dialog>
+    <div id="update-banner" class="update-banner" role="status" hidden>
+      <span>新版本已准备好，本机记录会保留。</span>
+      <button class="btn small primary" data-action="apply-update">更新页面</button>
+      <button class="icon-button" data-action="dismiss-update" aria-label="稍后更新">×</button>
+    </div>
     <dialog
       id="detail-dialog"
       class="detail-dialog"

@@ -543,3 +543,26 @@ test("显示名称不能把已选择的另一品牌改成指定产品，旧通�
   d.pantryItems[0].name = "君度";
   assert.equal(C.have({ id: "cointreau" }, d), true);
 });
+
+test('常见中文输入、带分数与范围用量可以正确校验和换算', () => {
+  for (const [input, output] of [['３０', '60'], ['1 / 2', '1'], ['1 1/2', '3'], ['1½', '3'], ['½', '1'], ['半', '1'], ['.5', '1'], ['1–2', '2–4']]) {
+    assert.equal(C.amountIssue(input), '', input);
+    assert.equal(C.scaleAmount(input, 2), output, input);
+  }
+  for (const input of ['０', '0.0', '1/0', '1 1/0', '−3', '3–1', '1..2', '1/2/3']) assert.ok(C.amountIssue(input), input);
+  assert.equal(C.scaleAmount('适量', 3), '适量');
+  assert.equal(C.scaleAmount('1/0', 2), '1/0');
+});
+test('批量匹配索引与逐项匹配一致，原地修改后不会读到旧缓存', () => {
+  const d = data();
+  own(d, 'gin', 'campari', 'sweet-vermouth');
+  const all = C.analyze(d);
+  for (const r of d.recipes) assert.deepEqual(all.get(r.id), C.match(r, d));
+  assert.equal(all.get('iba-negroni').ready, true);
+  d.pantryItems.splice(0, 1);
+  assert.equal(C.analyze(d).get('iba-negroni').ready, false);
+  const gin = d.ingredients.find((i) => i.id === 'gin');
+  C.materialText(gin, d);
+  gin.name = '新金酒名称';
+  assert.ok(C.materialText(gin, d).includes('新金酒名称'));
+});
