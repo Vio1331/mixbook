@@ -50,7 +50,7 @@ test('activation only removes old releases within this site scope', async () => 
   await h.lifecycle('activate');
   assert.ok(h.stores.has('mixbook-other-site-old'));
   assert.ok(!h.stores.has('mixbook-' + encodeURIComponent(h.scope) + '-old'));
-  assert.equal(h.activated(), false);
+  assert.equal(h.activated(), true);
   h.events.message({ data: { type: 'ACTIVATE_UPDATE' } });
   assert.equal(h.activated(), true);
 });

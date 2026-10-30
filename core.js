@@ -369,9 +369,6 @@
   }
   function searchMaterials(data, query = '', category = '', recent = []) {
     const q = norm(query), terms = q.split(/\s+/).filter(Boolean);
-    const usage = new Map();
-    for (const r of data.recipes) for (const x of [...r.ingredients, ...r.garnishes])
-      usage.set(x.id, (usage.get(x.id) || 0) + 1);
     const direct = [], related = [];
     for (const i of data.ingredients) {
       if (materialGroups.has(i.id)) continue;
@@ -382,13 +379,11 @@
       const hit = terms.every((t) => own.includes(t));
       if (!hit && !terms.every((t) => materialText(i, data).includes(t))) continue;
       const rank = q ? exact ? 100 : names.some((n) => n.startsWith(q)) ? 80 : 60 : 0;
-      const row = { item: i, rank, owned: have({id:i.id}, data),
-        recent: recent.includes(i.id) ? recent.length - recent.indexOf(i.id) : 0,
-        usage: usage.get(i.id) || 0 };
+      const row = {item:i,rank};
       (hit ? direct : related).push(row);
     }
-    const compare = (a,b) => b.rank - a.rank || Number(b.owned) - Number(a.owned) ||
-      b.recent - a.recent || b.usage - a.usage || a.item.name.localeCompare(b.item.name, 'zh-CN');
+    const pathLabel = item => ingredientPath(item.id,data).map(x=>x.name).join(' / ');
+    const compare = (a,b) => b.rank-a.rank || pathLabel(a.item).localeCompare(pathLabel(b.item),'zh-CN') || a.item.id.localeCompare(b.item.id);
     return { direct: direct.sort(compare).map((x) => x.item),
       related: related.sort(compare).map((x) => x.item) };
   }

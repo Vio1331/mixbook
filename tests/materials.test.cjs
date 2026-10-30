@@ -227,3 +227,10 @@ test('旧通用原料的名称识别迁移保留其他明确匹配', () => {
   assert.equal(C.have(row('lemon-fruit'), d), false);
   assert.deepEqual(C.validate(d), d);
 });
+
+test('分类浏览顺序不随拥有状态、最近选择或配方使用次数变化', () => {
+  const d=data(), ids = () => C.searchMaterials(d, '', 'gin', ['london-dry']).direct.map(i=>i.id);
+  const before=ids();own(d,'gin');d.recipes.reverse();
+  assert.deepEqual(ids(),before);
+  assert.equal(C.searchMaterials(d,'Cointreau').direct[0].id,'cointreau');
+});

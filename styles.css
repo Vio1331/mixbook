@@ -1294,7 +1294,7 @@ dialog:modal {
   position: fixed;
   bottom: 28px;
   left: 50%;
-  transform: translateX(-50%) translateY(15px);
+  transform: translateX(-50%);
   opacity: 0;
   pointer-events: none;
   z-index: 20;
@@ -1305,9 +1305,7 @@ dialog:modal {
   color: var(--surface);
   box-shadow: var(--shadow);
   font-size: 13px;
-  transition:
-    opacity 0.2s,
-    transform 0.2s;
+  transition: opacity 0.15s;
 }
 #toast.show {
   opacity: 1;
@@ -3098,3 +3096,57 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
   #material-dialog.definition-mode .dialog-top .link-button { font-size: 11px; }
   .picker-item { gap: 10px; }
 }
+/* v2.5: one task per view, fixed categories and explicit save/cancel. */
+.picker-category-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 28px; padding: 4px 0 18px; }
+.picker-category-grid button { display: flex; align-items: center; gap: 12px; min-height: 54px; padding: 10px 4px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
+.picker-category-grid button:hover { background: var(--soft); }
+.picker-category-grid button > span { flex: 1; }
+.picker-category-grid svg { width: 18px; height: 18px; flex: 0 0 auto; color: var(--muted); }
+.picker-navigation { padding-bottom: 10px; }
+.picker-category-select select { width: 220px; }
+.picker-item.is-selected { background: var(--accent-soft); }
+.picker-item.is-selected > svg { color: var(--accent); }
+.picker-item[aria-pressed] > svg { padding: 2px; width: 22px; height: 22px; border: 1px solid var(--line); border-radius: 4px; }
+.picker-item[aria-pressed=false]:not(:disabled) > svg { color: transparent; }
+.picker-item[aria-pressed=true] > svg { border-color: var(--accent); }
+.picker-footer { justify-content: flex-end; flex-wrap: wrap; }
+.picker-footer .form-error:empty { display: none; }
+.picker-footer .form-error:not(:empty) { flex-basis: 100%; }
+.pantry-group h3 { font-size: 13px; margin: 24px 0 6px; color: var(--muted); }
+.pantry-group:first-child h3 { margin-top: 8px; }
+.pantry-group .stock-card, .pantry-group .directory-card { margin: 0; }
+.settings-layout .panel { border: 0; border-radius: 0; padding: 22px 0; box-shadow: none; background: none; border-top: 1px solid var(--line); }
+.settings-layout .panel:first-child { padding-top: 0; border-top: 0; }
+.connection-summary { background: none; border: 0; padding-left: 0; }
+.brand small { display: none; }
+#main-content { padding-bottom: 64px; }
+@media (max-width:650px) {
+  .picker-category-grid { column-gap: 14px; }
+  .picker-category-grid button { font-size: 13px; gap: 8px; min-height: 52px; }
+  .picker-category-grid button > svg:last-child { display: none; }
+  .picker-category-select select { width: 185px; }
+  #main-content { padding-bottom: 100px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+.pantry-workspace.is-empty { display: block; }
+.field-row > .field:only-child { grid-column: 1 / -1; }
+.card-bottom { justify-content: flex-end; }
+.card-bottom .match-label { margin-right: auto; }
+.catalog-photo, .recipe-card { transition: none; }
+.card-visual:hover .catalog-photo { transform: none; }
+.editor-section > .field:last-child { margin-bottom: 0; }
+.app-version { margin-top: 30px; color: var(--muted); font-size: 11px; }
+.setup-guide { margin-top: 24px; font-size: 12px; }
+.setup-guide summary, .danger-zone summary, .sync-advanced summary { cursor: pointer; }
+.sync-advanced { margin: 0 0 22px; font-size: 12px; color: var(--muted); }
+.sync-advanced[open] > div { margin-top: 14px; }
+.empty { border: 0; border-radius: 0; background: none; }
+.stock-identity small:empty { display: none; }
+.picker-selection { display: flex; flex-wrap: wrap; gap: 6px; max-height: 84px; overflow: auto; padding: 10px 24px; border-top: 1px solid var(--line); }
+.picker-selection button { gap: 5px; }
+.picker-selection svg { width: 12px; height: 12px; }
+@media(max-width:650px) { .picker-selection { padding: 10px 18px; } }
+
+.settings-layout > .panel { padding-top: 0; border-top: 0; }

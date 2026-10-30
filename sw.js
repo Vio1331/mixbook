@@ -1,7 +1,7 @@
 // A release uses one coherent code shell. New code becomes active only after all
-// its files are cached and the visitor accepts an update (or closes old tabs).
+// its files are cached. Open forms stay open; the next navigation uses this release.
 const PREFIX = 'mixbook-' + encodeURIComponent(self.registration.scope) + '-',
-  CACHE = PREFIX + 'v2.4.0',
+  CACHE = PREFIX + 'v2.5.0',
   IMAGES = PREFIX + 'images',
   SHELL = ['./', './index.html', './styles.css', './boot.js', './core.js',
     './catalog.js', './hierarchy.js', './app.js', './manifest.webmanifest',
@@ -9,7 +9,8 @@ const PREFIX = 'mixbook-' + encodeURIComponent(self.registration.scope) + '-',
   shellPaths = new Set(SHELL.map((p) => new URL(p, self.registration.scope).pathname));
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) =>
-    cache.addAll(SHELL.map((p) => new Request(new URL(p, self.registration.scope), { cache: 'reload' })))));
+    cache.addAll(SHELL.map((p) => new Request(new URL(p, self.registration.scope), { cache: 'reload' }))))
+    .then(() => self.skipWaiting()));
 });
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'ACTIVATE_UPDATE') self.skipWaiting();
