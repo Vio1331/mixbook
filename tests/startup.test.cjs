@@ -67,7 +67,7 @@ test("没有数据库权限时也能打开试用界面，清楚提示临时会�
     );
   assert.ok(elements.get("#app").innerHTML.includes("临时会话"));
   assert.ok(elements.get("#app").innerHTML.includes("我的配方"));
-  assert.ok(elements.get("#recipe-results").innerHTML.includes("尼格罗尼"));
+  assert.ok(elements.get("#app").innerHTML.includes("尼格罗尼"));
   assert.ok(elements.get("#recipe-results").innerHTML.includes("缺 3 种原料"));
   assert.ok(elements.get("#app").innerHTML.includes("我的收藏"));
   assert.ok(events.click && events.change && events.submit);

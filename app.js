@@ -202,6 +202,8 @@
     pantryTab = "owned",
     pantryQ = "",
     layout = "grid";
+  let resultPage = 1, resultSignature = "";
+  const pageSize = 24;
   let filters = {
     q: "",
     tags: [],
@@ -543,7 +545,7 @@
     const active = focusSnapshot();
     $("#app").innerHTML =
       nav() +
-      `<main id="main-content" class="shell" tabindex="-1">${storageError ? `<div class="notice" role="alert">${esc(storageError)}</div>` : ""}${view === "recipes" ? recipesPage() : view === "pantry" ? pantryPage() : settingsPage()}<footer class="footer"><span>喝了么 · 私人调酒手册</span><span>本机保存 / 离线可用 <span class="footer-version">v2.1</span></span></footer></main>`;
+      `<main id="main-content" class="shell" tabindex="-1">${storageError ? `<div class="notice" role="alert">${esc(storageError)}</div>` : ""}${view === "recipes" ? recipesPage() : view === "pantry" ? pantryPage() : settingsPage()}<footer class="footer"><span>喝了么 · 私人调酒手册</span><span>本机保存 / 离线可用 <span class="footer-version">v2.2</span></span></footer></main>`;
     if (view === "recipes") renderResults();
     if (view === "pantry") renderPantry();
     const filterDialog = $('#filter-dialog');
@@ -567,14 +569,20 @@
       ? `<div class="draft-banner"><span>${icon("edit")} 上次的${kind === "recipe" ? "配方" : "酒柜"}草稿已保留${record.recipe?.name ? " · " + esc(record.recipe.name) : ""}</span><button class="link-button" data-action="resume-${kind}-draft">继续编辑 ${icon("arrow")}</button></div>`
       : "";
   }
+  function discoveryHero() {
+    const featured = env.data.recipes.find((r) => r.id === 'iba-negroni') || env.data.recipes[0];
+    if (!featured) return '';
+    return `<section class="discovery-hero" aria-label="酒谱灵感"><div class="hero-copy"><span class="eyebrow">THE HOME BAR COLLECTION</span><h2>好的一杯，<br>从灵感开始。</h2><p>探索 ${env.data.recipes.length} 份酒谱，把喜欢的味道变成自己的配方。</p><div class="hero-links"><button class="btn primary" data-action="surprise">${icon('glass')}给我一点灵感</button><button class="link-button" data-action="show-mine">我的创作 ${icon('arrow')}</button></div></div><button class="hero-feature" data-detail="${esc(featured.id)}" aria-label="探索经典：${esc(featured.name)}">${photo(featured, 'hero-photo')}<span class="hero-feature-label"><small>从经典开始 / ${esc(featured.base)}</small><strong>${esc(featured.name)} ${icon('arrow')}</strong><span>${esc(featured.en)}</span></span></button></section>`;
+  }
   function recipesPage() {
     return (
       heading(
-        "A LITTLE SPIRIT, A LOT OF POSSIBILITIES",
-        "今晚，调一杯。",
-        "发现经典，留下自己的配方。",
+        "EXPLORE / CREATE / MIX",
+        "发现你的下一杯",
+        "一本不断生长的私人酒谱。",
         `<button class="btn primary" data-action="new">${icon("plus")}新增配方</button>`,
       ) +
+      discoveryHero() +
       `<div class="discovery-strip"><div>${icon("bottle")}<span>${env.data.pantryItems.length ? `酒柜已有 <strong>${env.data.pantryItems.length}</strong> 种原料` : "从你的酒柜，发现下一杯"}</span></div><div class="discovery-actions"><button class="discovery-link" data-availability="ready">原料齐全 <strong>${readyCount()}</strong>${icon("arrow")}</button><button class="discovery-link" data-availability="one">只差一种 <strong>${[...analysis().values()].filter((m) => m.missing.length === 1).length}</strong>${icon("arrow")}</button><button class="discovery-link" data-view="pantry">${env.data.pantryItems.length ? "整理酒柜" : "添加已有原料"}${icon("plus")}</button></div></div>` +
       draftBanner(draftRecord, "recipe") +
       `<div class="collection-bar"><div class="view-tabs" aria-label="酒谱范围">${[
@@ -588,7 +596,7 @@
         )
         .join(
           "",
-        )}</div><span class="collection-note">${readyCount()} 份原料齐全</span></div><div class="workspace"><aside class="filter-rail ${filterOpen ? "mobile-open" : ""}" aria-label="筛选配方"><div class="filter-head"><h2>筛选酒谱</h2><div class="row"><button class="link-button" data-action="reset-filters">重置</button><button class="icon-button filter-close" data-close="filter-dialog" aria-label="关闭筛选">${icon("close")}</button></div></div><div class="filter-block"><h3>基酒</h3><div class="base-filter-list">${[["", "全部基酒"], ...["金酒", "威士忌", "朗姆酒", "龙舌兰", "伏特加", "白兰地", "其他烈酒", "多种烈酒"].map((v) => [v, v])].map(([v, l]) => `<button class="filter-choice ${filters.base === v ? "active" : ""}" data-base-filter="${esc(v)}" aria-pressed="${filters.base === v}">${l}</button>`).join("")}</div></div><div class="filter-block"><h3>风味</h3><div class="chips">${env.data.options.tags.map((t) => `<button class="chip ${filters.tags.includes(t) ? "active" : ""}" data-filter-tag="${esc(t)}" aria-pressed="${filters.tags.includes(t)}">${esc(t)}</button>`).join("")}</div><p class="filter-caption">任一已选风味</p></div><div class="filter-block"><h3>我的原料</h3><label class="sr-only" for="availability-filter">原料筛选</label><select id="availability-filter">${[
+        )}</div><span class="collection-note">${readyCount()} 份原料齐全</span></div><div class="workspace"><aside class="filter-rail ${filterOpen ? "mobile-open" : ""}" aria-label="筛选配方"><div class="filter-head"><h2>筛选酒谱</h2><div class="row"><button class="link-button" data-action="reset-filters">重置</button><button class="icon-button filter-close" data-close="filter-dialog" aria-label="关闭筛选">${icon("close")}</button></div></div><div class="filter-block"><h3>基酒</h3><div class="base-filter-list">${[["", "全部基酒"], ...["金酒", "威士忌", "朗姆酒", "龙舌兰", "伏特加", "白兰地", "其他烈酒", "多种烈酒"].map((v) => [v, v])].map(([v, l]) => `<button class="filter-choice ${filters.base === v ? "active" : ""}" data-base-filter="${esc(v)}" aria-pressed="${filters.base === v}">${l}<small>${env.data.recipes.filter((r) => !v || r.base === v).length}</small></button>`).join("")}</div></div><div class="filter-block"><h3>风味</h3><div class="chips">${env.data.options.tags.map((t) => `<button class="chip ${filters.tags.includes(t) ? "active" : ""}" data-filter-tag="${esc(t)}" aria-pressed="${filters.tags.includes(t)}">${esc(t)}</button>`).join("")}</div><p class="filter-caption">任一已选风味</p></div><div class="filter-block"><h3>我的原料</h3><label class="sr-only" for="availability-filter">原料筛选</label><select id="availability-filter">${[
         ["all", "全部配方"],
         ["ready", "原料齐全"],
         ["one", "只差一种"],
@@ -612,7 +620,7 @@
         )
         .join(
           "",
-        )}</select></label><div class="layout-toggle" aria-label="展示方式"><button data-layout="grid" class="${layout === "grid" ? "active" : ""}" aria-label="卡片视图" aria-pressed="${layout === "grid"}">${icon("grid")}</button><button data-layout="list" class="${layout === "list" ? "active" : ""}" aria-label="列表视图" aria-pressed="${layout === "list"}">${icon("list")}</button></div></div><div class="results-heading"><p id="results-summary" aria-live="polite"></p><div id="active-filters" class="chips"></div></div><div id="recipe-results" class="result-grid ${layout === "list" ? "is-list" : ""}"></div></section></div>`
+        )}</select></label><div class="layout-toggle" aria-label="展示方式"><button data-layout="grid" class="${layout === "grid" ? "active" : ""}" aria-label="卡片视图" aria-pressed="${layout === "grid"}">${icon("grid")}</button><button data-layout="list" class="${layout === "list" ? "active" : ""}" aria-label="列表视图" aria-pressed="${layout === "list"}">${icon("list")}</button></div></div><div class="results-heading"><p id="results-summary" aria-live="polite"></p><div id="active-filters" class="chips"></div></div><div id="recipe-results" class="result-grid ${layout === "list" ? "is-list" : ""}"></div><nav id="result-pagination" class="pagination" aria-label="酒谱分页"></nav></section></div>`
     );
   }
   function photoPlaceholder(r, cls = "") {
@@ -710,6 +718,13 @@
         (a, b) => randomOrder.indexOf(a.id) - randomOrder.indexOf(b.id),
       );
     }
+    const signature = JSON.stringify([filters, sort]);
+    if (signature !== resultSignature) { resultPage = 1; resultSignature = signature; }
+    const pages = Math.max(1, Math.ceil(result.length / pageSize));
+    resultPage = Math.max(1, Math.min(resultPage, pages));
+    const offset = (resultPage - 1) * pageSize;
+    $('#result-pagination').innerHTML = result.length > pageSize
+      ? `<span>显示 ${offset + 1}–${Math.min(offset + pageSize, result.length)} / ${result.length} 份</span><div><button class="btn small" data-result-page="${resultPage - 1}" ${resultPage === 1 ? 'disabled' : ''} aria-label="上一页">上一页</button><label class="page-jump"><span class="sr-only">跳转到页</span><select id="result-page">${Array.from({length: pages}, (_, n) => `<option value="${n + 1}" ${resultPage === n + 1 ? 'selected' : ''}>第 ${n + 1} / ${pages} 页</option>`).join('')}</select></label><button class="btn small" data-result-page="${resultPage + 1}" ${resultPage === pages ? 'disabled' : ''} aria-label="下一页">下一页</button></div>` : '';
     const selected = [
       ...(filters.q.trim() ? [['q', filters.q.trim()]] : []),
       ...(filters.base ? [['base', filters.base]] : []),
@@ -725,7 +740,7 @@
       ? !env.data.recipes.some((r) => !r.catalog || r.versions.length)
       : filters.collection === 'favorites' && !env.data.recipes.some((r) => env.data.favorites[r.id]);
     $("#recipe-results").innerHTML = result.length
-      ? result
+      ? result.slice(offset, offset + pageSize)
           .map(
             (r) =>
               `<article class="recipe-card"><button class="card-visual" tabindex="-1" data-detail="${esc(r.id)}" data-detail-version="${esc(r.versionId || "")}" aria-label="查看${esc(r.name)}">${photo(r, "catalog-photo")}<span class="card-provenance">${r.versionId ? "我的版本" : r.catalog ? "经典配方" : "私人配方"}</span></button><button class="card-main" data-detail="${esc(r.id)}" data-detail-version="${esc(r.versionId || "")}"><h3>${esc(r.name)}</h3>${r.en ? `<p class="recipe-en">${esc(r.en)}</p>` : ""}<p class="card-facts">${[r.base, r.tags[0], r.method].filter(Boolean).map(esc).join(" · ")}</p>${layout === "list" ? `<p class="card-ingredients">${r.ingredients.map((x) => esc(ingredientName(x.id))).join(" / ")}</p>` : ""}</button><div class="card-bottom">${matchLabel(r, matches.get(r.id))}<button class="icon-button ${env.data.favorites[r.id] ? "is-favorite" : ""}" data-favorite="${esc(r.id)}" aria-label="${env.data.favorites[r.id] ? "取消收藏" : "收藏"}${esc(r.name)}" aria-pressed="${!!env.data.favorites[r.id]}">${icon("heart")}</button></div></article>`,
@@ -737,6 +752,16 @@
 
   }
 
+  function pantryInsights() {
+    const candidates = new Map();
+    for (const match of analysis().values()) {
+      if (match.missing.length !== 1) continue;
+      const id = match.missing[0].id;
+      candidates.set(id, (candidates.get(id) || 0) + 1);
+    }
+    const best = [...candidates].sort((a,b) => b[1] - a[1]).slice(0,3);
+    return `<section class="pantry-insights" aria-label="酒柜概览"><div class="pantry-stat"><span>${icon('bottle')}我的原料</span><strong>${env.data.pantryItems.length}<small>种</small></strong></div><button class="pantry-stat" data-action="show-ready"><span>${icon('glass')}现在能调</span><strong>${readyCount()}<small>份酒谱 ${icon('arrow')}</small></strong></button><div class="pantry-opportunities"><h2>再添一种，多一点可能</h2>${best.length ? best.map(([id,count]) => `<button data-add-material-stock="${esc(id)}"><span>${esc(ingredientName(id))}</span><small>补齐 ${count} 份酒谱 ${icon('plus')}</small></button>`).join('') : '<p>记录已有原料后，这里会推荐能补齐配方的材料。</p>'}<small class="hint">按主体原料计算；仅在实际拥有后加入酒柜。</small></div></section>`;
+  }
   function pantryPage() {
     const owned = env.data.pantryItems.length;
     return (
@@ -746,6 +771,7 @@
         `${owned} 种已有原料 · ${readyCount()} 份配方原料齐全`,
         `<button class="btn primary" data-action="${pantryTab === "owned" ? "add-stock" : "new-material"}">${icon("plus")}${pantryTab === "owned" ? "添加已有原料" : "新增原料定义"}</button>`,
       ) +
+      pantryInsights() +
       draftBanner(stockDraftRecord, "stock") +
       `<div class="collection-bar"><div class="view-tabs"><button data-pantry-tab="owned" class="${pantryTab === "owned" ? "active" : ""}" aria-pressed="${pantryTab === "owned"}">我的酒柜<span>${owned}</span></button><button data-pantry-tab="directory" class="${pantryTab === "directory" ? "active" : ""}" aria-pressed="${pantryTab === "directory"}">原料目录<span>${env.data.ingredients.length}</span></button></div><button class="link-button" data-action="show-ready">看看能调什么 ${icon("arrow")}</button></div><div class="workspace pantry-workspace"><aside class="pantry-sidebar ${filterOpen ? "mobile-open" : ""}" aria-label="原料类别"><div class="filter-head"><h2>原料类别</h2><button class="icon-button filter-close" data-close="filter-dialog" aria-label="关闭分类">${icon("close")}</button></div><div class="pantry-category-list">${[["all", "全部原料", "grid"], ...pantryMenus.map(([id]) => [id, ingredientName(id), pantryCategoryIcon(id)])].map(([id, name, i]) => `<button data-pantry-section="${id}" class="filter-choice ${pantrySection === id ? "active" : ""}" aria-pressed="${pantrySection === id}">${icon(i)}<span>${esc(name)}</span><small>${pantryTab === "directory" ? env.data.ingredients.filter((i) => id === "all" || C.satisfies(i.id, id, env.data)).length : id === "all" ? owned : env.data.pantryItems.filter((x) => x.matches.some((m) => C.satisfies(m, id, env.data))).length}</small></button>`).join("")}</div><button class="btn primary filter-apply" data-close="filter-dialog">查看原料</button></aside><section class="pantry-content"><div class="recipe-toolbar"><label class="search-field">${icon("search")}<span class="sr-only">搜索酒柜或原料</span><input id="pantry-search" type="search" autocomplete="off" placeholder="搜索名称、品牌或类别…" value="${esc(pantryQ)}"></label><button class="btn small mobile-filter-toggle" data-action="toggle-filters" aria-expanded="${filterOpen}" aria-controls="filter-dialog">${icon("filter")}分类</button></div><div id="pantry-results"></div></section></div>`
     );
@@ -957,7 +983,7 @@
     row = { id: "", amount: "", unit: "ml", optional: false, alternatives: [] },
     section = "ingredients",
   ) {
-    return `<div class="ingredient-edit-row" data-section="${section}"><input type="hidden" name="ingredientId" value="${esc(row.id)}"><div class="ingredient-edit-main">${materialButton(row.id, editorDraft)}<label class="amount-field"><span>用量</span><input name="amount" autocomplete="off" inputmode="text" required maxlength="40" value="${esc(row.amount)}" placeholder="30 / 适量"></label><label class="unit-field"><span>单位</span><input name="unit" list="unit-options" autocomplete="off" maxlength="30" value="${esc(row.unit)}" placeholder="ml"></label><button type="button" class="icon-button" data-action="remove-row" aria-label="移除这一项">${icon("close")}</button></div><div class="row-settings"><label class="optional-check"><input name="optional" type="checkbox" ${row.optional ? "checked" : ""}>可选</label>${section === "ingredients" ? `<button type="button" class="link-button alternative-add" data-action="add-alternative">添加替代原料</button>` : ""}<div class="alternative-list">${(row.alternatives || []).map((id) => alternativeMarkup(id)).join("")}</div></div><p class="row-error" role="alert"></p></div>`;
+    return `<div class="ingredient-edit-row" data-section="${section}"><input type="hidden" name="ingredientId" value="${esc(row.id)}"><div class="ingredient-edit-main">${materialButton(row.id, editorDraft)}<label class="amount-field"><span>用量</span><input name="amount" autocomplete="off" inputmode="text" required maxlength="40" value="${esc(row.amount)}" placeholder="30 / 适量"></label><label class="unit-field"><span>单位</span><input name="unit" list="unit-options" autocomplete="off" maxlength="30" value="${esc(row.unit)}" placeholder="ml"></label><button type="button" class="icon-button" data-action="remove-row" aria-label="移除这一项">${icon("close")}</button></div><div class="row-settings"><div class="row-order"><button type="button" class="link-button" data-action="row-up" aria-label="上移原料">上移</button><button type="button" class="link-button" data-action="row-down" aria-label="下移原料">下移</button><button type="button" class="link-button" data-action="row-copy" aria-label="复制原料行">复制</button></div><label class="optional-check"><input name="optional" type="checkbox" ${row.optional ? "checked" : ""}>可选</label>${section === "ingredients" ? `<button type="button" class="link-button alternative-add" data-action="add-alternative">添加替代原料</button>` : ""}<div class="alternative-list">${(row.alternatives || []).map((id) => alternativeMarkup(id)).join("")}</div></div><p class="row-error" role="alert"></p></div>`;
   }
   function alternativeMarkup(id) {
     return `<span class="chip" data-alternative="${esc(id)}">${esc(ingredientName(id, editorDraft))}<button type="button" data-action="remove-alternative" aria-label="移除${esc(ingredientName(id, editorDraft))}">×</button></span>`;
@@ -1002,9 +1028,27 @@
     };
     editor.library = editorDraft;
   }
+  function updateEditorPreview() {
+    if (!editor || !$('#editor-preview')) return;
+    const r = editor.recipe;
+    const rows = r.ingredients.filter((x) => ingredient(x.id, editorDraft));
+    const steps = r.steps.filter((x) => x.trim());
+    const checks = [
+      [!!r.name.trim(), '填写名称', 'editor-identity'],
+      [r.ingredients.length > 0 && r.ingredients.every((x) => ingredient(x.id, editorDraft) && !C.amountIssue(x.amount)), '原料与用量', 'editor-materials'],
+      [steps.length > 0, '调制步骤', 'editor-method'],
+    ];
+    const completed = checks.filter(([done]) => done).length;
+    $('#editor-preview').innerHTML = `<div class="preview-heading"><span class="eyebrow">LIVE PREVIEW</span><span class="preview-label">实时预览</span></div><h2>${esc(r.name || '你的下一份创作')}</h2><p class="recipe-en">${esc(r.en || r.author || '从一份配方，记录一个味道。')}</p><div class="preview-facts"><span>${rows.length} 种原料</span><span>${steps.length} 个步骤</span>${r.method ? `<span>${esc(r.method)}</span>` : ''}</div><div class="preview-recipe">${rows.length ? rows.map((x) => `<div><span>${esc(ingredientName(x.id, editorDraft))}${x.optional ? '<small> · 可选</small>' : ''}</span><strong>${esc(x.amount || '待填')} ${esc(x.unit)}</strong></div>`).join('') : '<p>选择原料后，在这里核对用量。</p>'}</div><div class="entry-checklist"><strong>录入进度 <span>${completed} / 3</span></strong><progress value="${completed}" max="3" aria-label="必填内容完成进度"></progress>${checks.map(([done,label,id]) => `<a href="#${id}" class="${done ? 'complete' : ''}">${icon(done ? 'check' : 'minus')}${label}</a>`).join('')}<p>填写即保留草稿，稍后可以继续。<br>风味、来源和图片在「其他信息」中补充。</p></div>`;
+    for (const section of ['ingredients', 'garnishes']) $('#editor-' + section).querySelectorAll('.ingredient-edit-row').forEach((row,n,all) => {
+      row.querySelector('[data-action="row-up"]').disabled = n === 0;
+      row.querySelector('[data-action="row-down"]').disabled = n === all.length - 1;
+    });
+  }
   async function stashEditor() {
     if (!editor) return;
     captureEditor();
+    updateEditorPreview();
     draftRecord = C.clone(editor);
     draftRecord.savedAt = C.now();
     writeLocal("mixbook.recipe-draft", draftRecord);
@@ -1109,7 +1153,7 @@
     const r = editor.recipe,
       isVersion = editor.mode === "version",
       el = $("#editor-dialog");
-    el.innerHTML = `<form id="recipe-form" novalidate><div class="dialog-top"><div><span>${isVersion ? "我的配方版本" : editor.mode === "variant" ? "创建变体" : editor.id ? "编辑配方" : "新增配方"}</span><p id="draft-status">填写即保留草稿</p></div><button type="button" class="icon-button" data-close="editor-dialog" aria-label="保存草稿并关闭">${icon("close")}</button></div><div class="editor-body"><nav class="editor-sections" aria-label="编辑区域"><a href="#editor-identity">基本信息</a><a href="#editor-materials">原料组成</a><a href="#editor-method">调制步骤</a><a href="#editor-more">其他信息</a></nav><section id="editor-identity" class="editor-section"><div class="section-heading"><h2>01 <span>基本信息</span></h2></div><div class="field-row"><label class="field">${isVersion ? "版本名称" : "酒名"} <span class="required">*</span><input name="name" autofocus required maxlength="100" value="${esc(r.name)}" placeholder="${isVersion ? "例如：偏金酒的 45 / 30 / 30" : "例如：我的尼格罗尼"}"></label><label class="field">${isVersion ? "记录者（可选）" : "英文名（可选）"}<input name="${isVersion ? "author" : "en"}" maxlength="100" value="${esc(isVersion ? r.author || "" : r.en || "")}"></label></div>${isVersion ? `<p class="hint">此版本属于“${esc(env.data.recipes.find((x) => x.id === editor.id)?.name || "原配方")}”，标准配方会保留。</p>` : ""}</section><section id="editor-materials" class="editor-section"><div class="section-heading"><h2>02 <span>原料组成</span></h2><button type="button" class="link-button" data-action="toggle-paste">多行粘贴</button></div><div id="paste-panel" class="paste-panel" hidden><label class="field">每行一种原料<textarea id="paste-ingredients" rows="4" placeholder="金酒 30 ml&#10;金巴利 30 ml&#10;甜味美思 30 ml"></textarea></label><div class="row"><button type="button" class="btn small" data-action="parse-paste">添加到原料表</button><span id="paste-status" class="hint" role="status"></span></div></div><div id="editor-ingredients">${(r.ingredients.length ? r.ingredients : [{}]).map((x) => rowMarkup({ amount: "", unit: "ml", optional: false, ...x })).join("")}</div><button type="button" class="btn add-row" data-add-row="ingredients">${icon("plus")}添加原料</button><details class="garnish-editor" ${r.garnishes.length ? "open" : ""}><summary>装饰 <span>${r.garnishes.length ? "已添加 " + r.garnishes.length + " 项" : "可选填写"}</span></summary><div id="editor-garnishes">${r.garnishes.map((x) => rowMarkup(x, "garnishes")).join("")}</div><button class="link-button" type="button" data-add-row="garnishes">${icon("plus")}添加装饰</button></details><datalist id="unit-options">${["ml", "吧匙", "茶匙", "汤匙", "dash", "滴", "片", "枝", "颗", "撮", "块", "份", "补满", "冲洗"].map((x) => `<option value="${x}"></option>`).join("")}</datalist></section><section id="editor-method" class="editor-section"><div class="section-heading"><h2>03 <span>调制步骤</span></h2></div><label class="field">每行一个步骤 <span class="required">*</span><textarea name="steps" required rows="5" placeholder="材料加冰摇匀。&#10;滤入预冷鸡尾酒杯。">${esc(r.steps.join("\n"))}</textarea></label><div class="field-row"><label class="field">调制方式<select name="method">${selectOptions(["摇和", "搅拌", "直调", "捣压", "搅打", "旋调"], r.method, "暂不指定")}</select></label><label class="field">杯型<select name="glass">${selectOptions([...new Set([...env.data.options.glasses, r.glass].filter(Boolean))], r.glass, "暂不指定")}</select></label></div></section><section id="editor-more" class="editor-section"><details class="editor-advanced" ${r.notes ? "open" : ""}><summary>其他信息 <span>风味、来源与笔记</span></summary><div class="field-row"><label class="field">基酒<select name="base">${selectOptions(["金酒", "朗姆酒", "伏特加", "龙舌兰", "威士忌", "白兰地", "其他烈酒", "多种烈酒"], r.base, "保存时根据原料推断")}</select></label><label class="field">配方来源<input name="sourceName" list="source-options" maxlength="200" value="${esc(r.sourceName || "")}" placeholder="个人配方 / 书名 / 调酒师"><datalist id="source-options">${env.data.options.sources.map((x) => `<option value="${esc(x)}"></option>`).join("")}</datalist></label></div><fieldset class="tag-picker"><legend>风味标签</legend><div class="chips">${[...new Set([...env.data.options.tags, ...r.tags])].map((t) => `<label class="chip pick-chip"><input name="tags" type="checkbox" value="${esc(t)}" ${r.tags.includes(t) ? "checked" : ""}>${esc(t)}</label>`).join("")}</div></fieldset><div class="inline-tag-add"><label class="sr-only" for="new-recipe-tag">新增风味标签</label><input id="new-recipe-tag" maxlength="60" placeholder="新增风味标签"><button type="button" class="btn small" data-action="add-recipe-tag">添加</button></div><label class="field">配方笔记<textarea name="notes" maxlength="10000" rows="3" placeholder="喜欢的比例、调整原因、制作心得…">${esc(r.notes || "")}</textarea></label><label class="field">来源链接 / 书名页码<input name="source" maxlength="2000" value="${esc(r.source || "")}"></label>${
+    el.innerHTML = `<form id="recipe-form" novalidate><div class="dialog-top"><div><span>${isVersion ? "我的配方版本" : editor.mode === "variant" ? "创建变体" : editor.id ? "编辑配方" : "新增配方"}</span><p id="draft-status">填写即保留草稿</p></div><button type="button" class="icon-button" data-close="editor-dialog" aria-label="保存草稿并关闭">${icon("close")}</button></div><div class="editor-body"><div class="editor-layout"><div class="editor-fields"><nav class="editor-sections" aria-label="编辑区域"><a href="#editor-identity">基本信息</a><a href="#editor-materials">原料组成</a><a href="#editor-method">调制步骤</a><a href="#editor-more">其他信息</a></nav><section id="editor-identity" class="editor-section"><div class="section-heading"><h2>01 <span>基本信息</span></h2></div><div class="field-row"><label class="field">${isVersion ? "版本名称" : "酒名"} <span class="required">*</span><input name="name" autofocus required maxlength="100" value="${esc(r.name)}" placeholder="${isVersion ? "例如：偏金酒的 45 / 30 / 30" : "例如：我的尼格罗尼"}"></label><label class="field">${isVersion ? "记录者（可选）" : "英文名（可选）"}<input name="${isVersion ? "author" : "en"}" maxlength="100" value="${esc(isVersion ? r.author || "" : r.en || "")}"></label></div>${isVersion ? `<p class="hint">此版本属于“${esc(env.data.recipes.find((x) => x.id === editor.id)?.name || "原配方")}”，标准配方会保留。</p>` : ""}</section><section id="editor-materials" class="editor-section"><div class="section-heading"><h2>02 <span>原料组成</span></h2><button type="button" class="link-button" data-action="toggle-paste">多行粘贴</button></div><div id="paste-panel" class="paste-panel" hidden><label class="field">每行一种原料<textarea id="paste-ingredients" rows="4" placeholder="金酒 30 ml&#10;金巴利 30 ml&#10;甜味美思 30 ml"></textarea></label><div class="row"><button type="button" class="btn small" data-action="parse-paste">添加到原料表</button><span id="paste-status" class="hint" role="status"></span></div></div><div id="editor-ingredients">${(r.ingredients.length ? r.ingredients : [{}]).map((x) => rowMarkup({ amount: "", unit: "ml", optional: false, ...x })).join("")}</div><button type="button" class="btn add-row" data-add-row="ingredients">${icon("plus")}添加原料</button><details class="garnish-editor" ${r.garnishes.length ? "open" : ""}><summary>装饰 <span>${r.garnishes.length ? "已添加 " + r.garnishes.length + " 项" : "可选填写"}</span></summary><div id="editor-garnishes">${r.garnishes.map((x) => rowMarkup(x, "garnishes")).join("")}</div><button class="link-button" type="button" data-add-row="garnishes">${icon("plus")}添加装饰</button></details><datalist id="unit-options">${["ml", "吧匙", "茶匙", "汤匙", "dash", "滴", "片", "枝", "颗", "撮", "块", "份", "补满", "冲洗"].map((x) => `<option value="${x}"></option>`).join("")}</datalist></section><section id="editor-method" class="editor-section"><div class="section-heading"><h2>03 <span>调制步骤</span></h2></div><label class="field">每行一个步骤 <span class="required">*</span><textarea name="steps" required rows="5" placeholder="材料加冰摇匀。&#10;滤入预冷鸡尾酒杯。">${esc(r.steps.join("\n"))}</textarea></label><div class="field-row"><label class="field">调制方式<select name="method">${selectOptions(["摇和", "搅拌", "直调", "捣压", "搅打", "旋调"], r.method, "暂不指定")}</select></label><label class="field">杯型<select name="glass">${selectOptions([...new Set([...env.data.options.glasses, r.glass].filter(Boolean))], r.glass, "暂不指定")}</select></label></div></section><section id="editor-more" class="editor-section"><details class="editor-advanced" ${r.notes ? "open" : ""}><summary>其他信息 <span>风味、来源与笔记</span></summary><div class="field-row"><label class="field">基酒<select name="base">${selectOptions(["金酒", "朗姆酒", "伏特加", "龙舌兰", "威士忌", "白兰地", "其他烈酒", "多种烈酒"], r.base, "保存时根据原料推断")}</select></label><label class="field">配方来源<input name="sourceName" list="source-options" maxlength="200" value="${esc(r.sourceName || "")}" placeholder="个人配方 / 书名 / 调酒师"><datalist id="source-options">${env.data.options.sources.map((x) => `<option value="${esc(x)}"></option>`).join("")}</datalist></label></div><fieldset class="tag-picker"><legend>风味标签</legend><div class="chips">${[...new Set([...env.data.options.tags, ...r.tags])].map((t) => `<label class="chip pick-chip"><input name="tags" type="checkbox" value="${esc(t)}" ${r.tags.includes(t) ? "checked" : ""}>${esc(t)}</label>`).join("")}</div></fieldset><div class="inline-tag-add"><label class="sr-only" for="new-recipe-tag">新增风味标签</label><input id="new-recipe-tag" maxlength="60" placeholder="新增风味标签"><button type="button" class="btn small" data-action="add-recipe-tag">添加</button></div><label class="field">配方笔记<textarea name="notes" maxlength="10000" rows="3" placeholder="喜欢的比例、调整原因、制作心得…">${esc(r.notes || "")}</textarea></label><label class="field">来源链接 / 书名页码<input name="source" maxlength="2000" value="${esc(r.source || "")}"></label>${
       !isVersion
         ? `<label class="field">关联原配方<select name="parentId"><option value="">独立配方</option>${env.data.recipes
             .filter(
@@ -1123,7 +1167,7 @@
               "",
             )}</select></label><div class="field-row"><label class="field">使用已有配图<select name="image"><option value="">暂无配图</option>${window.MIX_SEED.recipes.map((x) => `<option value="${esc(x.image)}" ${r.image === x.image ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label><label class="field">自定义图片链接（HTTPS）<input name="photoUrl" type="url" value="${esc(r.photoUrl || "")}" maxlength="2000" placeholder="https://…"></label></div>`
         : `<input type="hidden" name="en" value="${esc(r.en || "")}"><input type="hidden" name="image" value="${esc(r.image || "")}"><input type="hidden" name="photoUrl" value="${esc(r.photoUrl || "")}"><input type="hidden" name="parentId" value="${esc(r.parentId || "")}">`
-    }</details></section><div id="editor-error" class="form-error" role="alert"></div></div><div class="dialog-actions"><button type="button" class="link-button danger left" data-action="discard-editor">放弃草稿</button><button class="btn" type="button" data-close="editor-dialog">稍后继续</button><button class="btn primary" type="submit">保存${isVersion ? "版本" : "配方"}</button></div></form>`;
+    }</details></section><div id="editor-error" class="form-error" role="alert"></div></div><aside id="editor-preview" class="editor-preview" aria-label="配方实时预览"></aside></div></div><div class="dialog-actions"><button type="button" class="link-button danger left" data-action="discard-editor">放弃草稿</button><button class="btn" type="button" data-close="editor-dialog">稍后继续</button><button class="btn primary" type="submit">保存${isVersion ? "版本" : "配方"}</button></div></form>`;
     showDialog(el);
     stashEditor();
   }
@@ -1197,7 +1241,10 @@
         );
       }
     }
-    if (!r.name.trim()) {
+    if (!r.ingredients.length) {
+      first ||= form.querySelector('[data-add-row="ingredients"]');
+      $('#editor-error').textContent = '请添加至少一种原料。';
+    } else if (!r.name.trim()) {
       first ||= form.elements.name;
       $("#editor-error").textContent = "请填写名称。";
     } else if (!r.steps.some((x) => x.trim())) {
@@ -1210,6 +1257,9 @@
     if (first) {
       first.setAttribute('aria-invalid', 'true');
       if (!first.closest('.ingredient-edit-row')) first.setAttribute('aria-describedby', 'editor-error');
+      for (let parent = first.parentElement; parent; parent = parent.parentElement) {
+        if (parent.tagName === 'DETAILS') parent.open = true;
+      }
       first.focus();
       first.scrollIntoView({ block: "center" });
       await stashEditor();
@@ -1410,7 +1460,7 @@
       .map(([name, i]) => `<span>${icon(i)}${esc(name)}</span>`)
       .join(
         "",
-      )}${r.glass ? `<span>${glassIcon(r.glass)}${esc(r.glass)}</span>` : ""}</div><div class="chips">${(r.tags || []).map((t) => `<span class="chip quiet">${esc(t)}</span>`).join("")}</div></div>${photo(base, "detail-photo")}</div><section class="version-section"><div class="section-heading"><h3>配方版本</h3><button class="link-button" data-add-version="${esc(id)}">${icon("plus")}添加我的版本</button></div><div class="version-tabs"><button class="chip ${!v ? "active" : ""}" data-version="" data-recipe="${esc(id)}" aria-pressed="${!v}">${base.catalog ? "标准配方" : "基础配方"}</button>${base.versions.map((x) => `<button class="chip ${v?.id === x.id ? "active" : ""}" data-version="${esc(x.id)}" data-recipe="${esc(id)}" aria-pressed="${v?.id === x.id}">${esc(x.name)}</button>`).join("")}</div>${v ? `<div class="version-caption"><span>${esc(v.author || "我的版本")}</span><div><button class="link-button" data-edit-version="${esc(v.id)}" data-recipe="${esc(id)}">编辑版本</button><button class="link-button danger" data-delete-version="${esc(v.id)}" data-recipe="${esc(id)}">删除</button></div></div>` : ""}</section><div class="detail-status">${matchLabel(r)}${m.ready && m.garnishes.some((x) => !x.optional) ? "<small>主体原料齐全，仍缺部分装饰</small>" : ""}<label class="scale-control"><span>制作杯数</span><select id="detail-scale">${[1, 2, 3, 4, 6, 8].map((n) => `<option value="${n}" ${n === detailScale ? "selected" : ""}>${n} 杯</option>`).join("")}</select></label></div><div class="detail-columns"><section><h3>调酒原料</h3>${detailRows(r.ingredients, "main")}${r.garnishes.length ? `<h3 class="garnish-heading">装饰</h3>${detailRows(r.garnishes, "garnish")}` : ""}${detailScale > 1 ? '<p class="hint scale-hint">数值用量按杯数调整；适量、补满等说明保持原样。</p>' : ""}</section><section><div class="section-heading"><h3>调制步骤</h3>${cooking ? `<span class="step-count">${Math.min(cookStep + 1, r.steps.length)} / ${r.steps.length}</span>` : ""}</div><ol class="method-steps">${r.steps.map((s, n) => `<li class="${cooking && cookStep === n ? "current" : ""}"><span class="step-number">${String(n + 1).padStart(2, "0")}</span>${cooking ? `<button data-cook-step="${n}" aria-pressed="${cookStep === n}">${esc(s)}</button>` : `<span>${esc(s)}</span>`}</li>`).join("")}</ol>${cooking ? '<button class="btn small" data-action="next-step">下一步 ' + icon("arrow") + "</button>" : ""}</section></div>${r.notes ? `<section class="notes-box"><h3>配方笔记</h3><p>${esc(r.notes)}</p></section>` : ""}${parent || children.length ? `<section class="related-recipes"><h3>相关变体</h3><div class="chips">${[...(parent ? [parent] : []), ...children].map((x) => `<button class="chip" data-detail="${esc(x.id)}">${esc(x.name)}</button>`).join("")}</div></section>` : ""}<p class="source-line">${safeLink(r.source) ? `配方参考：<a href="${esc(safeLink(r.source))}" target="_blank" rel="noopener noreferrer">查看原文 ${icon("arrow")}</a>` : esc(r.source || "个人记录")}</p></div><div class="dialog-actions"><button class="icon-button left ${env.data.favorites[id] ? "is-favorite" : ""}" data-favorite="${esc(id)}" aria-label="${env.data.favorites[id] ? "取消收藏此配方" : "收藏此配方"}" aria-pressed="${!!env.data.favorites[id]}">${icon("heart")}</button><details class="action-menu"><summary class="btn">更多</summary><div><button data-duplicate="${esc(id)}">复制配方</button><button data-variant="${esc(id)}">创建变体</button>${!base.catalog ? `<button class="danger" data-delete="${esc(id)}">删除配方</button>` : ""}</div></details>${!base.catalog ? `<button class="btn" data-edit="${esc(id)}">编辑</button>` : ""}<button class="btn primary" data-action="toggle-cooking">${icon(cooking ? "check" : "glass")}${cooking ? "结束调制" : "开始调制"}</button></div>`;
+      )}${r.glass ? `<span>${glassIcon(r.glass)}${esc(r.glass)}</span>` : ""}</div><div class="chips">${(r.tags || []).map((t) => `<span class="chip quiet">${esc(t)}</span>`).join("")}</div></div>${photo(base, "detail-photo")}</div><section class="version-section"><div class="section-heading"><h3>配方版本</h3><button class="link-button" data-add-version="${esc(id)}">${icon("plus")}添加我的版本</button></div><div class="version-tabs"><button class="chip ${!v ? "active" : ""}" data-version="" data-recipe="${esc(id)}" aria-pressed="${!v}">${base.catalog ? "标准配方" : "基础配方"}</button>${base.versions.map((x) => `<button class="chip ${v?.id === x.id ? "active" : ""}" data-version="${esc(x.id)}" data-recipe="${esc(id)}" aria-pressed="${v?.id === x.id}">${esc(x.name)}</button>`).join("")}</div>${v ? `<div class="version-caption"><span>${esc(v.author || "我的版本")}</span><div><button class="link-button" data-edit-version="${esc(v.id)}" data-recipe="${esc(id)}">编辑版本</button><button class="link-button danger" data-delete-version="${esc(v.id)}" data-recipe="${esc(id)}">删除</button></div></div>` : ""}</section><div class="detail-status">${matchLabel(r)}${m.ready && m.garnishes.some((x) => !x.optional) ? "<small>主体原料齐全，仍缺部分装饰</small>" : ""}<label class="scale-control"><span>制作杯数</span><select id="detail-scale">${[1, 2, 3, 4, 6, 8].map((n) => `<option value="${n}" ${n === detailScale ? "selected" : ""}>${n} 杯</option>`).join("")}</select></label></div>${m.missing.length ? `<div class="missing-summary"><strong>还需准备 ${m.missing.length} 种原料</strong><span>${m.missing.map((x) => esc(ingredientName(x.id))).join("、")}</span></div>` : ""}<div class="detail-columns"><section><div class="section-heading"><h3>调酒原料</h3><button class="link-button" data-action="copy-ingredients">${icon("copy")}复制清单</button></div>${detailRows(r.ingredients, "main")}${r.garnishes.length ? `<h3 class="garnish-heading">装饰</h3>${detailRows(r.garnishes, "garnish")}` : ""}${detailScale > 1 ? '<p class="hint scale-hint">数值用量按杯数调整；适量、补满等说明保持原样。</p>' : ""}</section><section><div class="section-heading"><h3>调制步骤</h3>${cooking ? `<span class="step-count">${Math.min(cookStep + 1, r.steps.length)} / ${r.steps.length}</span>` : ""}</div><ol class="method-steps">${r.steps.map((s, n) => `<li class="${cooking && cookStep === n ? "current" : ""}"><span class="step-number">${String(n + 1).padStart(2, "0")}</span>${cooking ? `<button data-cook-step="${n}" aria-pressed="${cookStep === n}">${esc(s)}</button>` : `<span>${esc(s)}</span>`}</li>`).join("")}</ol>${cooking ? '<button class="btn small" data-action="next-step">下一步 ' + icon("arrow") + "</button>" : ""}</section></div>${r.notes ? `<section class="notes-box"><h3>配方笔记</h3><p>${esc(r.notes)}</p></section>` : ""}${parent || children.length ? `<section class="related-recipes"><h3>相关变体</h3><div class="chips">${[...(parent ? [parent] : []), ...children].map((x) => `<button class="chip" data-detail="${esc(x.id)}">${esc(x.name)}</button>`).join("")}</div></section>` : ""}<p class="source-line">${safeLink(r.source) ? `配方参考：<a href="${esc(safeLink(r.source))}" target="_blank" rel="noopener noreferrer">查看原文 ${icon("arrow")}</a>` : esc(r.source || "个人记录")}</p></div><div class="dialog-actions"><button class="icon-button left ${env.data.favorites[id] ? "is-favorite" : ""}" data-favorite="${esc(id)}" aria-label="${env.data.favorites[id] ? "取消收藏此配方" : "收藏此配方"}" aria-pressed="${!!env.data.favorites[id]}">${icon("heart")}</button><details class="action-menu"><summary class="btn">更多</summary><div><button data-duplicate="${esc(id)}">复制配方</button><button data-variant="${esc(id)}">创建变体</button>${!base.catalog ? `<button class="danger" data-delete="${esc(id)}">删除配方</button>` : ""}</div></details>${!base.catalog ? `<button class="btn" data-edit="${esc(id)}">编辑</button>` : ""}<button class="btn primary" data-action="toggle-cooking">${icon(cooking ? "check" : "glass")}${cooking ? "结束调制" : "开始调制"}</button></div>`;
     if (!el.open) showDialog(el);
     el.querySelector(".detail-body").scrollTop = scroll;
     restoreFocus(active, el);
@@ -1657,6 +1707,12 @@
         "同步与数据",
         "本机保存开箱即用，也可连接私人 GitHub 仓库跨设备同步。",
       ) +
+      `<section class="data-overview" aria-label="本机数据概览">${[
+        ['个人配方', env.data.recipes.filter((r) => !r.catalog).length],
+        ['个人版本', env.data.recipes.reduce((n,r) => n + r.versions.length, 0)],
+        ['收藏酒谱', env.data.recipes.filter((r) => env.data.favorites[r.id]).length],
+        ['酒柜原料', env.data.pantryItems.length],
+      ].map(([label,n]) => `<div><span>${label}</span><strong>${n}</strong></div>`).join('')}</section>` +
       `<div class="settings-layout"><div><section class="panel"><div class="row spread"><h2>连接 GitHub</h2><span class="sync-badge">${env.lastSync ? "已连接" : connected ? "已配置" : "尚未连接"}</span></div><p class="panel-intro">使用独立的私有仓库保存酒谱，所有设备读取同一份数据。</p><div class="connection-summary"><span class="connection-icon">${icon("cloud")}</span><div><strong>${connected ? esc(config.owner + "/" + config.repo) : "尚未配置数据仓库"}</strong><span>${connected ? esc(config.path) + " · 自动同步已" + (config.auto ? "开启" : "关闭") : "连接自己的私有仓库，跨设备保留记录"}</span></div></div><div class="status-box">${esc(status())} · ${esc(dateText(env.lastSync))}</div><div class="row wrap connection-actions"><button class="btn primary" data-action="open-sync-settings">${connected ? "管理连接" : "连接 GitHub"} ${icon("arrow")}</button>${connected ? `<button class="btn" data-action="sync-now" ${syncBusy ? "disabled" : ""}>${icon("refresh")}${syncBusy ? "正在同步" : "手动同步"}</button>` : ""}</div></section><p class="hint">手动同步默认提供合并两端修改，也可明确选择上传或下载覆盖。未连接前，配方只保存在当前浏览器中。</p></div><div><section class="panel"><h2>导入与导出</h2><p class="panel-intro">没有仓库时，也可以先保存一份完整备份。</p><div class="backup-row"><div><strong>导出全部数据</strong><p>配方、材料、酒柜和收藏</p></div><button class="btn small" data-action="export">${icon("download")}导出</button></div><div class="backup-row"><div><strong>导入已有数据</strong><p>合并记录，遇到冲突会询问</p></div><button class="btn small" data-action="import">${icon("upload")}导入</button></div><input id="import-file" type="file" accept=".json,application/json" hidden></section><section class="panel"><h2>仓库准备好后</h2><ol class="steps-list"><li>创建一个<strong>私有仓库</strong>，勾选添加 README，先保留空白即可。</li><li>创建仅限该仓库的 Fine-grained Token，授予 Contents 读写权限。</li><li>打开“连接 GitHub”填写信息并保存。</li></ol><a class="link-button" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">打开 GitHub 令牌设置 ${icon("arrow")}</a></section><section class="panel danger-zone"><h2>本地数据</h2><p class="hint">清空此浏览器中的配方、酒柜、收藏和同步设置。建议先导出备份。</p><button class="btn danger" data-action="clear-local-data">清空本地数据</button></section></div></div>`
     );
   }
@@ -2190,6 +2246,13 @@
       await navigate(b.dataset.view);
       return;
     }
+    if (b.dataset.resultPage) {
+      resultPage = Number(b.dataset.resultPage);
+      renderResults();
+      $('#recipe-results').scrollIntoView({block: 'start', behavior: 'instant'});
+      $('#result-page')?.focus({preventScroll: true});
+      return;
+    }
     if (b.dataset.removeFilter) {
       const key = b.dataset.removeFilter;
       if (key === 'tag') filters.tags = filters.tags.filter((t) => t !== b.dataset.filterValue);
@@ -2411,6 +2474,37 @@
       return;
     }
     switch (b.dataset.action) {
+      case 'show-mine':
+        filters.collection = 'mine';
+        render();
+        break;
+      case 'surprise': {
+        const pool = env.data.recipes.filter((r) => analysis().get(r.id)?.ready);
+        const choices = pool.length ? pool : env.data.recipes;
+        if (choices.length) openDetail(choices[Math.floor(Math.random() * choices.length)].id);
+        break;
+      }
+      case 'copy-ingredients': {
+        const base = env.data.recipes.find((r) => r.id === $('#detail-dialog').dataset.recipe);
+        if (!base) break;
+        const r = versionRecipe(base, selectedVersion);
+        const line = (x) => `${ingredientName(x.id)} ${C.scaleAmount(x.amount, detailScale)} ${x.unit}${x.optional ? '（可选）' : ''}`.trim();
+        const text = [base.name + (selectedVersion ? ' · ' + r.name : '') + ` · ${detailScale} 杯`, ...r.ingredients.map(line), ...(r.garnishes.length ? ['装饰', ...r.garnishes.map(line)] : [])].join('\n');
+        try { await navigator.clipboard.writeText(text); toast('原料清单已复制。'); }
+        catch { toast('浏览器未允许复制，请从原料表手动选择文本。'); }
+        break;
+      }
+      case 'row-up':
+      case 'row-down':
+      case 'row-copy': {
+        const row = b.closest('.ingredient-edit-row');
+        if (b.dataset.action === 'row-copy') row.insertAdjacentHTML('afterend', rowMarkup(readRow(row), row.dataset.section));
+        else if (b.dataset.action === 'row-up' && row.previousElementSibling) row.previousElementSibling.before(row);
+        else if (b.dataset.action === 'row-down' && row.nextElementSibling) row.nextElementSibling.after(row);
+        await stashEditor();
+        if (b.disabled) row.querySelector('.material-target').focus({preventScroll: true});
+        break;
+      }
       case "dismiss-update":
         $('#update-banner').hidden = true;
         break;
@@ -2743,6 +2837,11 @@
   });
   document.addEventListener("change", async (e) => {
     const t = e.target;
+    if (t.id === 'result-page') {
+      resultPage = Number(t.value);
+      renderResults();
+      $('#recipe-results').scrollIntoView({block: 'start', behavior: 'instant'});
+    }
     if (t.id === "source-filter") {
       filters.sourceName = t.value;
       renderResults();
