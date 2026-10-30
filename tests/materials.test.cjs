@@ -171,3 +171,59 @@ test("目录引用、标签引用和循环仍被严格校验", () => {
   d.ingredients.find((i) => i.id === "whiskey").parentId = "islay";
   assert.throws(() => C.validate(d), /循环/);
 });
+
+test('原料、品牌产品与导航分组按用途区分，鲜果不等于果汁', () => {
+  const d = data(), get = id => d.ingredients.find(i => i.id === id);
+  assert.equal(C.materialRole(get('lemon')), 'ingredient');
+  assert.equal(C.materialRole(get('cointreau')), 'product');
+  assert.equal(C.materialRole(get('juice')), 'group');
+  assert.equal(C.satisfies('lemon-fruit', 'lemon', d), false);
+  assert.equal(C.satisfies('lemon', 'lemon-fruit', d), false);
+});
+test('品牌果汁可归属于通用果汁，反向和同品牌不同产品不自动替代', () => {
+  let d = data();
+  const base = {...C.clone(d.ingredients.find(i => i.id === 'lemon')), kind:'product', brand:'测试品牌', customized:true};
+  d.ingredients.push({...base, id:'bottled-lemon', name:'瓶装柠檬汁', parentId:'lemon'});
+  d.ingredients.push({...base, id:'another-lemon', name:'另一款柠檬汁', parentId:'lemon'});
+  d = C.validate(d);
+  own(d, 'bottled-lemon');
+  assert.ok(C.have(row('lemon'), d));
+  assert.equal(C.have(row('another-lemon'), d), false);
+  own(d, 'lemon');
+  assert.equal(C.have(row('bottled-lemon'), d), false);
+  d.ingredients.find(i => i.id === 'another-lemon').parentId = 'bottled-lemon';
+  assert.throws(() => C.validate(d), /产品|上级/);
+});
+test('旧名称识别只迁移一次，备注名与笔记不会改变匹配身份', () => {
+  let d = data();
+  own(d, 'orange-liqueur');
+  d.pantryItems[0].name = 'Cointreau';
+  d = C.validate(d);
+  assert.deepEqual(d.pantryItems[0].matches, ['cointreau']);
+  assert.equal(d.pantryItems[0].identityMode, 'explicit');
+  assert.deepEqual(C.validate(d), d);
+  d.pantryItems[0].name = 'Grand Marnier';
+  d.pantryItems[0].notes = '2026-10 开封，橙香';
+  d = C.validate(d);
+  assert.ok(C.have(row('cointreau'), d));
+  assert.equal(C.have(row('grand-marnier'), d), false);
+  assert.equal(d.pantryItems[0].notes, '2026-10 开封，橙香');
+  own(d, 'liqueur');
+  d.pantryItems[0].identityMode = 'explicit';
+  d.pantryItems[0].name = 'Cointreau';
+  d = C.validate(d);
+  assert.deepEqual(d.pantryItems[0].matches, ['liqueur']);
+  assert.equal(C.have(row('cointreau'), d), false);
+});
+test('旧通用原料的名称识别迁移保留其他明确匹配', () => {
+  let d = data();
+  own(d, 'juice');
+  d.pantryItems[0].name = '柠檬汁';
+  d.pantryItems[0].matches.push('simple-syrup');
+  d = C.validate(d);
+  assert.deepEqual(d.pantryItems[0].matches, ['lemon','simple-syrup']);
+  assert.ok(C.have(row('lemon'), d));
+  assert.ok(C.have(row('simple-syrup'), d));
+  assert.equal(C.have(row('lemon-fruit'), d), false);
+  assert.deepEqual(C.validate(d), d);
+});

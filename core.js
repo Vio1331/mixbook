@@ -117,8 +117,8 @@
     }
     treeCheck(ingredients);
     for (const i of ingredients)
-      if (i.parentId && dict.get(i.parentId).kind !== "type")
-        fail("上级必须是材料类别，不能是具体产品。");
+      if (i.parentId && materialRole(dict.get(i.parentId)) === "product")
+        fail("所属原料不能是另一个品牌产品。");
     for (const i of ingredients) {
       if (input.schemaVersion < 3)
         i.tags = i.tags.filter(
@@ -265,6 +265,8 @@
       image: image(i.image),
       matches: list(i.matches || [], 200),
       tags: list(i.tags || [], 200),
+      notes: text(i.notes || "", 2000),
+      identityMode: "explicit",
     }));
     for (const i of pantryItems)
       if (
@@ -273,6 +275,20 @@
         i.tags.some((id) => !ids.has(id))
       )
         fail("酒柜记录的分类无效。");
+    // Resolve old name-based bottle identities once. Subsequent label changes
+    // are presentation only; matching always follows the chosen material ID.
+    for (let n = 0; n < pantryItems.length; n++) {
+      const item = pantryItems[n];
+      if (rawPantry[n].identityMode === 'explicit') continue;
+      const candidates = ingredients.filter((r) => materialRole(r) !== 'group' &&
+        [r.name, ...r.aliases].map(norm).includes(norm(item.name)) &&
+        item.matches.every((id) => materialRole(dict.get(id)) !== 'product') &&
+        (!r.parentId || item.matches.some((id) => satisfies(id, r.parentId, {ingredients}))));
+      if (candidates.length === 1) {
+        const chosen = candidates[0].id;
+        item.matches = [chosen, ...item.matches.filter(id => !satisfies(chosen, id, {ingredients}))];
+      }
+    }
     const options = {};
     for (const k of ["glasses", "tags", "sources"])
       options[k] = list(input.options?.[k] || [], k === "sources" ? 200 : 100);
@@ -347,6 +363,10 @@
   const materialGroups = new Set(['brandy-root', 'liqueur-root', 'other-alcohol',
     'port-sherry', 'liquid-materials', 'solid-materials', 'other-liquid',
     'other-food', 'fruit-vegetable', 'seasoning', 'juice', 'syrup', 'soda-root']);
+  function materialRole(item) {
+    if (!item) return 'ingredient';
+    return materialGroups.has(item.id) ? 'group' : item.brand?.trim() ? 'product' : 'ingredient';
+  }
   function searchMaterials(data, query = '', category = '', recent = []) {
     const q = norm(query), terms = q.split(/\s+/).filter(Boolean);
     const usage = new Map();
@@ -397,7 +417,7 @@
     const d = ingredientIndex(data), o = d.get(owned), r = d.get(required);
     if (!o || !r) return false;
     if (o.id === r.id) return true;
-    if (r.kind === "product") return false;
+    if (materialRole(r) === "product") return false;
     if (categorySatisfies(owned, required, data)) return true;
     return ingredientPath(owned, data).some((i) =>
       (i.tags || []).some((tag) => categorySatisfies(tag, required, data)),
@@ -410,7 +430,7 @@
     // Names/aliases support legacy independently named bottles, within their category.
     const identity = [r.name, ...r.aliases].map(norm).includes(norm(item.name));
     if (
-      identity &&
+      item.identityMode !== 'explicit' && identity &&
       (item.matches || []).every((id) => {
         const selected = d.get(id);
         return selected?.kind === "type" || selected?.customized;
@@ -419,7 +439,7 @@
         (item.matches || []).some((id) => satisfies(id, r.parentId, data)))
     )
       return 0;
-    if (r.kind === "product") return Infinity;
+    if (materialRole(r) === "product") return Infinity;
     if ((item.tags || []).some((tag) => categorySatisfies(tag, required, data)))
       return 1;
     if ((item.matches || []).some((id) => satisfies(id, required, data)))
@@ -709,6 +729,7 @@
     uid,
     empty,
     amountIssue,
+    materialRole,
     searchMaterials: (data, query, category, recent) => indexed(data, () => searchMaterials(data, query, category, recent)),
     scaleAmount,
     validate,

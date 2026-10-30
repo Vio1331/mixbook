@@ -3043,3 +3043,58 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
 .advanced-sync { margin-top: 20px; color: var(--muted); font-size: 12px; }
 .advanced-sync summary { cursor: pointer; }
 .advanced-sync > div { margin-top: 12px; }
+/* v2.4 material library: identity, product information and personal notes. */
+#material-dialog { width: 740px; height: min(790px, 92dvh); overflow: hidden; }
+#material-dialog .picker-controls { padding: 20px 24px 12px; align-items: center; }
+#material-dialog .picker-controls > .btn { flex: 0 0 auto; height: 44px; }
+.picker-navigation { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 24px 12px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+.picker-tabs { display: flex; gap: 22px; }
+.picker-tabs button { color: var(--muted); padding: 9px 0; border-bottom: 2px solid transparent; white-space: nowrap; font-size: 13px; }
+.picker-tabs button[aria-pressed=true] { color: var(--ink); border-color: var(--accent); font-weight: 600; }
+.picker-navigation select { width: 132px; min-height: 36px; font-size: 12px; background: transparent; }
+#material-dialog .picker-body { padding: 8px 24px 24px; }
+.picker-result-count { color: var(--muted); font-size: 11px; margin: 8px 0 16px; }
+.picker-group h3 { font-size: 12px; font-weight: 600; color: var(--ink); margin: 18px 0 4px; }
+.picker-item { padding: 14px 4px; gap: 14px; }
+.picker-item .picker-symbol { flex: 0 0 22px; color: var(--muted); display: grid; place-items: center; }
+.picker-symbol svg { width: 20px; height: 20px; }
+.picker-item .picker-identity { flex: 1; }
+.picker-item .picker-kind { font-size: 11px; }
+.picker-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 24px; border-top: 1px solid var(--line); flex-shrink: 0; }
+.picker-footer > span { color: var(--muted); font-size: 11px; }
+.definition-mode #quick-material-form { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.definition-body { padding: 22px 32px; min-height: 0; overflow: auto; flex: 1; }
+.definition-role { display: flex; gap: 24px; padding: 0; margin: 0 0 12px; border: 0; }
+.definition-role label { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+.definition-role input { accent-color: var(--accent); width: 16px; height: 16px; }
+.definition-guidance { color: var(--muted); font-size: 12px; margin: 0 0 24px; }
+.definition-extra { margin-top: 18px; }
+.definition-extra summary { font-size: 12px; color: var(--muted); cursor: pointer; margin-bottom: 14px; }
+.field-help { font-size: 11px; color: var(--muted); margin: -4px 0 20px; }
+.field-optional { color: var(--muted); font-size: 11px; font-weight: 400; }
+#material-dialog .dialog-top [data-action=back-to-materials] { font-size: 12px; }
+[data-action=back-to-materials] svg { transform: rotate(180deg); width: 16px; }
+.stock-definition { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: 12px; margin: -6px 0 16px; }
+.stock-uses { margin: 0 0 24px; font-size: 12px; }
+.stock-uses summary, .legacy-stock summary { cursor: pointer; color: var(--muted); }
+.stock-uses p { margin-top: 10px; line-height: 1.8; }
+.stock-personal { border-top: 1px solid var(--line); padding-top: 22px; }
+.legacy-stock { border-top: 1px solid var(--line); padding-top: 16px; font-size: 12px; margin-bottom: 14px; }
+.legacy-stock p { margin: 12px 0; }
+.stock-nickname { font-size: 11px; }
+#quick-error .link-button { display: block; margin-top: 8px; }
+@media (max-width: 650px) {
+  #material-dialog { width: 100vw; height: 100dvh; max-height: 100dvh; }
+  #material-dialog .picker-controls { padding: 16px 18px 10px; gap: 8px; }
+  .picker-navigation { padding: 0 18px 10px; gap: 8px; }
+  .picker-tabs { gap: 16px; }
+  .picker-tabs button { font-size: 12px; }
+  .picker-navigation select { width: 98px; }
+  #material-dialog .picker-body { padding: 4px 18px 18px; }
+  .picker-footer { padding: 12px 18px calc(12px + env(safe-area-inset-bottom)); }
+  .definition-body { padding: 20px 18px; }
+  #material-dialog.definition-mode .dialog-top { gap: 8px; }
+  #material-dialog.definition-mode .dialog-top > span { font-size: 15px; }
+  #material-dialog.definition-mode .dialog-top .link-button { font-size: 11px; }
+  .picker-item { gap: 10px; }
+}
