@@ -342,6 +342,36 @@
         .join(" "),
     );
   }
+  // Navigation groups are not ingredients. Keep their IDs in stored data, but
+  // don't offer them as new selections or mix inherited category hits with names.
+  const materialGroups = new Set(['brandy-root', 'liqueur-root', 'other-alcohol',
+    'port-sherry', 'liquid-materials', 'solid-materials', 'other-liquid',
+    'other-food', 'fruit-vegetable', 'seasoning', 'juice', 'syrup', 'soda-root']);
+  function searchMaterials(data, query = '', category = '', recent = []) {
+    const q = norm(query), terms = q.split(/\s+/).filter(Boolean);
+    const usage = new Map();
+    for (const r of data.recipes) for (const x of [...r.ingredients, ...r.garnishes])
+      usage.set(x.id, (usage.get(x.id) || 0) + 1);
+    const direct = [], related = [];
+    for (const i of data.ingredients) {
+      if (materialGroups.has(i.id)) continue;
+      if (category && !ingredientPath(i.id, data).some((x) => x.id === category)) continue;
+      const names = [i.name, ...i.aliases].map(norm);
+      const own = norm([i.name, i.brand, ...i.aliases].join(' '));
+      const exact = names.includes(q);
+      const hit = terms.every((t) => own.includes(t));
+      if (!hit && !terms.every((t) => materialText(i, data).includes(t))) continue;
+      const rank = q ? exact ? 100 : names.some((n) => n.startsWith(q)) ? 80 : 60 : 0;
+      const row = { item: i, rank, owned: have({id:i.id}, data),
+        recent: recent.includes(i.id) ? recent.length - recent.indexOf(i.id) : 0,
+        usage: usage.get(i.id) || 0 };
+      (hit ? direct : related).push(row);
+    }
+    const compare = (a,b) => b.rank - a.rank || Number(b.owned) - Number(a.owned) ||
+      b.recent - a.recent || b.usage - a.usage || a.item.name.localeCompare(b.item.name, 'zh-CN');
+    return { direct: direct.sort(compare).map((x) => x.item),
+      related: related.sort(compare).map((x) => x.item) };
+  }
   // Membership and substitution are deliberately separate. A product's descriptive
   // tags never make every other product bearing the same tag interchangeable.
   function categorySatisfies(owned, required, data) {
@@ -679,6 +709,7 @@
     uid,
     empty,
     amountIssue,
+    searchMaterials: (data, query, category, recent) => indexed(data, () => searchMaterials(data, query, category, recent)),
     scaleAmount,
     validate,
     match: (r, data) => indexed(data, () => match(r, data)),

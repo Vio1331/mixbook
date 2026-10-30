@@ -32,6 +32,25 @@ const own = (d, id, tags) => {
     },
   ];
 };
+test('材料搜索区分名称命中和继承分类，并隐藏重复导航节点', () => {
+  const d = data(), original = C.clone(d);
+  assert.equal(C.searchMaterials(d, 'Cointreau').direct[0].id, 'cointreau');
+  const brandy = C.searchMaterials(d, '白兰地');
+  assert.equal(brandy.direct.filter((x) => x.name === '白兰地').length, 1);
+  assert.equal(brandy.direct[0].id, 'brandy');
+  assert.ok(!C.searchMaterials(d).direct.some((x) => ['liquid-materials', 'brandy-root', 'juice'].includes(x.id)));
+  assert.ok(C.searchMaterials(d, '柠檬').direct.some((x) => x.id === 'lemon'));
+  assert.ok(C.searchMaterials(d, '柠檬').direct.some((x) => x.id === 'lemon-fruit'));
+  assert.deepEqual(d, original);
+  d.ingredients.push({...C.clone(d.ingredients.find((x) => x.id === 'campari')),
+    id:'custom-gin', name:'孟买蓝宝石', brand:'孟买', aliases:['Bombay Sapphire'], parentId:'london-dry', tags:[]});
+  const gin = C.searchMaterials(d, '金酒');
+  assert.equal(gin.direct[0].id, 'gin');
+  assert.ok(gin.related.some((x) => x.id === 'custom-gin'));
+  assert.ok(!gin.direct.some((x) => x.id === 'custom-gin'));
+  assert.equal(C.searchMaterials(d, 'Bombay Sapphire').direct[0].id, 'custom-gin');
+  assert.ok(C.searchMaterials(d, '', 'gin').direct.some((x) => x.id === 'custom-gin'));
+});
 test("目录定义完整且每个产品均属于通用类别", () => {
   const d = data(),
     by = new Map(d.ingredients.map((i) => [i.id, i]));
