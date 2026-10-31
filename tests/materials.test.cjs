@@ -284,3 +284,35 @@ test('马提尼克糖蜜朗姆同时满足产地和白朗姆，反向不成立',
   assert.ok(C.satisfies('martinique-molasses','light-rum',d));
   assert.equal(C.satisfies('martinique-rum','martinique-molasses',d),false);
 });
+
+test('目录的真实从属关系用于匹配，不把无关酒类混为一种', () => {
+  const d=data();
+  for(const [owned,required] of [['champagne','sparkling'],['prosecco','sparkling'],['cava','sparkling'],['cacao-brown','cacao-liqueur'],['menthe-white','mint-liqueur'],['kahlua','coffee-liqueur'],['cointreau','triple-sec'],['triple-sec','orange-liqueur'],['angostura','aromatic-bitters']])
+    assert.ok(C.satisfies(owned,required,d),`${owned} → ${required}`);
+  for(const [owned,required] of [['baijiu','vodka'],['soju','vodka'],['shochu','vodka'],['cachaca','rum'],['absinthe','liqueur'],['blanco-tequila','mezcal'],['joven-mezcal','tequila']])
+    assert.equal(C.satisfies(owned,required,d),false,`${owned} ≠ ${required}`);
+});
+
+test('同一类型和同一产品的多条库存各自保留并可独立删除', () => {
+  const d=data();own(d,'blanco-tequila');const a={...d.pantryItems[0],id:'first',name:'第一瓶',notes:'2026-10 开封',identityMode:'explicit'};
+  d.pantryItems=[a,{...a,id:'second',name:'第二瓶',notes:'未开封'}];
+  const installed=C.installCatalog(d,catalog);
+  assert.equal(installed.pantryItems.length,2);
+  assert.equal(C.matches(row('blanco-tequila'),installed).length,2);
+  installed.pantryItems=installed.pantryItems.filter(i=>i.id!=='first');
+  assert.ok(C.have(row('blanco-tequila'),installed));
+  assert.equal(installed.pantryItems[0].notes,'未开封');
+});
+
+test('补充分类的多级关系与目录一致，边界和具体品牌仍严格匹配', () => {
+  const d=data(),base=d.ingredients.find(i=>i.id==='dark-rum');
+  d.ingredients.push({...C.clone(base),id:'region-style',name:'地区风格',tags:['jamaican-rum']});
+  d.ingredients.push({...C.clone(base),id:'custom-style',name:'自定义风格',tags:['region-style']});
+  d.ingredients.push({...C.clone(base),id:'bottle',name:'某款黑朗姆',kind:'product',brand:'某品牌',parentId:'custom-style'});
+  assert.ok(C.satisfies('bottle','jamaican-rum',d));
+  assert.equal(C.satisfies('jamaican-rum','bottle',d),false);
+  d.ingredients.find(i=>i.id==='bottle').matchParent=false;
+  assert.equal(C.satisfies('bottle','jamaican-rum',d),false);
+  d.ingredients.find(i=>i.id==='region-style').tags=['custom-style'];
+  assert.equal(C.satisfies('custom-style','gin',d),false);
+});

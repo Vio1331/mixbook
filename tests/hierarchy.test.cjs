@@ -43,12 +43,10 @@ test("标签从属关系严格符合内置目录", () => {
     "demerara-rum",
     "martinique-rum",
     "puerto-rico-rum",
-    "cachaca",
   ])
     assert.equal(tags.get(id), "rum");
   for (const id of ["cognac", "pisco"]) assert.equal(tags.get(id), "brandy");
   for (const id of [
-    "absinthe",
     "cacao-liqueur",
     "coffee-liqueur",
     "cream-liqueur",
@@ -67,6 +65,7 @@ test("标签从属关系严格符合内置目录", () => {
     "amaretto",
   ])
     assert.equal(tags.get(id), "liqueur");
+  for (const id of ["cachaca", "absinthe"]) assert.equal(tags.get(id), "other-alcohol");
   for (const id of ["soda", "tonic"]) assert.equal(tags.get(id), "soda-root");
 });
 test("菜单读取为副本且验证所有标签记录", () => {

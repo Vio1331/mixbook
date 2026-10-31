@@ -283,7 +283,7 @@
       const candidates = ingredients.filter((r) => materialRole(r) !== 'group' &&
         [r.name, ...r.aliases].map(norm).includes(norm(item.name)) &&
         item.matches.every((id) => materialRole(dict.get(id)) !== 'product') &&
-        (!r.parentId || item.matches.some((id) => satisfies(id, r.parentId, {ingredients}))));
+        (!r.parentId || item.matches.some((id) => satisfies(id, r.parentId, {ingredients}) || categorySatisfies(r.parentId, id, {ingredients}))));
       if (candidates.length === 1) {
         const chosen = candidates[0].id;
         item.matches = [chosen, ...item.matches.filter(id => !satisfies(chosen, id, {ingredients}))];
@@ -413,10 +413,17 @@
     if (!o || !r) return false;
     if (o.id === r.id) return true;
     if (materialRole(r) === "product") return false;
-    if (categorySatisfies(owned, required, data)) return true;
-    return ingredientPath(owned, data).some((i) =>
-      (i.tags || []).some((tag) => categorySatisfies(tag, required, data)),
-    );
+    const seen = new Set();
+    function visit(id) {
+      if (id === required) return true;
+      if (seen.has(id)) return false;
+      seen.add(id);
+      const item = d.get(id);
+      if (!item) return false;
+      return (item.tags || []).some(visit) ||
+        item.matchParent !== false && !!item.parentId && visit(item.parentId);
+    }
+    return visit(owned);
   }
   function pantryMatchLevel(item, required, data) {
     const d = ingredientIndex(data), r = d.get(required);
@@ -431,7 +438,7 @@
         return selected?.kind === "type" || selected?.customized;
       }) &&
       (!r.parentId ||
-        (item.matches || []).some((id) => satisfies(id, r.parentId, data)))
+        (item.matches || []).some((id) => satisfies(id, r.parentId, data) || categorySatisfies(r.parentId, id, data)))
     )
       return 0;
     if (materialRole(r) === "product") return Infinity;
