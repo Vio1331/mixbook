@@ -316,3 +316,46 @@ test('补充分类的多级关系与目录一致，边界和具体品牌仍严�
   d.ingredients.find(i=>i.id==='region-style').tags=['custom-style'];
   assert.equal(C.satisfies('custom-style','gin',d),false);
 });
+
+test('酒柜的名称和品牌是真实可编辑字段，旧值与隐藏笔记不丢失', () => {
+  const d=data(), old={id:'laphroaig',name:'拉弗格 10 年',brand:'Laphroaig',category:'威士忌',image:'my-bottle',matches:['islay'],tags:[],notes:'原有笔记',identityMode:'explicit'};
+  const original=C.clone(old), count=d.ingredients.length;
+  assert.equal(C.pantryCategory(old,d),'islay');
+  assert.deepEqual(C.preparePantryItem(d,{name:old.name,brand:old.brand,categoryId:'islay'},old),old);
+  assert.equal(d.ingredients.length,count);
+  const edited=C.preparePantryItem(d,{name:'拉弗格 10 年新瓶',brand:'拉弗格',categoryId:'islay'},old);
+  assert.equal(edited.id,old.id);assert.equal(edited.notes,old.notes);assert.equal(edited.image,old.image);
+  assert.equal(edited.name,'拉弗格 10 年新瓶');assert.equal(edited.brand,'拉弗格');
+  assert.equal(C.pantryCategory(edited,d),'islay');assert.deepEqual(old,original);
+  d.pantryItems=[edited];assert.ok(C.have(row('islay'),C.validate(d)));
+});
+
+test('同款可存多瓶，编辑一瓶的品牌不会改其他瓶或共用产品定义', () => {
+  const d=data(),fields={name:'唐胡里奥银牌',brand:'唐胡里奥',categoryId:'blanco-tequila'};
+  const a=C.preparePantryItem(d,fields),b=C.preparePantryItem(d,fields);
+  assert.notEqual(a.id,b.id);assert.deepEqual(a.matches,b.matches);
+  const definition=C.clone(d.ingredients.find(i=>i.id===a.matches[0]));
+  const updated=C.preparePantryItem(d,{...fields,name:'另一款银龙舌兰',brand:'另一品牌'},a);
+  assert.notDeepEqual(updated.matches,b.matches);assert.deepEqual(d.ingredients.find(i=>i.id===b.matches[0]),definition);
+  d.pantryItems=[updated,b];assert.equal(C.matches(row('blanco-tequila'),d).length,2);
+  assert.equal(C.have(row('joven-mezcal'),d),false);
+});
+
+test('只改名称和品牌保留旧分类补充信息，改分类时不沿用旧类别匹配', () => {
+  const d=data(),old={id:'old-rum',name:'我的朗姆',brand:'',matches:['dark-rum'],tags:['jamaican-rum'],notes:'',image:''};
+  const renamed=C.preparePantryItem(d,{name:'重新命名的朗姆',brand:'我的品牌',categoryId:'dark-rum'},old);
+  assert.deepEqual(renamed.tags,old.tags);assert.notEqual(renamed.tags,old.tags);
+  d.pantryItems=[renamed];assert.ok(C.have(row('jamaican-rum'),C.validate(d)));
+  const reclassified=C.preparePantryItem(d,{name:'实际是金酒',brand:'',categoryId:'gin'},old);
+  assert.deepEqual(reclassified.tags,[]);assert.deepEqual(reclassified.matches,['gin']);
+});
+
+test('保存具体产品仍支持指定品牌酒谱，类别或改名不能冒充具体产品', () => {
+  const d=data(),product=d.ingredients.find(i=>i.id==='cointreau');
+  const known=C.preparePantryItem(d,{name:product.name,brand:product.brand,categoryId:product.parentId});
+  assert.deepEqual(known.matches,['cointreau']);
+  const unknown=C.preparePantryItem(d,{name:product.name,brand:'',categoryId:'orange-liqueur'});
+  d.pantryItems=[unknown];assert.equal(C.have(row('cointreau'),d),false);
+  assert.throws(()=>C.preparePantryItem(d,{name:'',categoryId:'gin'}),/名称/);
+  assert.throws(()=>C.preparePantryItem(d,{name:'酒',categoryId:'cointreau'}),/分类/);
+});

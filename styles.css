@@ -1843,6 +1843,7 @@ dialog:modal {
   object-fit: cover;
 }
 .photo-placeholder {
+  display: flex;
   flex-direction: column;
   gap: 10px;
 }
@@ -3187,3 +3188,61 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
 .tree-leaf > svg { width: 18px; height: 18px; flex-shrink: 0; }
 .tree-select { min-width: 44px; }
 .tree-select-label { color: var(--accent); font-size: 12px; padding: 0 8px; }
+/* Bottle editing is a three-field form. All category rows share one text column. */
+.tree-gutter { width: 16px; height: 16px; flex: 0 0 16px; }
+.tree-expand > svg { flex: 0 0 16px; }
+.material-tree-row .tree-leaf, .material-tree-row .tree-expand { gap: 8px; }
+.stock-fields .field { margin-bottom: 20px; }
+.stock-fields .material-target { width: 100%; min-height: 46px; text-align: left; background: var(--surface); border: 1px solid var(--line); }
+.stock-fields .material-target > span { flex: 1; overflow-wrap: anywhere; }
+.stock-fields .material-target > svg { transform: rotate(90deg); width: 16px; flex-shrink: 0; }
+#item-dialog:has(#stock-form) { width: min(560px, calc(100vw - 32px)); height: fit-content; max-height: 90dvh; }
+#stock-form { height: auto; min-height: 0; max-height: 90dvh; }
+#stock-form .editor-body { flex: 1; min-height: 0; padding: 24px; }
+#stock-form .dialog-top, #stock-form .dialog-actions { padding: 18px 24px; flex-shrink: 0; }
+.picker-products { margin-top: 24px; }
+.picker-products h3, .picker-related > h3 { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.definition-browser { margin: -8px 0 20px; }
+/* Connection inputs and actions stay visible without nested action menus. */
+#sync-dialog { width: min(600px, calc(100vw - 32px)); height: fit-content; max-height: 90dvh; }
+#sync-form { display: flex; flex-direction: column; width: 100%; min-height: 0; height: auto; max-height: 90dvh; padding: 0; }
+#sync-form .dialog-top { flex-shrink: 0; padding: 20px 24px; margin: 0; }
+#sync-form .editor-body { min-height: 0; flex: 1; overflow: auto; padding: 24px; }
+#sync-form .dialog-actions { flex-shrink: 0; padding: 16px 24px; margin: 0; }
+#sync-form .field-row { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+#sync-form .field { min-width: 0; }
+.sync-option { display: flex; align-items: center; justify-content: space-between; min-height: 44px; gap: 16px; font-size: 13px; }
+.sync-option input { appearance: auto; width: 18px; height: 18px; min-height: 0; flex: 0 0 18px; padding: 0; margin: 0; accent-color: var(--accent); }
+.settings-layout { align-items: start; gap: 48px; padding-bottom: 90px; }
+.settings-section h2 { font-size: 16px; margin: 0 0 20px; }
+.settings-section-title { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.settings-actions, .sync-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.sync-actions > button { flex: 1 1 140px; }
+.sync-account { font-size: 13px; margin: -4px 0 18px; overflow-wrap: anywhere; }
+.sync-time { font-size: 12px; color: var(--muted); margin: 14px 0; }
+.settings-section .setup-guide { margin-top: 24px; }
+.app-version { position: fixed; right: 24px; bottom: 14px; margin: 0; padding: 4px 8px; font-size: 11px; color: var(--muted); background: var(--bg); pointer-events: none; }
+.source-filters .chip { text-align: left; white-space: normal; }
+@media(max-width:650px) {
+  .settings-layout { grid-template-columns: 1fr; gap: 32px; }
+  .app-version { bottom: calc(76px + env(safe-area-inset-bottom)); right: 14px; }
+  #stock-form .editor-body, #sync-form .editor-body { padding: 20px; }
+  #stock-form .dialog-top, #stock-form .dialog-actions, #sync-form .dialog-top, #sync-form .dialog-actions { padding: 16px 20px; }
+}
+@media(max-width:440px) { #sync-form .field-row { grid-template-columns: 1fr; gap: 0; } }
+
+#item-dialog:has(#stock-form):modal, #sync-dialog:modal { margin: auto; }
+
+#material-dialog.definition-mode { width: min(620px, calc(100vw - 32px)); height: fit-content; max-height: 90dvh; border: 1px solid var(--line); border-radius: 12px; }
+#material-dialog.definition-mode:modal { margin: auto; }
+#quick-material-form { max-height: 90dvh; }
+#quick-material-form .definition-body { flex: 0 1 auto; min-height: 0; overflow: auto; }
+#item-dialog:has(#material-edit-form) { width: min(620px, calc(100vw - 32px)); height: fit-content; max-height: 90dvh; border: 1px solid var(--line); border-radius: 12px; }
+#item-dialog:has(#material-edit-form):modal { margin: auto; }
+#material-edit-form { height: auto; min-height: 0; max-height: 90dvh; }
+#material-edit-form .editor-body { flex: 0 1 auto; min-height: 0; overflow: auto; }
+
+.sync-actions { display: grid; grid-template-columns: 1fr; }
+.stock-fields .material-target { font-weight: 400; }
+@media(min-width:1100px) { .sync-actions { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media(max-width:650px) { #item-dialog:has(#stock-form), #sync-dialog { border: 1px solid var(--line); border-radius: 12px; } }

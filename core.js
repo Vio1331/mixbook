@@ -367,6 +367,37 @@
     if (!item) return 'ingredient';
     return materialGroups.has(item.id) ? 'group' : item.brand?.trim() ? 'product' : 'ingredient';
   }
+  function pantryCategory(item, data) {
+    const material = data.ingredients.find(i => i.id === item?.matches?.[0]);
+    return materialRole(material) === 'product' ? material.parentId : material?.id || '';
+  }
+  // Bottle identity is editable independently of its classification and other bottles.
+  function preparePantryItem(data, fields, previous = null) {
+    const name = String(fields.name || '').trim(), brand = String(fields.brand || '').trim();
+    const category = data.ingredients.find(i => i.id === fields.categoryId);
+    if (!name) fail('请填写名称。');
+    if (!category || materialRole(category) === 'product') fail('请选择分类。');
+    if (previous && previous.name === name && previous.brand === brand && pantryCategory(previous, data) === category.id)
+      return clone(previous);
+    let material = category;
+    if (brand) {
+      material = data.ingredients.find(i => materialRole(i) === 'product' && i.parentId === category.id &&
+        norm(i.brand) === norm(brand) && [i.name, ...i.aliases].map(norm).includes(norm(name)));
+      if (!material) {
+        material = {id:uid(),name,brand,parentId:category.id,category:category.name,kind:'product',
+          aliases:[],tags:[],image:'',matchParent:true,customized:true,builtIn:false,builtInTag:false};
+        data.ingredients.push(material);
+      }
+    } else {
+      const candidates = data.ingredients.filter(i => materialRole(i) === 'ingredient' &&
+        [i.name, ...i.aliases].map(norm).includes(norm(name)) && categorySatisfies(i.id, category.id, data));
+      if (candidates.length === 1) material = candidates[0];
+    }
+    const sameCategory = previous && pantryCategory(previous, data) === category.id;
+    return {...(previous || {}),id:previous?.id || uid(),name,brand,category:category.name,
+      image:previous?.image || '',matches:[...new Set([material.id,...(sameCategory ? previous.matches.slice(1) : [])])],
+      tags:sameCategory ? clone(previous.tags || []) : [],notes:previous?.notes || '',identityMode:'explicit'};
+  }
   function searchMaterials(data, query = '', category = '', recent = []) {
     const q = norm(query), terms = q.split(/\s+/).filter(Boolean);
     const direct = [], related = [];
@@ -529,6 +560,7 @@
         (!f.tags?.length || f.tags.some((t) => r.tags.includes(t))) &&
         (!f.base || r.base === f.base) &&
         (!f.sourceName || r.sourceName === f.sourceName) &&
+        (!f.sourceNames?.length || f.sourceNames.includes(r.sourceName)) &&
         (!f.favorite || data.favorites[r.id]) &&
         (!f.availability ||
           f.availability === "all" ||
@@ -778,6 +810,8 @@
     empty,
     amountIssue,
     materialRole,
+    pantryCategory,
+    preparePantryItem,
     searchMaterials: (data, query, category, recent) => indexed(data, () => searchMaterials(data, query, category, recent)),
     scaleAmount,
     validate,
