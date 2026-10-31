@@ -234,3 +234,53 @@ test('分类浏览顺序不随拥有状态、最近选择或配方使用次数�
   assert.deepEqual(ids(),before);
   assert.equal(C.searchMaterials(d,'Cointreau').direct[0].id,'cointreau');
 });
+
+test('重复原料统一库存、配方、版本、替代项及产品引用，保留个人内容', () => {
+  const d=data(), lime=d.ingredients.find(i=>i.id==='lime');
+  d.ingredients.push({...C.clone(lime),id:'legacy-lime',kind:'type',customized:true,aliases:['家用青柠汁']});
+  d.ingredients.push({...C.clone(lime),id:'bottled-lime',name:'瓶装青柠汁',brand:'测试品牌',parentId:'legacy-lime',tags:['legacy-lime']});
+  own(d,'legacy-lime');Object.assign(d.pantryItems[0],{identityMode:'explicit',notes:'保留备注',tags:['legacy-lime']});
+  const recipe={...C.clone(d.recipes[0]),id:'personal',customized:true,notes:'个人笔记',ingredients:[row('legacy-lime')],garnishes:[row('legacy-lime')],versions:[{id:'version',name:'我的比例',notes:'版本笔记',ingredients:[{...row('lemon'),alternatives:['legacy-lime','lime']}],garnishes:[row('legacy-lime')],steps:['混合']}]};
+  d.recipes.push(recipe);
+  assert.equal(C.have(row('lime'),C.validate(d)),false);
+  const fixed=C.installCatalog(d,catalog);
+  assert.ok(C.have(row('lime'),fixed));
+  assert.equal(C.searchMaterials(fixed,'青柠汁').direct.filter(i=>i.name==='青柠汁').length,1);
+  assert.ok(!fixed.ingredients.some(i=>i.id==='legacy-lime'));
+  assert.deepEqual(fixed.pantryItems[0].matches,['lime']);
+  assert.deepEqual(fixed.pantryItems[0].tags,['lime']);
+  assert.equal(fixed.pantryItems[0].notes,'保留备注');
+  const r=fixed.recipes.find(r=>r.id==='personal');
+  assert.equal(r.ingredients[0].id,'lime');assert.equal(r.garnishes[0].id,'lime');
+  assert.equal(r.notes,'个人笔记');assert.equal(r.versions[0].notes,'版本笔记');
+  assert.deepEqual(r.versions[0].ingredients[0].alternatives,['lime']);
+  assert.equal(r.versions[0].garnishes[0].id,'lime');
+  assert.equal(fixed.ingredients.find(i=>i.id==='bottled-lime').parentId,'lime');
+  assert.ok(fixed.ingredients.find(i=>i.id==='lime').aliases.includes('家用青柠汁'));
+  assert.deepEqual(C.installCatalog(fixed,catalog),fixed);
+  assert.deepEqual(C.reconcileMaterials(C.merge(C.empty(),fixed,d).data,catalog),fixed);
+});
+
+test('同物异名可修复，品牌、果汁与果泥、类型边界和特征不能误合并', () => {
+  const d=data();
+  for(const [id,target,name] of [['old-fruit','lime-fruit','青柠'],['old-lemon','lemon-fruit','柠檬'],['old-grapefruit','grapefruit-juice','西柚汁'],['old-orange','orange-juice','橙汁']])
+    d.ingredients.push({...C.clone(d.ingredients.find(i=>i.id===target)),id,name,customized:true});
+  const lime=d.ingredients.find(i=>i.id==='lime');
+  for(const [id,changes] of [['brand',{brand:'品牌 A'}],['boundary',{matchParent:false}],['other-parent',{parentId:'syrup'}],['qualified',{tags:['rum']}],['other-image',{image:'local-image'}]]) {
+    d.ingredients.push({...C.clone(lime),id,customized:true,...changes});
+  }
+  d.ingredients.find(i=>i.id==='lime').image='original-image';
+  d.ingredients.find(i=>i.id==='lime').customized=true;
+  const fixed=C.installCatalog(d,catalog);
+  for(const id of ['old-fruit','old-lemon','old-grapefruit','old-orange'])assert.ok(!fixed.ingredients.some(i=>i.id===id));
+  for(const id of ['brand','boundary','other-parent','qualified','other-image','lime','lime-fruit','passion-puree','passion-fruit'])assert.ok(fixed.ingredients.some(i=>i.id===id));
+  assert.equal(C.satisfies('lime-fruit','lime',fixed),false);
+  assert.equal(C.satisfies('rum','light-rum',fixed),false);
+});
+
+test('马提尼克糖蜜朗姆同时满足产地和白朗姆，反向不成立', () => {
+  const d=data();
+  assert.ok(C.satisfies('martinique-molasses','martinique-rum',d));
+  assert.ok(C.satisfies('martinique-molasses','light-rum',d));
+  assert.equal(C.satisfies('martinique-rum','martinique-molasses',d),false);
+});

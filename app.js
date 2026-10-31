@@ -341,7 +341,7 @@
           throw Error(
             "其他页面同时修改了数据，本机记录已保留。请刷新后重试。",
           );
-        next.data = C.validate(merged.data);
+        next.data = C.reconcileMaterials(merged.data, window.MIX_SEED);
       }
       return next;
     });
@@ -366,7 +366,7 @@
           const next = C.clone(stored || env);
           next.data = C.installCatalog(next.data, window.MIX_SEED);
           change(next.data);
-          next.data = C.validate(next.data);
+          next.data = C.reconcileMaterials(next.data, window.MIX_SEED);
           return next;
         });
         updateHeader();
@@ -851,6 +851,8 @@
   }
   function renderPicker() {
     if(!picker || !$('#material-results')) return;
+    const expanded=new Set([...$('#material-results').querySelectorAll('[data-material-section][open]')]
+      .map(el=>el.closest('[data-result-category]').dataset.resultCategory+':'+el.dataset.materialSection));
     const {data,q,category,limit}=picker, batch=picker.scope==='quick-stock';
     $('.picker-navigation').hidden=!q.trim() && !category;
     if(!q.trim() && !category) {
@@ -864,7 +866,21 @@
       const subtitle=materialMeta(i,data);
       return `<button type="button" class="picker-item ${selected?'is-selected':''}" data-pick="${esc(i.id)}" ${batch ? `aria-pressed="${selected}" ${owned?'disabled':''}` : ''}><span class="picker-identity"><strong>${esc(i.name)}</strong>${subtitle ? `<small>${esc(subtitle)}</small>` : ''}</span><span class="picker-kind">${batch && owned?'已在酒柜':''}</span>${icon(batch ? owned||selected?'check':'plus':'chevron')}</button>`;
     };
-    const groups=rows=>groupedMaterials(rows,data).map(([id,list])=>`<section class="picker-group" data-result-category="${esc(id)}">${category && groupedMaterials(rows,data).length===1 ? '' : `<h3>${esc(categoryLabel(id,data))}</h3>`}<div class="picker-list">${list.map(row).join('')}</div></section>`).join('');
+    const groups=rows=>groupedMaterials(rows,data).map(([id,list])=>{
+      // A category browse should not mix broad types, regional variants and
+      // branded bottles in one flat list. Specific searches remain direct.
+      const categoryNames=[categoryLabel(id,data),...(ingredient(id,data)?.aliases || [])].map(C.norm), query=C.norm(q);
+      const browsing=!query || categoryNames.some(name=>name===query || query.length>=2 && name.startsWith(query));
+      let body=`<div class="picker-list">${list.map(row).join('')}</div>`;
+      if(browsing) {
+        const products=list.filter(i=>C.materialRole(i)==='product');
+        const detailed=list.filter(i=>C.materialRole(i)!=='product' && i.builtInTag);
+        const basic=list.filter(i=>!products.includes(i) && !detailed.includes(i));
+        const section=(title,items,key)=>items.length ? `<details class="picker-refinements" data-material-section="${key}" ${!basic.length || expanded.has(id+':'+key)?'open':''}><summary>${title}<span>${items.length}</span></summary><div class="picker-list">${items.map(row).join('')}</div></details>` : '';
+        body=`<div class="picker-list">${basic.map(row).join('')}</div>${section('产地与细分类型',detailed,'types')}${section('品牌产品',products,'brands')}`;
+      }
+      return `<section class="picker-group" data-result-category="${esc(id)}">${(category || browsing) && groupedMaterials(rows,data).length===1 ? '' : `<h3>${esc(categoryLabel(id,data))}</h3>`}${body}</section>`;
+    }).join('');
     const direct=shown.filter(i=>found.direct.includes(i)), related=shown.filter(i=>found.related.includes(i));
     $('#material-results').innerHTML=`${groups(direct)}${related.length?`<details class="picker-related" ${direct.length?'':'open'}><summary>相关结果</summary>${groups(related)}</details>`:''}${!items.length?`<div class="picker-empty"><p>没有找到“${esc(q || categoryLabel(category,data))}”</p><button type="button" class="btn" data-action="create-material">新建原料</button></div>`:''}${items.length>limit?`<button class="link-button picker-more" data-action="more-materials">显示更多</button>`:''}`;
   }
@@ -1603,7 +1619,7 @@
 
   function settingsPage() {
     const connected=!!(config.owner && config.repo);
-    return heading('','设置','') + `<div class="settings-layout"><div><section class="panel"><h2>备份</h2><p class="hint">备份包含配方、原料和收藏。</p><div class="row wrap"><button class="btn" data-action="export">${icon('download')}导出备份</button><button class="btn" data-action="import">${icon('upload')}导入备份</button></div><input id="import-file" type="file" accept=".json,application/json" hidden></section><details class="panel danger-zone"><summary>清空本机数据</summary><p class="hint">删除此浏览器中的记录和同步设置，不影响已导出的备份。</p><button class="btn danger" data-action="clear-local-data">清空本机数据</button></details><p class="app-version">版本 2.5.0</p></div><section class="panel"><h2>跨设备同步</h2><p>${connected?esc(config.owner+'/'+config.repo):'通过自己的私有 GitHub 仓库同步。'}</p>${connected?`<p class="hint">${esc(dateText(env.lastSync))} · 自动同步${config.auto?'开启':'关闭'}</p>`:''}<div class="row wrap connection-actions"><button class="btn ${connected?'':'primary'}" data-action="open-sync-settings">${connected?'连接设置':'连接 GitHub'}</button>${connected?`<button class="btn primary" data-action="sync-now" ${syncBusy?'disabled':''}>${syncBusy?'同步中':'立即同步'}</button>`:''}</div>${connected?`<details class="advanced-sync"><summary>覆盖数据</summary><div class="row wrap"><button class="link-button" data-action="sync-upload">以本机覆盖云端</button><button class="link-button" data-action="sync-download">以云端覆盖本机</button></div></details>`:''}<details class="setup-guide"><summary>连接说明</summary><ol class="steps-list"><li>创建私有 GitHub 仓库。</li><li>创建仅限该仓库的 Fine-grained Token，授予 Contents 读写权限。</li><li>点击“连接 GitHub”填写仓库和令牌。</li></ol><a class="link-button" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">创建令牌 ${icon('arrow')}</a></details></section></div>`;
+    return heading('','设置','') + `<div class="settings-layout"><div><section class="panel"><h2>备份</h2><p class="hint">备份包含配方、原料和收藏。</p><div class="row wrap"><button class="btn" data-action="export">${icon('download')}导出备份</button><button class="btn" data-action="import">${icon('upload')}导入备份</button></div><input id="import-file" type="file" accept=".json,application/json" hidden></section><details class="panel danger-zone"><summary>清空本机数据</summary><p class="hint">删除此浏览器中的记录和同步设置，不影响已导出的备份。</p><button class="btn danger" data-action="clear-local-data">清空本机数据</button></details><p class="app-version">版本 2.6.0</p></div><section class="panel"><h2>跨设备同步</h2><p>${connected?esc(config.owner+'/'+config.repo):'通过自己的私有 GitHub 仓库同步。'}</p>${connected?`<p class="hint">${esc(dateText(env.lastSync))} · 自动同步${config.auto?'开启':'关闭'}</p>`:''}<div class="row wrap connection-actions"><button class="btn ${connected?'':'primary'}" data-action="open-sync-settings">${connected?'连接设置':'连接 GitHub'}</button>${connected?`<button class="btn primary" data-action="sync-now" ${syncBusy?'disabled':''}>${syncBusy?'同步中':'立即同步'}</button>`:''}</div>${connected?`<details class="advanced-sync"><summary>覆盖数据</summary><div class="row wrap"><button class="link-button" data-action="sync-upload">以本机覆盖云端</button><button class="link-button" data-action="sync-download">以云端覆盖本机</button></div></details>`:''}<details class="setup-guide"><summary>连接说明</summary><ol class="steps-list"><li>创建私有 GitHub 仓库。</li><li>创建仅限该仓库的 Fine-grained Token，授予 Contents 读写权限。</li><li>点击“连接 GitHub”填写仓库和令牌。</li></ol><a class="link-button" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">创建令牌 ${icon('arrow')}</a></details></section></div>`;
   }
   function openSyncSettings() {
     const el = $("#sync-dialog");
@@ -1682,7 +1698,7 @@
       return;
     }
     try {
-      const other = C.validate(JSON.parse(await file.text()));
+      const other = C.installCatalog(JSON.parse(await file.text()), window.MIX_SEED);
       await refreshState();
       const snapshot = C.clone(env.data);
       const result = C.merge(C.empty(), snapshot, other);
@@ -1955,7 +1971,7 @@
       }
       await persist({
         ...env,
-        data: C.validate(target),
+        data: C.reconcileMaterials(target, window.MIX_SEED),
         base: C.clone(target),
         syncId,
         sha,
@@ -2867,6 +2883,8 @@
     db.onversionchange = () => { db.close(); db = null; storageError = '本地存储连接已改变，请刷新页面后继续保存。'; render(); };
     const stored = await dbRead("current");
     if (stored) {
+      if (!(await dbRead("backup-before-material-dedup")))
+        await dbWrite("backup-before-material-dedup", stored);
       if (!(await dbRead("backup-before-v2-ui")))
         await dbWrite("backup-before-v2-ui", stored);
       if (stored.data?.pantryItems?.some(i => i.identityMode !== 'explicit') && !(await dbRead('backup-before-material-model')))

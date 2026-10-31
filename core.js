@@ -587,6 +587,52 @@
     }
     return { data: out, conflicts: [...new Set(conflicts)] };
   }
+  // Identity is scoped to a concrete parent and matching constraints. Never
+  // infer equivalence from a bottle's display name or from a shared category.
+  function reconcileMaterials(data, catalog) {
+    const canonicalIds = new Set(catalog.ingredients.map(i => i.id));
+    const redirects = new Map();
+    const compatible = (a, b) => !a.brand && !b.brand &&
+      materialRole(a) === 'ingredient' && materialRole(b) === 'ingredient' &&
+      a.parentId === b.parentId && a.matchParent === b.matchParent &&
+      same([...a.tags].sort(), [...b.tags].sort()) &&
+      (!a.image || !b.image || a.image === b.image);
+    for (const item of data.ingredients) {
+      if (canonicalIds.has(item.id)) continue;
+      const candidates = data.ingredients.filter(target => canonicalIds.has(target.id) &&
+        compatible(item, target) && [target.name, ...target.aliases].map(norm).includes(norm(item.name)));
+      if (candidates.length !== 1) continue;
+      const target = candidates[0];
+      redirects.set(item.id, target.id);
+      const aliases = [...new Set([...target.aliases, item.name, ...item.aliases])]
+        .filter(name => norm(name) !== norm(target.name));
+      if (!same(aliases, target.aliases) || item.image && !target.image || item.kind === 'type' && target.kind !== 'type') {
+        target.aliases = aliases;
+        target.image ||= item.image;
+        if (item.kind === 'type') target.kind = 'type';
+        target.customized = true;
+      }
+    }
+    if (!redirects.size) return data;
+    const resolve = id => redirects.get(id) || id;
+    const refs = (ids = []) => [...new Set(ids.map(resolve))];
+    for (const recipe of data.recipes)
+      for (const row of [...recipe.ingredients, ...recipe.garnishes,
+        ...recipe.versions.flatMap(v => [...v.ingredients, ...v.garnishes])]) {
+        row.id = resolve(row.id);
+        row.alternatives = refs(row.alternatives).filter(id => id !== row.id);
+      }
+    for (const stock of data.pantryItems) {
+      stock.matches = refs(stock.matches);
+      stock.tags = refs(stock.tags);
+    }
+    data.ingredients = data.ingredients.filter(i => !redirects.has(i.id));
+    for (const item of data.ingredients) {
+      item.parentId = resolve(item.parentId);
+      item.tags = refs(item.tags).filter(id => id !== item.id);
+    }
+    return reconcileMaterials(data, catalog);
+  }
   function installCatalog(input, catalog) {
     const d = validate(input),
       c = validate(catalog),
@@ -670,7 +716,7 @@
     for (const k of Object.keys(d.options))
       d.options[k] = [...new Set([...d.options[k], ...c.options[k]])];
     d.catalogVersion = c.catalogVersion;
-    return validate(d);
+    return validate(reconcileMaterials(d, c));
   }
 
   const vulgarFractions = { '¼': '1/4', '½': '1/2', '¾': '3/4', '⅓': '1/3', '⅔': '2/3', '⅛': '1/8', '⅜': '3/8', '⅝': '5/8', '⅞': '7/8' };
@@ -735,6 +781,7 @@
     have: (row, data) => indexed(data, () => have(row, data)),
     matches: (row, data) => indexed(data, () => matches(row, data)),
     installCatalog,
+    reconcileMaterials: (data, catalog) => validate(reconcileMaterials(validate(data), validate(catalog))),
     ingredientPath: (id, data) => indexed(data, () => ingredientPath(id, data)),
     needsProduct,
     materialText: (i, data) => indexed(data, () => materialText(i, data)),

@@ -2965,6 +2965,9 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
 .picker-body { overscroll-behavior: contain; }
 .picker-result-head { font-size: 11px; margin: 6px 0 14px; }
 .picker-group { margin-bottom: 18px; }
+.picker-refinements { border-top: 1px solid var(--line); margin-top: 8px; }
+.picker-refinements > summary { cursor: pointer; padding: 14px 0; font-size: 13px; font-weight: 600; }
+.picker-refinements > summary span { margin-left: 8px; color: var(--muted); font-weight: 400; }
 .picker-group h3 { font-size: 11px; color: var(--muted); font-weight: 500; margin: 14px 0 6px; }
 .picker-item { display: flex; width: 100%; gap: 14px; align-items: center; padding: 12px 6px; text-align: left; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: none; }
 .picker-item:hover { background: var(--soft); }

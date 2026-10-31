@@ -1,6 +1,7 @@
 """Audit catalog.js, navigation references and local recipe assets (no dependencies)."""
 import json
 import subprocess
+import unicodedata
 from pathlib import Path
 
 root = Path(__file__).resolve().parent.parent
@@ -23,6 +24,16 @@ for root_id, children in menus:
         while ancestor and ancestor != root_id:
             ancestor = by[ancestor]['parentId']
         assert ancestor == root_id, child
+# A selectable name/alias must identify only one unbranded ingredient within
+# its parent and constraints. Navigation labels may repeat across levels.
+identities = {}
+for item in by.values():
+    if item['brand']:
+        continue
+    for name in {item['name'], *item['aliases']}:
+        key = (item['parentId'], tuple(sorted(item['tags'])), item['matchParent'], unicodedata.normalize('NFKC', name).strip().lower())
+        assert key not in identities or identities[key] == item['id'], ('重复原料名称或别名', name, identities.get(key), item['id'])
+        identities[key] = item['id']
 # Some entries are both second-level navigation and selectable built-in tags.
 tags = [i for i in by.values() if i['builtInTag']]
 for tag in tags:

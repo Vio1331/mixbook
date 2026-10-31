@@ -1,7 +1,7 @@
 // A release uses one coherent code shell. New code becomes active only after all
 // its files are cached. Open forms stay open; the next navigation uses this release.
 const PREFIX = 'mixbook-' + encodeURIComponent(self.registration.scope) + '-',
-  CACHE = PREFIX + 'v2.5.0',
+  CACHE = PREFIX + 'v2.6.0',
   IMAGES = PREFIX + 'images',
   SHELL = ['./', './index.html', './styles.css', './boot.js', './core.js',
     './catalog.js', './hierarchy.js', './app.js', './manifest.webmanifest',
