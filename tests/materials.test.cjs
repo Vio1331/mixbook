@@ -65,7 +65,7 @@ test("一级和二级目录逐层匹配具体原料", () => {
   const d = data();
   assert.deepEqual(
     C.ingredientPath("lagavulin-16", d).map((i) => i.id),
-    ["whiskey", "scotch", "islay", "lagavulin-16"],
+    ["whiskey", "islay", "lagavulin-16"],
   );
   assert.ok(C.satisfies("lagavulin-16", "islay", d));
   assert.ok(C.satisfies("lagavulin-16", "whiskey", d));
@@ -285,12 +285,12 @@ test('马提尼克糖蜜朗姆同时满足产地和白朗姆，反向不成立',
   assert.equal(C.satisfies('martinique-rum','martinique-molasses',d),false);
 });
 
-test('目录的真实从属关系用于匹配，不把无关酒类混为一种', () => {
+test('目录归属忠实保留用户维护的关系，不由程序重新分类', () => {
   const d=data();
-  for(const [owned,required] of [['champagne','sparkling'],['prosecco','sparkling'],['cava','sparkling'],['cacao-brown','cacao-liqueur'],['menthe-white','mint-liqueur'],['kahlua','coffee-liqueur'],['cointreau','triple-sec'],['triple-sec','orange-liqueur'],['angostura','aromatic-bitters']])
-    assert.ok(C.satisfies(owned,required,d),`${owned} → ${required}`);
-  for(const [owned,required] of [['baijiu','vodka'],['soju','vodka'],['shochu','vodka'],['cachaca','rum'],['absinthe','liqueur'],['blanco-tequila','mezcal'],['joven-mezcal','tequila']])
-    assert.equal(C.satisfies(owned,required,d),false,`${owned} ≠ ${required}`);
+  for(const [id,parent] of [['champagne','wine'],['baijiu','vodka'],['soju','vodka'],['shochu','vodka'],['cachaca','rum'],['absinthe','liqueur'],['cointreau','liqueur'],['cola','other-liquid'],['coffee','other-food']])
+    assert.equal(d.ingredients.find(i=>i.id===id).parentId,parent);
+  for(const [owned,required] of [['blanco-tequila','mezcal'],['joven-mezcal','tequila']])
+    assert.equal(C.satisfies(owned,required,d),false);
 });
 
 test('同一类型和同一产品的多条库存各自保留并可独立删除', () => {

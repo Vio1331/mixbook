@@ -60,7 +60,7 @@ test("没有数据库权限时也能打开试用界面，清楚提示临时会�
   context.window.addEventListener = () => {};
   context.window.scrollTo = () => {};
   vm.createContext(context);
-  for (const name of ["core.js", "catalog.js", "hierarchy.js", "app.js"])
+  for (const name of ["core.js", "catalog.js", "catalog-recovery.js", "hierarchy.js", "app.js"])
     await vm.runInContext(
       fs.readFileSync(path.join(__dirname, "..", name), "utf8"),
       context,

@@ -92,7 +92,7 @@ test("102 张 IBA 配图按上传文件名固定引用", () => {
         fs.existsSync(path.join(root, `assets/ingredients/${i.image}.webp`)),
       );
 });
-test("同一份 catalog.js 修改后刷新内置配方，同时保留用户比例", () => {
+test("程序目录更新不得覆盖已经保存的配方或用户比例", () => {
   const old = data(),
     changed = data(),
     target = recipe(changed, "negroni");
@@ -111,18 +111,18 @@ test("同一份 catalog.js 修改后刷新内置配方，同时保留用户比�
   ];
   const upgraded = C.installCatalog(old, changed),
     result = recipe(upgraded, "negroni");
-  assert.equal(result.name, "我刚改的中文名");
-  assert.equal(result.ingredients[0].amount, "31");
+  assert.equal(result.name, recipe(old,"negroni").name);
+  assert.equal(result.ingredients[0].amount, recipe(old,"negroni").ingredients[0].amount);
   assert.equal(result.versions[0].name, "我的比例");
 });
-test("目录升级会收敛未编辑的内置杯形，同时保留用户修改", () => {
+test("目录升级不覆盖任何已有杯形，不依赖编辑标记", () => {
   const old = data();
   old.catalogVersion = "iba-before-glass-unification";
   recipe(old, "bellini").glass = "香槟笛杯";
   recipe(old, "negroni").glass = "我的杯";
   recipe(old, "negroni").customized = true;
   const upgraded = C.installCatalog(old, seed);
-  assert.equal(recipe(upgraded, "bellini").glass, "香槟杯");
+  assert.equal(recipe(upgraded, "bellini").glass, "香槟笛杯");
   assert.equal(recipe(upgraded, "negroni").glass, "我的杯");
 });
 test("仙山露满足甜味美思，但类别不能反向满足具体名称", () => {

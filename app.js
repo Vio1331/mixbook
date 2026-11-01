@@ -709,7 +709,7 @@
 
   function pantryPage() {
     const owned = env.data.pantryItems.length;
-    const directory = C.searchMaterials(env.data).direct.filter(i=>C.materialRole(i)!=='product');
+    const directory = C.searchMaterials(env.data).direct.filter(i=>C.materialRole(i)!=='product'&&directoryItem(i,env.data));
     const directoryCounts = new Map();
     for (const item of directory) {
       const root = materialCategory(item.id)?.id;
@@ -756,7 +756,7 @@
       );
     else {
       const found = C.searchMaterials(env.data, pantryQ, pantrySection === 'all' ? '' : pantrySection);
-      items = found.direct.filter(i=>C.materialRole(i)!=='product');
+      items = found.direct.filter(i=>C.materialRole(i)!=='product'&&directoryItem(i,env.data));
     }
     $("#pantry-results").innerHTML =
       `<p class="sr-only" role="status">${esc(title)}：${items.length} 项</p>${items.length ? `<div class="material-list">${groupedMaterials(items,env.data,i=>pantryTab==='owned'?i.matches[0]:i.id).map(([id,rows])=>`<section class="pantry-group"><h3>${esc(categoryLabel(id))}</h3>${rows.map(item=>pantryTab==='owned'?stockCard(item):directoryCard(item)).join('')}</section>`).join('')}</div>` : `<div class="empty">${icon("bottle")}<h3>${pantryQ ? "没有找到匹配的原料" : pantrySection !== "all" ? "这个类别还没有原料" : pantryTab === "directory" ? "原料库为空" : "酒柜中还没有原料"}</h3><p>${pantryQ ? "试试名称、英文名或品牌。" : ""}</p>${pantryQ || pantrySection !== "all" ? '<button class="btn" data-action="reset-pantry">清除筛选</button>' : ""}</div>`}`;
@@ -788,18 +788,22 @@
     return item.name + (context ? ' · ' + context : '');
   }
   function materialPathLabel(id,data=env.data) {
-    return C.ingredientPath(id,data).filter(i=>!['liquid-materials','solid-materials','brandy-root','liqueur-root'].includes(i.id)).map(i=>categoryLabel(i.id,data)).join(' › ');
+    return C.ingredientPath(id,data).map(i=>categoryLabel(i.id,data)).join(' › ');
   }
   function materialChildren(data,id) {
     const order=pantryMenus.flatMap(([root,children])=>[root,...children]);
     const rank=item=>{const n=order.indexOf(item.id);return n<0?order.length+data.ingredients.indexOf(item):n;};
-    return data.ingredients.filter(i=>i.parentId===id || i.tags.includes(id) && !C.ingredientPath(i.id,data).some(p=>p.id===id))
+    return data.ingredients.filter(i=>i.parentId===id)
       .sort((a,b)=>(C.materialRole(a)==='product')-(C.materialRole(b)==='product') || rank(a)-rank(b));
+  }
+  function directoryItem(item,data) {
+    const helper=window.MIX_CATALOG_RECOVERY?.compatibilityDefinitions?.find(i=>i.id===item.id);
+    return !helper || !Object.keys(helper).every(key=>C.same(item[key],helper[key])) || data.ingredients.some(i=>i.parentId===item.id);
   }
   // One relationship browser for inventory, recipes, new definitions and edits.
   // A secondary classification is a real membership edge, never an arbitrary UI bucket.
   function materialTree(data,roots,{mode='pick',expanded=new Set(),exclude='',tags=[]}={}) {
-    const allowed=i=>C.materialRole(i)!=='product' && (!exclude || !C.ingredientPath(i.id,data).some(x=>x.id===exclude));
+    const allowed=i=>C.materialRole(i)!=='product' && directoryItem(i,data) && (!exclude || !C.ingredientPath(i.id,data).some(x=>x.id===exclude));
     const select=i=>mode==='parent'?`data-definition-parent="${esc(i.id)}"`:mode==='tag'?`data-definition-tag="${esc(i.id)}" aria-pressed="${tags.includes(i.id)}"`:`data-pick="${esc(i.id)}"`;
     const selectable=i=>mode==='parent'||picker?.scope==='stock-category'||(mode==='tag'?i.kind==='type'&&C.materialRole(i)!=='group':C.materialRole(i)!=='group');
     const node=(id,path=[])=>{
@@ -821,7 +825,7 @@
   }
   function renderDefinitionChoices(form,query='') {
     const data=definitionData(form), exclude=form.elements.materialId?.value || '';
-    const candidates=data.ingredients.filter(i=>C.materialRole(i)!=='product' && !['liquid-materials','solid-materials','brandy-root','liqueur-root'].includes(i.id) &&
+    const candidates=data.ingredients.filter(i=>C.materialRole(i)!=='product' &&
       (!exclude || !C.ingredientPath(i.id,data).some(x=>x.id===exclude)));
     const q=C.norm(query), result=form.querySelector('[data-definition-choices]');
     if(!result) return;
@@ -833,17 +837,14 @@
   }
   function materialCategory(id, data = env.data) {
     const path = C.ingredientPath(id,data);
-    // Show useful categories, not implementation buckets such as liquid/solid.
-    const root = path[0];
-    return ['liquid-materials','solid-materials'].includes(root?.id) ? path[1] || root : root;
+    return path[0];
   }
   function categoryLabel(id,data=env.data) {
-    return ({'liquid-materials':'果汁、糖浆与饮料','solid-materials':'水果与调味','soda-root':'气泡饮料','other-liquid':'其他饮品','other-food':'其他食品','fruit-vegetable':'水果与蔬菜'})[id] || ingredientName(id,data);
+    return ingredientName(id,data);
   }
   function materialCategories(data) {
-    return pantryMenus.flatMap(([id])=>['liquid-materials','solid-materials'].includes(id)
-      ? data.ingredients.filter(i=>i.parentId===id && C.materialRole(i)==='group').map(i=>i.id)
-      : [id]);
+    const maintained = pantryMenus.map(([id])=>id).filter(id=>data.ingredients.some(i=>i.id===id));
+    return [...maintained, ...data.ingredients.filter(i=>!i.parentId&&!maintained.includes(i.id)&&C.materialRole(i)!=='product').map(i=>i.id)];
   }
   function groupedMaterials(items,data,getId=i=>i.id) {
     const order=materialCategories(data), groups=new Map();
@@ -902,8 +903,9 @@
   function readDefinition(form,data,old=null) {
     const f=new FormData(form),name=String(f.get('name')||'').trim(),brand=String(f.get('brand')??old?.brand??'').trim(),q=C.norm(String(f.get('baseName')||''));
     if(!name) throw Error('请填写名称。');
-    const candidates=data.ingredients.filter(i=>C.materialRole(i)!=='product' && !['brandy-root','liqueur-root'].includes(i.id) &&
-      (C.norm(materialPathLabel(i.id,data))===q || C.norm(materialOptionLabel(i,data))===q || [i.name,...i.aliases].some(n=>C.norm(n)===q)));
+    const eligible=data.ingredients.filter(i=>C.materialRole(i)!=='product');
+    const paths=eligible.filter(i=>C.norm(materialPathLabel(i.id,data))===q);
+    const candidates=paths.length?paths:eligible.filter(i=>C.norm(materialOptionLabel(i,data))===q || [i.name,...i.aliases].some(n=>C.norm(n)===q));
     if(candidates.length!==1) throw Error('请选择类型；输入名称后，从列表中选取。');
     const parent=candidates[0];
     if(old && C.ingredientPath(parent.id,data).some(i=>i.id===old.id)) throw Error('不能归到自身或下级类型。');
@@ -1507,7 +1509,7 @@
 
   function settingsPage() {
     const connected=!!(config.owner&&config.repo);
-    return heading('','设置','')+`<div class="settings-layout"><section class="settings-section"><h2>数据</h2><div class="settings-actions"><button class="btn" data-action="export">导出备份</button><button class="btn" data-action="import">导入备份</button><button class="btn danger" data-action="clear-local-data">清空本机数据</button></div><input id="import-file" type="file" accept=".json,application/json" hidden></section><section class="settings-section"><div class="settings-section-title"><h2>GitHub 同步</h2><button class="link-button" data-action="open-sync-settings">${connected?'连接设置':'连接 GitHub'}</button></div>${connected?`<p class="sync-account">${esc(config.owner+'/'+config.repo)}</p><div class="sync-actions"><button class="btn" data-action="sync-now" ${syncBusy?'disabled':''}>合并同步</button><button class="btn" data-action="sync-upload">本机覆盖云端</button><button class="btn" data-action="sync-download">云端覆盖本机</button></div><p class="sync-time">${esc(dateText(env.lastSync))}</p>`:''}<details class="setup-guide"><summary>连接说明</summary><ol class="steps-list"><li>创建私有 GitHub 仓库。</li><li>创建仅限该仓库的 Fine-grained Token，授予 Contents 读写权限。</li><li>在连接设置中填写用户名、仓库名和令牌。</li></ol><a class="link-button" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">创建令牌 ${icon('arrow')}</a></details></section></div><footer class="app-version">版本 2.8.0</footer>`;
+    return heading('','设置','')+`<div class="settings-layout"><section class="settings-section"><h2>数据</h2><div class="settings-actions"><button class="btn" data-action="export">导出备份</button><button class="btn" data-action="import">导入备份</button><button class="btn danger" data-action="clear-local-data">清空本机数据</button></div><input id="import-file" type="file" accept=".json,application/json" hidden></section><section class="settings-section"><div class="settings-section-title"><h2>GitHub 同步</h2><button class="link-button" data-action="open-sync-settings">${connected?'连接设置':'连接 GitHub'}</button></div>${connected?`<p class="sync-account">${esc(config.owner+'/'+config.repo)}</p><div class="sync-actions"><button class="btn" data-action="sync-now" ${syncBusy?'disabled':''}>合并同步</button><button class="btn" data-action="sync-upload">本机覆盖云端</button><button class="btn" data-action="sync-download">云端覆盖本机</button></div><p class="sync-time">${esc(dateText(env.lastSync))}</p>`:''}<details class="setup-guide"><summary>连接说明</summary><ol class="steps-list"><li>创建私有 GitHub 仓库。</li><li>创建仅限该仓库的 Fine-grained Token，授予 Contents 读写权限。</li><li>在连接设置中填写用户名、仓库名和令牌。</li></ol><a class="link-button" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">创建令牌 ${icon('arrow')}</a></details></section></div><footer class="app-version">版本 2.8.1</footer>`;
   }
   function openSyncSettings() {
     const el=$('#sync-dialog');
@@ -2780,6 +2782,8 @@
     db.onversionchange = () => { db.close(); db = null; storageError = '本地存储连接已改变，请刷新页面后继续保存。'; render(); };
     const stored = await dbRead("current");
     if (stored) {
+      if (stored.data?.catalogRecoveryVersion !== window.MIX_CATALOG_RECOVERY?.version && !(await dbRead('backup-before-v2.8.1-catalog-restore')))
+        await dbWrite('backup-before-v2.8.1-catalog-restore', stored);
       if (!(await dbRead('backup-before-v2.7-hierarchy')))
         await dbWrite('backup-before-v2.7-hierarchy', stored);
       if (!(await dbRead("backup-before-material-dedup")))

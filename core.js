@@ -304,6 +304,7 @@
       favorites: flags(favorites, rids),
       options,
       catalogVersion: text(input.catalogVersion || "", 100),
+      catalogRecoveryVersion: text(input.catalogRecoveryVersion || "", 100),
     };
   }
   // An index lives for one synchronous operation only. Drafts are mutable, so a
@@ -451,6 +452,20 @@
       seen.add(id);
       const item = d.get(id);
       if (!item) return false;
+      // Recipe requirements can be broader than the user's directory levels.
+      // These existing compatibility rules do not rewrite names, parents or tags.
+      const families = {
+        islay:['whiskey','scotch'], 'blended-scotch':['whiskey','scotch'],
+        'blanco-tequila':['agave','tequila'], 'joven-tequila':['agave','tequila'],
+        'reposado-tequila':['agave','tequila'], 'anejo-tequila':['agave','tequila'],
+        'joven-mezcal':['agave','mezcal'], 'reposado-mezcal':['agave','mezcal'],
+        'anejo-mezcal':['agave','mezcal'], 'madurado-en-vidrio-mezcal':['agave','mezcal'],
+        'jamaican-gold':['gold-rum','jamaican-rum'], 'jamaican-dark':['dark-rum','jamaican-rum'],
+        'puerto-rico-gold':['gold-rum','puerto-rico-rum'], 'martinique-molasses':['light-rum','martinique-rum'],
+        agricole:['rum','martinique-rum'], cointreau:['liqueur','triple-sec']
+      };
+      const family = families[id];
+      if (!item.customized && item.matchParent !== false && family?.[0] === item.parentId && visit(family[1])) return true;
       return (item.tags || []).some(visit) ||
         item.matchParent !== false && !!item.parentId && visit(item.parentId);
     }
@@ -606,6 +621,7 @@
         ...new Set([...local.options[k], ...remote.options[k]]),
       ];
     out.catalogVersion = local.catalogVersion || remote.catalogVersion;
+    out.catalogRecoveryVersion = local.catalogRecoveryVersion || remote.catalogRecoveryVersion;
     const ids = new Set(out.ingredients.map((i) => i.id)),
       rids = new Set(out.recipes.map((r) => r.id));
     out.pantryItems = out.pantryItems.filter(
@@ -630,6 +646,7 @@
   // infer equivalence from a bottle's display name or from a shared category.
   function reconcileMaterials(data, catalog) {
     const canonicalIds = new Set(catalog.ingredients.map(i => i.id));
+    const repairableIds = new Set(catalog.ingredients.filter(i => i.kind === "product" && !i.brand).map(i => i.id));
     const redirects = new Map();
     const compatible = (a, b) => !a.brand && !b.brand &&
       materialRole(a) === 'ingredient' && materialRole(b) === 'ingredient' &&
@@ -638,8 +655,9 @@
       (!a.image || !b.image || a.image === b.image);
     for (const item of data.ingredients) {
       if (canonicalIds.has(item.id)) continue;
-      const candidates = data.ingredients.filter(target => canonicalIds.has(target.id) &&
-        compatible(item, target) && [target.name, ...target.aliases].map(norm).includes(norm(item.name)));
+      const juiceNames = {'lime-fruit':['青柠','鲜青柠'], 'lemon-fruit':['柠檬','鲜柠檬'], 'orange-juice':['橙汁','鲜橙汁'], 'grapefruit':['西柚','葡萄柚'], 'grapefruit-juice':['西柚汁','葡萄柚汁']};
+      const candidates = data.ingredients.filter(target => repairableIds.has(target.id) &&
+        compatible(item, target) && [target.name, ...target.aliases, ...(juiceNames[target.id] || [])].map(norm).includes(norm(item.name)));
       if (candidates.length !== 1) continue;
       const target = candidates[0];
       redirects.set(item.id, target.id);
@@ -676,72 +694,32 @@
     const d = validate(input),
       c = validate(catalog),
       installed = !!d.catalogVersion,
-      sameCatalog = d.catalogVersion === c.catalogVersion;
-    for (const [removed, replacement] of Object.entries(
-      catalog.ingredientRemovals || {},
-    )) {
-      for (const r of d.recipes)
-        for (const x of [
-          ...r.ingredients,
-          ...r.garnishes,
-          ...r.versions.flatMap((v) => [...v.ingredients, ...v.garnishes]),
-        ]) {
-          if (x.id === removed) x.id = replacement;
-          x.alternatives = (x.alternatives || [])
-            .map((id) => (id === removed ? replacement : id))
-            .filter((id, n, a) => id !== x.id && a.indexOf(id) === n);
+      firstInstall = !installed;
+    const recovery = catalog.restoration || root.MIX_CATALOG_RECOVERY;
+    if (recovery && d.catalogRecoveryVersion !== recovery.version) {
+      for (const change of recovery.changes) {
+        const item = d.ingredients.find(i => i.id === change.id);
+        if (!item || item.customized || !change.from.some(known => Object.keys(known).every(key => same(item[key], known[key])))) continue;
+        if (change.to.parentId && !d.ingredients.some(i => i.id === change.to.parentId)) continue;
+        // A later manual move elsewhere in the tree can make an old parent unsafe.
+        let parent = d.ingredients.find(i => i.id === change.to.parentId), cycle = false;
+        while (parent) {
+          if (parent.id === item.id) { cycle = true; break; }
+          parent = d.ingredients.find(i => i.id === parent.parentId);
         }
-      for (const i of d.pantryItems) {
-        i.matches = i.matches
-          .map((id) => (id === removed ? replacement : id))
-          .filter((id, n, a) => a.indexOf(id) === n);
-        i.tags = i.tags
-          .map((id) => (id === removed ? replacement : id))
-          .filter((id, n, a) => a.indexOf(id) === n);
+        if (cycle) continue;
+        Object.assign(item, clone(change.to));
       }
-      for (const i of d.ingredients) {
-        if (i.parentId === removed) i.parentId = replacement;
-        i.tags = (i.tags || [])
-          .map((id) => (id === removed ? replacement : id))
-          .filter((id, n, a) => id !== i.id && a.indexOf(id) === n);
-      }
-      d.ingredients = d.ingredients.filter((i) => i.id !== removed);
+      d.catalogRecoveryVersion = recovery.version;
     }
     for (const i of c.ingredients) {
       const old = d.ingredients.find((x) => x.id === i.id);
-      if (!old) d.ingredients.push(clone(i));
-      else if (!old.customized) Object.assign(old, clone(i));
+      if (!old && firstInstall) d.ingredients.push(clone(i));
     }
     for (const r of c.recipes) {
       const existing = d.recipes.find((x) => x.id === r.id);
-      if (existing) {
-        const raw = input.recipes.find((x) => x.id === r.id);
-        // Refresh untouched built-in recipes directly from catalog.js, even when its version string is unchanged.
-        // Personal edits and user-created ratio versions remain local user data.
-        if (!existing.customized) {
-          const versions = existing.versions,
-            createdAt = existing.createdAt,
-            updatedAt = existing.updatedAt,
-            notes = existing.notes || r.notes,
-            photoUrl = existing.photoUrl || r.photoUrl;
-          Object.assign(existing, clone(r), {
-            versions,
-            createdAt,
-            updatedAt,
-            notes,
-            photoUrl,
-          });
-        } else {
-          if (raw.sourceName === undefined) existing.sourceName = r.sourceName;
-          if (!existing.customized) {
-            existing.base = r.base;
-            existing.glass = r.glass;
-            existing.tags = [...new Set([...existing.tags, ...r.tags])];
-          }
-          if (existing.catalog && !existing.image) existing.image = r.image;
-        }
-        continue;
-      }
+      // Existing content belongs to the user, including records without an edit flag.
+      if (existing) continue;
       // A catalog already installed on this device may have deliberate recipe deletions.
       if (installed) continue;
       const old = d.recipes.find((x) => x.id === r.id.replace(/^iba-/, ""));
@@ -752,9 +730,9 @@
       }
       d.recipes.push(clone(r));
     }
-    for (const k of Object.keys(d.options))
+    if (firstInstall) for (const k of Object.keys(d.options))
       d.options[k] = [...new Set([...d.options[k], ...c.options[k]])];
-    d.catalogVersion = c.catalogVersion;
+    d.catalogVersion ||= c.catalogVersion;
     return validate(reconcileMaterials(d, c));
   }
 

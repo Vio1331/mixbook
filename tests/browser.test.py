@@ -109,7 +109,7 @@ class BrowserTests(unittest.TestCase):
         expect(self.page.locator('.stock-card')).to_contain_text('Laphroaig')
         self.page.locator('.stock-card').click();form=self.page.locator('#stock-form')
         expect(form.locator('[name=name]')).to_have_value('拉弗格 10 年');expect(form.locator('[name=brand]')).to_have_value('Laphroaig')
-        expect(form.locator('[data-action=pick-stock]')).to_contain_text('威士忌 › 苏格兰威士忌 › 艾雷岛')
+        expect(form.locator('[data-action=pick-stock]')).to_contain_text('威士忌 › 艾雷岛')
         expect(form.locator('input:not([type=hidden])')).to_have_count(2)
         expect(form.locator('details, textarea')).to_have_count(0)
         box=self.page.locator('#item-dialog').bounding_box();foot=form.locator('.dialog-actions').bounding_box()
@@ -126,6 +126,27 @@ class BrowserTests(unittest.TestCase):
         form.locator('[name=name]').fill('取消的改名');self.close('item-dialog')
         self.assertEqual(self.data()['pantryItems'][0]['name'],'拉弗格 10 年·新瓶')
 
+    def test_catalog_restoration_preserves_later_edits_and_original_navigation(self):
+        d=self.data();d['catalogRecoveryVersion']=''
+        changes=self.page.evaluate('MIX_CATALOG_RECOVERY.changes')
+        for change in changes:
+            target=next(i for i in d['ingredients'] if i['id']==change['id']);target.update(change['from'][-1])
+        next(i for i in d['ingredients'] if i['id']=='blanco-tequila')['name']='后来确认的分类名称'
+        d['pantryItems']=[{'id':'later-bottle','name':'后来新增的一瓶','brand':'我的品牌','category':'龙舌兰','matches':['blanco-tequila'],'tags':[],'notes':'保留','image':'','identityMode':'explicit'}]
+        d['recipes'][0]['notes']='后来添加的笔记';d['favorites'][d['recipes'][0]['id']]=True
+        self.put(d);self.page.reload();self.page.wait_for_selector('.recipe-card');restored=self.data()
+        for section in ['pantryItems','recipes','favorites','options']:self.assertEqual(restored[section],d[section])
+        for change in changes:
+            expected=next(i for i in d['ingredients'] if i['id']==change['id']) if change['id']=='blanco-tequila' else change['to']
+            self.assertEqual(next(i for i in restored['ingredients'] if i['id']==change['id']),expected)
+        self.go('pantry');self.page.locator('[data-action=add-stock]').click();self.page.locator('[data-action=pick-stock]').click()
+        expected=self.page.evaluate('MIX_CATALOG.menus.map(([id])=>({id,name:MIX_CATALOG.ingredients.find(i=>i.id===id).name}))')
+        actual=self.page.locator('[data-picker-category]').evaluate_all('(els)=>els.map(e=>({id:e.dataset.pickerCategory,name:e.querySelector("span").textContent}))')
+        self.assertEqual(actual,expected)
+        self.page.locator('[data-picker-category=liquid-materials]').click()
+        expect(self.page.locator('[data-material-node=juice]')).to_be_visible()
+        self.close('material-dialog');self.close('item-dialog');self.page.reload();self.page.wait_for_selector('.recipe-card');self.assertEqual(self.data(),restored)
+
     def test_add_bottle_category_tree_alignment_and_no_early_save(self):
         self.go('pantry');self.page.locator('[data-action=add-stock]').click();form=self.page.locator('#stock-form')
         form.locator('[name=name]').fill('拉弗格 10 年');form.locator('[name=brand]').fill('Laphroaig')
@@ -135,7 +156,8 @@ class BrowserTests(unittest.TestCase):
         bourbon=self.page.locator('[data-material-node=bourbon] .tree-identity strong').bounding_box()
         scotch=self.page.locator('[data-material-node=scotch] > .material-tree-row .tree-identity strong').bounding_box()
         self.assertLess(abs(bourbon['x']-scotch['x']),1)
-        self.page.locator('[data-material-branch="pick/whiskey/scotch"]').click()
+        self.page.locator('[data-material-branch="pick/whiskey"]').click()
+        self.page.locator('[data-material-branch="pick/whiskey"]').click()
         expect(self.page.locator('#material-dialog')).to_be_visible();expect(form.locator('[name=categoryId]')).to_have_value('')
         self.page.locator('[data-pick=islay]').click();expect(self.page.locator('#material-dialog')).not_to_be_visible()
         expect(form).to_be_visible();expect(form.locator('[name=name]')).to_have_value('拉弗格 10 年');expect(form.locator('[name=brand]')).to_have_value('Laphroaig')
@@ -198,13 +220,17 @@ class BrowserTests(unittest.TestCase):
         for category in categories:
             if self.page.locator('#material-category').is_visible():self.page.locator('#material-category').select_option(category)
             else:self.page.locator('[data-picker-category="'+category+'"]').click()
+            if category=='agave':
+                actual=self.page.locator('[data-material-node=agave] > ul > li').evaluate_all('(els)=>els.map(e=>e.dataset.materialNode)')
+                self.assertEqual(actual,self.page.evaluate('MIX_CATALOG.menus.find(m=>m[0]==="agave")[1]'))
             seen.update(self.page.locator('[data-pick]').evaluate_all('(els)=>els.map(el=>el.dataset.pick)'))
             while self.page.locator('[data-material-branch][aria-expanded=false]:visible').count():self.page.locator('[data-material-branch][aria-expanded=false]:visible').first.click()
             self.assertTrue(self.page.locator('#material-dialog').evaluate('(el)=>el.scrollWidth<=el.clientWidth+1'),category)
             aligned=self.page.locator('.material-tree').evaluate('''(tree)=>[tree,...tree.querySelectorAll('ul')].every(ul=>{const xs=[...ul.children].map(li=>li.querySelector(':scope > .material-tree-row .tree-identity')?.getBoundingClientRect().x).filter(x=>x!==undefined);return !xs.length||Math.max(...xs)-Math.min(...xs)<1})''')
             self.assertTrue(aligned,category)
         d=self.data();products={i['id'] for i in d['ingredients'] if i['brand']}
-        expected={i['id'] for i in d['ingredients'] if not i['brand'] and i['id'] not in ['liquid-materials','solid-materials']}
+        helpers=set(self.page.evaluate('MIX_CATALOG_RECOVERY.compatibilityDefinitions.map(i=>i.id)'))
+        expected={i['id'] for i in d['ingredients'] if not i['brand'] and i['id'] not in helpers}
         self.assertFalse(seen & products);self.assertEqual(seen,expected)
         self.close('material-dialog');self.close('item-dialog');self.assertEqual(len(self.data()['pantryItems']),0)
 
@@ -419,7 +445,7 @@ class BrowserTests(unittest.TestCase):
         p=c.new_page();p.goto(self.url);p.wait_for_selector('.recipe-card')
         p.evaluate('async()=>await navigator.serviceWorker.ready');p.reload();p.wait_for_selector('.recipe-card')
         self.assertTrue(p.evaluate('!!navigator.serviceWorker.controller'))
-        self.assertTrue(any(k.endswith('-v2.8.0') for k in p.evaluate('async()=>await caches.keys()')))
+        self.assertTrue(any(k.endswith('-v2.8.1') for k in p.evaluate('async()=>await caches.keys()')))
         c.set_offline(True);p.reload();p.wait_for_selector('.recipe-card')
         p.locator('.mobile-nav [data-view=pantry]').click();self.stock('gin',page=p)
         p.reload();p.wait_for_selector('.recipe-card');self.assertEqual(self.data(p)['pantryItems'][0]['matches'],['gin']);c.close()
@@ -621,7 +647,7 @@ class BrowserTests(unittest.TestCase):
             def do_GET(self):
                 name=self.path.split('?')[0]
                 if name in ['/sw.js','/app.js']:
-                    content=(source.replace('v2.8.0','v2.4.0') if phase['value']=='old' else source) if name=='/sw.js' else 'window.__servedRelease='+json.dumps(phase['value'])+';\n'+(ROOT/'app.js').read_text()
+                    content=(source.replace('v2.8.1','v2.4.0') if phase['value']=='old' else source) if name=='/sw.js' else 'window.__servedRelease='+json.dumps(phase['value'])+';\n'+(ROOT/'app.js').read_text()
                     body=content.encode();self.send_response(200);self.send_header('Content-Type','text/javascript');self.send_header('Cache-Control','no-store');self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body)
                 else:super().do_GET()
         server=ThreadingHTTPServer(('127.0.0.1',0),partial(UpgradeHandler,directory=str(ROOT)))
@@ -632,7 +658,7 @@ class BrowserTests(unittest.TestCase):
             p.locator('.desktop-nav [data-view=pantry]').click();self.stock('gin',page=p)
             expect(p.locator('#material-dialog')).not_to_be_visible();p.locator('.stock-card').click();p.locator('#stock-form [name=brand]').fill('正在输入')
             phase['value']='new';p.evaluate('async()=>{const r=await navigator.serviceWorker.getRegistration();await r.update()}')
-            p.wait_for_function("async()=>{const r=await navigator.serviceWorker.getRegistration();const keys=await caches.keys();return !r.waiting&&keys.some(k=>k.endsWith('-v2.8.0'))&&!keys.some(k=>k.endsWith('-v2.4.0'))}")
+            p.wait_for_function("async()=>{const r=await navigator.serviceWorker.getRegistration();const keys=await caches.keys();return !r.waiting&&keys.some(k=>k.endsWith('-v2.8.1'))&&!keys.some(k=>k.endsWith('-v2.4.0'))}")
             expect(p.locator('#stock-form [name=brand]')).to_have_value('正在输入')
             self.assertEqual(p.evaluate('window.__servedRelease'),'old')
             p.locator('#item-dialog [data-close]').first.click();p.reload();p.wait_for_selector('.recipe-card')
