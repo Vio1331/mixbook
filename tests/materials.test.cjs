@@ -359,3 +359,42 @@ test('保存具体产品仍支持指定品牌酒谱，类别或改名不能冒�
   assert.throws(()=>C.preparePantryItem(d,{name:'',categoryId:'gin'}),/名称/);
   assert.throws(()=>C.preparePantryItem(d,{name:'酒',categoryId:'cointreau'}),/分类/);
 });
+
+const categoryIds = C.clone(ctx.window.MIX_CATALOG.menus).flatMap(([root,children])=>[root,...children]);
+const prepareFixed = (d,fields,old=null)=>C.preparePantryItem(d,{categoryIds,...fields},old);
+test('固定分类仅来自维护目录，具体果汁与酒款归到已有目录',()=>{
+  const d=data(),before=C.clone(d);
+  assert.equal(C.fixedCategory('lime',d,categoryIds),'juice');
+  assert.equal(C.fixedCategory('lagavulin-16',d,categoryIds),'islay');
+  assert.throws(()=>prepareFixed(d,{categoryId:'lime',name:'青柠汁'}),/分类/);
+  assert.deepEqual(d,before);
+});
+test('输入已有材料名称再填品牌仍满足具体酒谱，不必重复选同名候选',()=>{
+  const d=data(),definitions=C.clone(d.ingredients);
+  const bottle=prepareFixed(d,{categoryId:'juice',name:'青柠汁',brand:'超市品牌'});
+  d.pantryItems.push(bottle);
+  const product=d.ingredients.find(i=>i.id===bottle.matches[0]);
+  assert.equal(product.parentId,'lime');assert.equal(product.brand,'超市品牌');
+  assert.equal(C.have({id:'lime'},d),true);assert.equal(C.have({id:'lemon'},d),false);
+  assert.deepEqual(d.ingredients.slice(0,definitions.length),definitions);
+  const changed=prepareFixed(d,{categoryId:'juice',materialId:product.id,name:'青柠汁',brand:'另一个品牌'},bottle);
+  assert.equal(d.ingredients.find(i=>i.id===changed.matches[0]).parentId,'lime');
+  assert.equal(product.brand,'超市品牌');
+});
+test('新材料在固定类别下保存为条目，同类多瓶独立且原材料目录不变',()=>{
+  const d=data(),before=C.clone(d.ingredients);
+  const one=prepareFixed(d,{categoryId:'blanco-tequila',name:'唐胡里奥银龙舌兰',brand:'唐胡里奥'});
+  const two=prepareFixed(d,{categoryId:'blanco-tequila',name:'另一瓶银龙舌兰',brand:'测试'});
+  assert.notEqual(one.id,two.id);assert.notEqual(one.matches[0],two.matches[0]);
+  const syrup=prepareFixed(d,{categoryId:'syrup',name:'自制红茶糖浆'});
+  const material=d.ingredients.find(i=>i.id===syrup.matches[0]);
+  assert.equal(material.kind,'product');assert.equal(material.parentId,'syrup');
+  assert.equal(categoryIds.includes(material.id),false);
+  assert.deepEqual(d.ingredients.slice(0,before.length),before);
+});
+test('旧材料仅打开保存保持记录及精确匹配，名称修改不改变材料身份',()=>{
+  const d=data(),old={id:'bottle',name:'家里的青柠汁',brand:'',matches:['lime'],tags:[],notes:'保留',image:'',category:'液体材料',identityMode:'explicit'};
+  assert.deepEqual(prepareFixed(d,{categoryId:'juice',materialId:'lime',name:old.name,brand:''},old),old);
+  const renamed=prepareFixed(d,{categoryId:'juice',materialId:'lime',name:'改名后',brand:''},old);
+  assert.deepEqual(renamed.matches,['lime']);assert.equal(renamed.notes,'保留');
+});

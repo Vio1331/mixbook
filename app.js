@@ -386,6 +386,7 @@
       "editor-dialog",
       "item-dialog",
       "material-dialog",
+      "category-dialog",
       "sync-dialog",
     ].some((id) => $("#" + id)?.open);
   }
@@ -709,7 +710,7 @@
 
   function pantryPage() {
     const owned = env.data.pantryItems.length;
-    const directory = C.searchMaterials(env.data).direct.filter(i=>C.materialRole(i)!=='product'&&directoryItem(i,env.data));
+    const directory = C.searchMaterials(env.data).direct.filter(i=>!fixedCategorySet.has(i.id));
     const directoryCounts = new Map();
     for (const item of directory) {
       const root = materialCategory(item.id)?.id;
@@ -720,9 +721,9 @@
         "",
         "酒柜",
         "",
-        `<button class="btn primary" data-action="${pantryTab === "owned" ? "add-stock" : "new-material"}">${icon("plus")}${pantryTab === "owned" ? "添加原料" : "新增分类"}</button>`,
+        `<button class="btn primary" data-action="${pantryTab === "owned" ? "add-stock" : "new-material"}">${icon("plus")}${pantryTab === "owned" ? "添加原料" : "新建材料"}</button>`,
       ) +
-      `<div class="collection-bar"><div class="view-tabs"><button data-pantry-tab="owned" class="${pantryTab === "owned" ? "active" : ""}" aria-pressed="${pantryTab === "owned"}">我的原料<span>${owned}</span></button><button data-pantry-tab="directory" class="${pantryTab === "directory" ? "active" : ""}" aria-pressed="${pantryTab === "directory"}">分类</button></div>${owned ? `<button class="link-button" data-action="show-ready">可制作的配方 ${icon("arrow")}</button>` : ""}</div><div class="workspace pantry-workspace ${!owned && pantryTab==='owned'?'is-empty':''}">${owned || pantryTab==='directory'?`<aside class="pantry-sidebar ${filterOpen ? "mobile-open" : ""}" aria-label="原料类别"><div class="filter-head"><h2>原料类别</h2><button class="icon-button filter-close" data-close="filter-dialog" aria-label="关闭分类">${icon("close")}</button></div><div class="pantry-category-list">${[["all", "全部原料", "grid"], ...materialCategories(env.data).filter(id=>pantryTab==='directory'||env.data.pantryItems.some(x=>x.matches.some(m=>C.satisfies(m,id,env.data)))).map(id=>[id,categoryLabel(id),pantryCategoryIcon(rootOf(id)?.id)])].map(([id, name, i]) => `<button data-pantry-section="${id}" class="filter-choice ${pantrySection === id ? "active" : ""}" aria-pressed="${pantrySection === id}">${icon(i)}<span>${esc(name)}</span><small>${pantryTab === "directory" ? (id === "all" ? directory.length : directoryCounts.get(id) || 0) : id === "all" ? owned : env.data.pantryItems.filter((x) => x.matches.some((m) => C.satisfies(m, id, env.data))).length}</small></button>`).join("")}</div><button class="btn primary filter-apply" data-close="filter-dialog">查看原料</button></aside>`:''}<section class="pantry-content">${owned || pantryTab==='directory'?`<div class="recipe-toolbar"><label class="search-field">${icon("search")}<span class="sr-only">搜索酒柜或原料</span><input id="pantry-search" type="search" autocomplete="off" placeholder="搜索名称、品牌或类别…" value="${esc(pantryQ)}"></label><button class="btn small mobile-filter-toggle" data-action="toggle-filters" aria-expanded="${filterOpen}" aria-controls="filter-dialog">${icon("filter")}分类</button></div>`:''}<div id="pantry-results"></div></section></div>`
+      `<div class="collection-bar"><div class="view-tabs"><button data-pantry-tab="owned" class="${pantryTab === "owned" ? "active" : ""}" aria-pressed="${pantryTab === "owned"}">我的原料<span>${owned}</span></button><button data-pantry-tab="directory" class="${pantryTab === "directory" ? "active" : ""}" aria-pressed="${pantryTab === "directory"}">材料库</button></div>${owned ? `<button class="link-button" data-action="show-ready">可制作的配方 ${icon("arrow")}</button>` : ""}</div><div class="workspace pantry-workspace ${!owned && pantryTab==='owned'?'is-empty':''}">${owned || pantryTab==='directory'?`<aside class="pantry-sidebar ${filterOpen ? "mobile-open" : ""}" aria-label="原料类别"><div class="filter-head"><h2>原料类别</h2><button class="icon-button filter-close" data-close="filter-dialog" aria-label="关闭分类">${icon("close")}</button></div><div class="pantry-category-list">${[["all", "全部原料", "grid"], ...materialCategories(env.data).filter(id=>pantryTab==='directory'||env.data.pantryItems.some(x=>x.matches.some(m=>C.satisfies(m,id,env.data)))).map(id=>[id,categoryLabel(id),pantryCategoryIcon(rootOf(id)?.id)])].map(([id, name, i]) => `<button data-pantry-section="${id}" class="filter-choice ${pantrySection === id ? "active" : ""}" aria-pressed="${pantrySection === id}">${icon(i)}<span>${esc(name)}</span><small>${pantryTab === "directory" ? (id === "all" ? directory.length : directoryCounts.get(id) || 0) : id === "all" ? owned : env.data.pantryItems.filter((x) => x.matches.some((m) => C.satisfies(m, id, env.data))).length}</small></button>`).join("")}</div><button class="btn primary filter-apply" data-close="filter-dialog">查看原料</button></aside>`:''}<section class="pantry-content">${owned || pantryTab==='directory'?`<div class="recipe-toolbar"><label class="search-field">${icon("search")}<span class="sr-only">搜索酒柜或原料</span><input id="pantry-search" type="search" autocomplete="off" placeholder="搜索名称、品牌或类别…" value="${esc(pantryQ)}"></label><button class="btn small mobile-filter-toggle" data-action="toggle-filters" aria-expanded="${filterOpen}" aria-controls="filter-dialog">${icon("filter")}分类</button></div>`:''}<div id="pantry-results"></div></section></div>`
     );
   }
   function renderPantry() {
@@ -756,7 +757,7 @@
       );
     else {
       const found = C.searchMaterials(env.data, pantryQ, pantrySection === 'all' ? '' : pantrySection);
-      items = found.direct.filter(i=>C.materialRole(i)!=='product'&&directoryItem(i,env.data));
+      items = found.direct.filter(i=>!fixedCategorySet.has(i.id));
     }
     $("#pantry-results").innerHTML =
       `<p class="sr-only" role="status">${esc(title)}：${items.length} 项</p>${items.length ? `<div class="material-list">${groupedMaterials(items,env.data,i=>pantryTab==='owned'?i.matches[0]:i.id).map(([id,rows])=>`<section class="pantry-group"><h3>${esc(categoryLabel(id))}</h3>${rows.map(item=>pantryTab==='owned'?stockCard(item):directoryCard(item)).join('')}</section>`).join('')}</div>` : `<div class="empty">${icon("bottle")}<h3>${pantryQ ? "没有找到匹配的原料" : pantrySection !== "all" ? "这个类别还没有原料" : pantryTab === "directory" ? "原料库为空" : "酒柜中还没有原料"}</h3><p>${pantryQ ? "试试名称、英文名或品牌。" : ""}</p>${pantryQ || pantrySection !== "all" ? '<button class="btn" data-action="reset-pantry">清除筛选</button>' : ""}</div>`}`;
@@ -766,12 +767,12 @@
     return [...new Set([item?.brand, parent && parent.id!==group?.id && parent.name!==group?.name ? parent.name : ''].filter(Boolean))].join(' · ');
   }
   function stockCard(item) {
-    const category=C.pantryCategory(item,env.data), root=rootOf(category);
-    return `<button class="stock-card" data-stock="${esc(item.id)}"><span class="material-avatar">${icon(pantryCategoryIcon(root?.id))}</span><span class="stock-identity"><strong>${esc(item.name)}</strong><small>${esc([item.brand,materialPathLabel(category)].filter(Boolean).join(' · '))}</small></span>${icon('chevron')}</button>`;
+    const category=categoryOf(item.matches[0],env.data), root=rootOf(category);
+    return `<button class="stock-card" data-stock="${esc(item.id)}"><span class="material-avatar">${icon(pantryCategoryIcon(root?.id))}</span><span class="stock-identity"><strong>${esc(item.name)}</strong><small>${esc([item.brand,categoryPath(category)].filter(Boolean).join(' · '))}</small></span>${icon('chevron')}</button>`;
   }
   function directoryCard(item) {
     const count=env.data.pantryItems.filter(x=>x.matches.includes(item.id)).length;
-    return `<article class="directory-card"><span class="material-avatar">${icon(pantryCategoryIcon(rootOf(item.id)?.id))}</span><div class="stock-identity"><strong>${esc(item.name)}</strong><small>${esc(materialPathLabel(item.id))}</small></div><button class="btn small" data-add-material-stock="${esc(item.id)}">${count?'再添加':'加入酒柜'}</button>${item.customized ? `<button class="icon-button" data-edit-material="${esc(item.id)}" aria-label="编辑${esc(item.name)}">${icon('edit')}</button>` : ''}</article>`;
+    return `<article class="directory-card"><span class="material-avatar">${icon(pantryCategoryIcon(rootOf(item.id)?.id))}</span><div class="stock-identity"><strong>${esc(item.name)}</strong><small>${esc([item.brand,categoryPath(categoryOf(item.id))].filter(Boolean).join(' · '))}</small></div><button class="btn small" data-add-material-stock="${esc(item.id)}">${count?'再添加':'加入酒柜'}</button>${item.customized ? `<button class="icon-button" data-edit-material="${esc(item.id)}" aria-label="编辑${esc(item.name)}">${icon('edit')}</button>` : ''}</article>`;
   }
 
   function materialContext(id, data = env.data) {
@@ -790,50 +791,37 @@
   function materialPathLabel(id,data=env.data) {
     return C.ingredientPath(id,data).map(i=>categoryLabel(i.id,data)).join(' › ');
   }
-  function materialChildren(data,id) {
-    const order=pantryMenus.flatMap(([root,children])=>[root,...children]);
-    const rank=item=>{const n=order.indexOf(item.id);return n<0?order.length+data.ingredients.indexOf(item):n;};
-    return data.ingredients.filter(i=>i.parentId===id)
-      .sort((a,b)=>(C.materialRole(a)==='product')-(C.materialRole(b)==='product') || rank(a)-rank(b));
+  const fixedCategoryIds=pantryMenus.flatMap(([root,children])=>[root,...children]);
+  const fixedCategorySet=new Set(fixedCategoryIds);
+  let categoryPicker=null;
+  function categoryOf(id,data=env.data) {return C.fixedCategory(id,data,fixedCategoryIds);}
+  function categoryPath(id,data=env.data) {
+    const menu=pantryMenus.find(([root,children])=>root===id||children.includes(id));
+    return menu?[menu[0],...(menu[0]===id?[]:[id])].map(x=>ingredientName(x,data)).join(' › '):'';
   }
-  function directoryItem(item,data) {
-    const helper=window.MIX_CATALOG_RECOVERY?.compatibilityDefinitions?.find(i=>i.id===item.id);
-    return !helper || !Object.keys(helper).every(key=>C.same(item[key],helper[key])) || data.ingredients.some(i=>i.parentId===item.id);
+  function openCategory(data,onSelect,selected='') {
+    categoryPicker={data,onSelect,selected,root:'',q:''};
+    const el=$('#category-dialog');
+    el.innerHTML=`<div class="dialog-top"><span>选择分类</span><button type="button" class="icon-button" data-close="category-dialog" aria-label="关闭分类">${icon('close')}</button></div><div class="category-search"><label class="search-field">${icon('search')}<span class="sr-only">搜索分类</span><input id="category-search" type="search" placeholder="搜索分类" autocomplete="off"></label></div><div class="category-body" id="category-results"></div><div class="dialog-actions"><button type="button" class="btn" data-close="category-dialog">取消</button></div>`;
+    renderCategories();showDialog(el);
   }
-  // One relationship browser for inventory, recipes, new definitions and edits.
-  // A secondary classification is a real membership edge, never an arbitrary UI bucket.
-  function materialTree(data,roots,{mode='pick',expanded=new Set(),exclude='',tags=[]}={}) {
-    const allowed=i=>C.materialRole(i)!=='product' && directoryItem(i,data) && (!exclude || !C.ingredientPath(i.id,data).some(x=>x.id===exclude));
-    const select=i=>mode==='parent'?`data-definition-parent="${esc(i.id)}"`:mode==='tag'?`data-definition-tag="${esc(i.id)}" aria-pressed="${tags.includes(i.id)}"`:`data-pick="${esc(i.id)}"`;
-    const selectable=i=>mode==='parent'||picker?.scope==='stock-category'||(mode==='tag'?i.kind==='type'&&C.materialRole(i)!=='group':C.materialRole(i)!=='group');
-    const node=(id,path=[])=>{
-      const item=ingredient(id,data);if(!item||path.includes(id)||!allowed(item))return '';
-      const key=[mode,...path,id].join('/'),children=materialChildren(data,id).filter(allowed).filter(i=>!path.includes(i.id));
-      const open=expanded.has(key),action=select(item),canSelect=selectable(item);
-      const text=`<span class="tree-identity"><strong>${esc(item.name)}</strong></span>`;
-      const main=children.length?`<button type="button" class="tree-expand" data-material-branch="${esc(key)}" aria-expanded="${open}">${icon('chevron')}${text}</button>`:`<button type="button" class="tree-leaf" ${canSelect?action:'disabled'}><span class="tree-gutter" aria-hidden="true"></span>${text}</button>`;
-      return `<li data-material-node="${esc(id)}"><div class="material-tree-row">${main}${children.length&&canSelect?`<button type="button" class="tree-select" ${action} aria-label="选择${esc(item.name)}">${icon('plus')}</button>`:''}</div>${children.length?`<ul ${open?'':'hidden'}>${children.map(i=>node(i.id,[...path,id])).join('')}</ul>`:''}</li>`;
-    };
-    return `<ul class="material-tree">${roots.map(id=>node(id)).join('')}</ul>`;
+  function renderCategories() {
+    const {data,q,root,selected}=categoryPicker,query=C.norm(q);
+    const pick=(id)=>`<button type="button" class="category-choice ${selected===id?'active':''}" data-category-pick="${esc(id)}"><span>${esc(ingredientName(id,data))}</span>${selected===id?icon('check'):''}</button>`;
+    if(query) {
+      const ids=fixedCategoryIds.filter(id=>ingredient(id,data)&&C.norm(categoryPath(id,data)).includes(query));
+      $('#category-results').innerHTML=ids.length?ids.map(id=>`<button type="button" class="category-choice" data-category-pick="${esc(id)}"><span>${esc(ingredientName(id,data))}<small>${esc(categoryPath(id,data))}</small></span></button>`).join(''):'<p class="empty-search">没有找到分类</p>';return;
+    }
+    if(!root) {
+      $('#category-results').innerHTML=`<div class="picker-category-grid">${pantryMenus.filter(([id])=>ingredient(id,data)).map(([id])=>`<button type="button" data-category-root="${esc(id)}">${icon(pantryCategoryIcon(id))}<span>${esc(ingredientName(id,data))}</span>${icon('chevron')}</button>`).join('')}</div>`;return;
+    }
+    const children=pantryMenus.find(([id])=>id===root)?.[1]||[];
+    $('#category-results').innerHTML=`<button type="button" class="link-button category-back" data-category-root="">全部分类</button><div class="category-parent"><strong>${esc(ingredientName(root,data))}</strong><button type="button" class="icon-button" data-category-pick="${esc(root)}" aria-label="选择${esc(ingredientName(root,data))}">${icon('plus')}</button></div><div class="category-children">${children.filter(id=>ingredient(id,data)).map(pick).join('')}</div>`;
   }
-  function definitionData(form) {
-    return form.id==='material-edit-form'?env.data:picker.data;
-  }
-  function definitionTree(data,root='',exclude='') {
-    return (root?'<button type="button" class="link-button type-back" data-definition-all>全部分类</button>':'')+
-      materialTree(data,root?[root]:materialCategories(data),{mode:'parent',exclude,expanded:new Set(root?['parent/'+root]:[])});
-  }
-  function renderDefinitionChoices(form,query='') {
-    const data=definitionData(form), exclude=form.elements.materialId?.value || '';
-    const candidates=data.ingredients.filter(i=>C.materialRole(i)!=='product' &&
-      (!exclude || !C.ingredientPath(i.id,data).some(x=>x.id===exclude)));
-    const q=C.norm(query), result=form.querySelector('[data-definition-choices]');
-    if(!result) return;
-    result.innerHTML=q ? '<button type="button" class="link-button type-back" data-definition-all>浏览全部分类</button>'+ (candidates.filter(i=>[i.name,...i.aliases,materialPathLabel(i.id,data)].some(n=>C.norm(n).includes(q))).map(i=>`<button type="button" class="type-result" data-definition-parent="${esc(i.id)}"><strong>${esc(i.name)}</strong><small>${esc(materialPathLabel(i.id,data))}</small></button>`).join('') || '<p class="hint">没有找到类型。</p>') : definitionTree(data,'',exclude);
-  }
+  function definitionData(form) {return form.id==='material-edit-form'?env.data:picker.data;}
   function definitionFields(data,item=null,defaults={}) {
-    const parent=ingredient(item?.parentId||defaults.parentId,data),categoryMode=picker?.scope==='directory'||item&&C.materialRole(item)!=='product';
-    return `<label class="field">名称<input name="name" required maxlength="100" value="${esc(item?.name??defaults.name??'')}" placeholder="${categoryMode?'分类名称':'原料名称'}" autocomplete="off"></label><label class="field">${categoryMode?'上级分类':'分类'}<input name="baseName" required autocomplete="off" value="${esc(defaults.baseName??(parent?materialPathLabel(parent.id,data):''))}" placeholder="搜索分类"></label><div class="definition-browser"><div data-definition-choices>${definitionTree(data,parent?materialCategory(parent.id,data).id:'',item?.id||'')}</div></div>${categoryMode?'':`<label class="field">品牌<input name="brand" maxlength="100" value="${esc(item?.brand??defaults.brand??'')}" placeholder="无品牌可留空"></label>`}`;
+    const parent=categoryOf(item?.parentId||defaults.parentId,data);
+    return `<label class="field">名称<input name="name" required maxlength="100" value="${esc(item?.name??defaults.name??'')}" placeholder="材料名称" autocomplete="off"></label><label class="field">分类<input type="hidden" name="categoryId" value="${esc(parent)}"><button type="button" class="material-target" data-action="definition-category"><span>${parent?esc(categoryPath(parent,data)):'选择分类'}</span>${icon('chevron')}</button></label><label class="field">品牌<input name="brand" maxlength="100" value="${esc(item?.brand??defaults.brand??'')}" placeholder="无品牌可留空"></label>`;
   }
   function materialCategory(id, data = env.data) {
     const path = C.ingredientPath(id,data);
@@ -842,10 +830,7 @@
   function categoryLabel(id,data=env.data) {
     return ingredientName(id,data);
   }
-  function materialCategories(data) {
-    const maintained = pantryMenus.map(([id])=>id).filter(id=>data.ingredients.some(i=>i.id===id));
-    return [...maintained, ...data.ingredients.filter(i=>!i.parentId&&!maintained.includes(i.id)&&C.materialRole(i)!=='product').map(i=>i.id)];
-  }
+  function materialCategories(data) {return pantryMenus.map(([id])=>id).filter(id=>ingredient(id,data));}
   function groupedMaterials(items,data,getId=i=>i.id) {
     const order=materialCategories(data), groups=new Map();
     for(const item of items) {
@@ -856,64 +841,52 @@
     return [...groups].sort(([a],[b])=>(order.indexOf(a)<0?999:order.indexOf(a))-(order.indexOf(b)<0?999:order.indexOf(b)));
   }
   function openPicker(data, onSelect, options = {}) {
-    picker = {data:C.clone(data), onSelect, scope:options.scope || 'recipe', q:'', category:options.category || '', limit:60};
+    picker = {data:C.clone(data), onSelect, scope:options.scope || 'recipe', q:'', category:options.category || '', limit:24};
     renderPickerShell();
     showDialog($('#material-dialog'));
   }
+  function materialMatches(data,q='',category='',includeCategories=true) {
+    const referenced=new Set(data.recipes.flatMap(r=>[...r.ingredients,...r.garnishes,...r.versions.flatMap(v=>[...v.ingredients,...v.garnishes])].map(x=>x.id)));
+    const found=C.searchMaterials(data,q,category);
+    return [...found.direct,...found.related].filter((i,n,all)=>all.findIndex(x=>x.id===i.id)===n && (!fixedCategorySet.has(i.id) || includeCategories && referenced.has(i.id)));
+  }
   function renderPickerShell() {
-    const el=$('#material-dialog'), categoryOnly=picker.scope==='stock-category';
-    el.classList.remove('definition-mode');
-    el.innerHTML=`<div class="dialog-top"><span>${categoryOnly?'选择分类':'选择原料'}</span><button type="button" class="icon-button" data-close="material-dialog" aria-label="取消">${icon('close')}</button></div><div class="picker-controls"><label class="search-field">${icon('search')}<span class="sr-only">${categoryOnly?'搜索分类':'搜索原料'}</span><input id="material-search" type="search" autofocus autocomplete="off" placeholder="${categoryOnly?'搜索分类':'搜索名称或品牌'}" value="${esc(picker.q)}"></label>${categoryOnly?'':'<button type="button" class="btn small" data-action="create-material">新增原料</button>'}</div><div class="picker-navigation"><label class="picker-category-select"><span class="sr-only">分类</span><select id="material-category"><option value="">全部分类</option>${materialCategories(picker.data).map(id=>`<option value="${id}" ${picker.category===id?'selected':''}>${esc(categoryLabel(id,picker.data))}</option>`).join('')}</select></label></div><div class="picker-body"><div id="material-results"></div></div><div class="picker-footer"><button type="button" class="btn" data-close="material-dialog">取消</button></div>`;
+    const el=$('#material-dialog');el.classList.remove('definition-mode');
+    el.innerHTML=`<div class="dialog-top"><span>选择材料</span><button type="button" class="icon-button" data-close="material-dialog" aria-label="关闭">${icon('close')}</button></div><div class="picker-controls"><label class="search-field">${icon('search')}<span class="sr-only">搜索材料</span><input id="material-search" type="search" autofocus autocomplete="off" placeholder="搜索名称或品牌" value="${esc(picker.q)}"></label><button type="button" class="btn small" data-action="create-material">新建材料</button></div><div class="picker-navigation"><button type="button" class="link-button" data-action="picker-filter">${picker.category?esc(categoryPath(picker.category,picker.data)):'按分类'}</button>${picker.category?'<button type="button" class="icon-button" data-action="clear-material-filter" aria-label="清除分类筛选">'+icon('close')+'</button>':''}</div><div class="picker-body"><div id="material-results"></div></div><div class="picker-footer"><button type="button" class="btn" data-close="material-dialog">取消</button></div>`;
     renderPicker();
   }
   function renderPicker() {
     if(!picker||!$('#material-results'))return;
-    const {data,q,category,limit}=picker,categoryOnly=picker.scope==='stock-category';
-    $('.picker-navigation').hidden=!q.trim()&&!category;
-    if(!q.trim()&&!category){
-      $('#material-results').innerHTML=`<div class="picker-category-grid">${materialCategories(data).map(id=>`<button type="button" data-picker-category="${esc(id)}">${icon(pantryCategoryIcon(rootOf(id,data)?.id))}<span>${esc(categoryLabel(id,data))}</span>${icon('chevron')}</button>`).join('')}</div>`;return;
-    }
-    const found=C.searchMaterials(data,q,category),query=C.norm(q);
-    if(categoryOnly){
-      found.direct=found.direct.filter(i=>C.materialRole(i)!=='product');found.related=found.related.filter(i=>C.materialRole(i)!=='product');
-      for(const i of data.ingredients)if(C.materialRole(i)==='group'&&!["liquid-materials","solid-materials","brandy-root","liqueur-root"].includes(i.id)&&query&&C.norm(i.name)===query&&(!category||C.ingredientPath(i.id,data).some(x=>x.id===category)))found.direct.unshift(i);
-    }
-    const exact=found.direct.filter(i=>C.materialRole(i)!=='product'&&[i.name,...i.aliases].some(n=>C.norm(n)===query));
-    const broad=query?materialCategories(data).filter(id=>(!category||category===id)&&query.length>=2&&C.norm(categoryLabel(id,data)).startsWith(query)):[];
-    const treeRoot=!query?category:exact.length===1&&materialChildren(data,exact[0].id).some(i=>C.materialRole(i)!=='product')?exact[0].id:broad.length===1?broad[0]:'';
-    const row=i=>`<button type="button" class="picker-item" data-pick="${esc(i.id)}"><span class="picker-identity"><strong>${esc(i.name)}</strong><small>${esc(materialPathLabel(C.materialRole(i)==='product'?i.parentId:i.id,data))}</small></span></button>`;
-    if(treeRoot){
-      picker.expanded ||= new Set();picker.expanded.add('pick/'+treeRoot);
-      const products=categoryOnly?[]:data.ingredients.filter(i=>C.materialRole(i)==='product'&&C.satisfies(i.id,treeRoot,data));
-      $('#material-results').innerHTML=materialTree(data,[treeRoot],{expanded:picker.expanded})+(products.length?`<section class="picker-products"><h3>具体原料</h3>${products.map(row).join('')}</section>`:'');return;
-    }
-    const items=[...found.direct,...found.related],shown=items.slice(0,limit);
-    const groups=rows=>groupedMaterials(rows,data).map(([id,list])=>`<section class="picker-group" data-result-category="${esc(id)}"><h3>${esc(categoryLabel(id,data))}</h3><div class="picker-list">${list.map(row).join('')}</div></section>`).join('');
-    const direct=shown.filter(i=>found.direct.includes(i)),related=shown.filter(i=>found.related.includes(i));
-    $('#material-results').innerHTML=`${groups(direct)}${related.length?`<section class="picker-related"><h3>相关原料</h3>${groups(related)}</section>`:''}${!items.length?'<p class="picker-empty">没有找到</p>':''}${items.length>limit?'<button class="link-button picker-more" data-action="more-materials">显示更多</button>':''}`;
+    const items=materialMatches(picker.data,picker.q,picker.category);
+    if(!picker.q) items.sort((a,b)=>fixedCategoryIds.indexOf(categoryOf(a.id,picker.data))-fixedCategoryIds.indexOf(categoryOf(b.id,picker.data)));
+    const shown=items.slice(0,picker.limit);
+    $('#material-results').innerHTML=groupedMaterials(shown,picker.data).map(([root,rows])=>`<section class="picker-group"><h3>${esc(ingredientName(root,picker.data))}</h3>${rows.map(i=>{
+      const category=categoryOf(i.id,picker.data),meta=[i.brand,category!==root&&ingredientName(category,picker.data)!==i.name?ingredientName(category,picker.data):''].filter(Boolean).join(' · ');
+      return `<button type="button" class="picker-item" data-pick="${esc(i.id)}"><span class="picker-identity"><strong>${esc(i.name)}</strong>${meta?`<small>${esc(meta)}</small>`:''}</span></button>`;
+    }).join('')}</section>`).join('')+(!items.length?'<p class="empty-search">没有找到材料，可直接新建。</p>':'')+(items.length>picker.limit?'<button type="button" class="link-button picker-more" data-action="more-materials">显示更多</button>':'');
   }
+
   function showMaterialCreate(defaults = {}) {
     if (!picker) return;
     picker.createDefaults = {name:picker.q, parentId:picker.category, ...picker.createDefaults, ...defaults};
     const el = $('#material-dialog');
     el.classList.add('definition-mode');
-    el.innerHTML = `<form id="quick-material-form" novalidate><div class="dialog-top"><span>${picker.scope==='directory'?'新增分类':'新增原料'}</span><button type="button" class="icon-button" data-close="material-dialog" aria-label="关闭">${icon('close')}</button></div><div class="definition-body">${definitionFields(picker.data,null,picker.createDefaults)}<div id="quick-error" class="form-error" role="alert"></div></div><div class="dialog-actions"><button class="btn" type="button" data-action="cancel-material-create">取消</button><button class="btn primary" type="submit">${picker.scope === 'directory' ? '保存' : '使用此原料'}</button></div></form>`;
+    el.innerHTML = `<form id="quick-material-form" novalidate><div class="dialog-top"><span>${'新建材料'}</span><button type="button" class="icon-button" data-close="material-dialog" aria-label="关闭">${icon('close')}</button></div><div class="definition-body">${definitionFields(picker.data,null,picker.createDefaults)}<div id="quick-error" class="form-error" role="alert"></div></div><div class="dialog-actions"><button class="btn" type="button" data-action="cancel-material-create">取消</button><button class="btn primary" type="submit">${picker.scope === 'directory' ? '保存' : '使用此原料'}</button></div></form>`;
     el.querySelector('[name=name]').focus();
   }
   function readDefinition(form,data,old=null) {
-    const f=new FormData(form),name=String(f.get('name')||'').trim(),brand=String(f.get('brand')??old?.brand??'').trim(),q=C.norm(String(f.get('baseName')||''));
+    const f=new FormData(form),name=String(f.get('name')||'').trim(),brand=String(f.get('brand')??old?.brand??'').trim();
     if(!name) throw Error('请填写名称。');
-    const eligible=data.ingredients.filter(i=>C.materialRole(i)!=='product');
-    const paths=eligible.filter(i=>C.norm(materialPathLabel(i.id,data))===q);
-    const candidates=paths.length?paths:eligible.filter(i=>C.norm(materialOptionLabel(i,data))===q || [i.name,...i.aliases].some(n=>C.norm(n)===q));
-    if(candidates.length!==1) throw Error('请选择类型；输入名称后，从列表中选取。');
-    const parent=candidates[0];
+    const parent=ingredient(String(f.get('categoryId')||''),data);
+    if(!parent || !fixedCategorySet.has(parent.id)) throw Error('请选择分类。');
     if(old && C.ingredientPath(parent.id,data).some(i=>i.id===old.id)) throw Error('不能归到自身或下级类型。');
     const tags=[...(old?.tags||[])];
     if(tags.some(id=>!old?.tags?.includes(id) && materialCategory(id,data)?.id!==materialCategory(parent.id,data)?.id))
       throw Error('补充分类需要与所属类型在同一类别下，请移除无关分类。');
-    return {...(old||{}),id:old?.id||C.uid(),name,brand,kind:brand?'product':'type',parentId:parent.id,
-      category:parent.name,aliases:[...(old?.aliases||[])],
+    const generic=!old&&brand?data.ingredients.find(i=>!i.brand&&!fixedCategorySet.has(i.id)&&
+      [i.name,...i.aliases].some(n=>C.norm(n)===C.norm(name))&&categoryOf(i.id,data)===parent.id):null;
+    return {...(old||{}),id:old?.id||C.uid(),name,brand,kind:old?.kind||'product',parentId:old&&categoryOf(old.id,data)===parent.id?old.parentId:generic?.id||parent.id,
+      category:old&&categoryOf(old.id,data)===parent.id?old.category:parent.name,aliases:[...(old?.aliases||[])],
       tags,image:old?.image||'',matchParent:old?.matchParent!==false,customized:true};
   }
   async function choosePicked(id) {
@@ -937,9 +910,9 @@
     let item;
     try { item = readDefinition(form, active.data); }
     catch (e) { error.textContent = e.message; return; }
-    const existing = active.data.ingredients.find((i)=>C.materialRole(i) !== 'group' &&
-      [i.name,...i.aliases].some((n)=>C.norm(n)===C.norm(item.name)) &&
-      (C.materialRole(i) === 'ingredient' && C.materialRole(item) === 'ingredient' || C.materialRole(i)==='product' && C.norm(i.brand)===C.norm(item.brand)));
+    const existing = active.data.ingredients.find(i=>
+      [i.name,...i.aliases].some(n=>C.norm(n)===C.norm(item.name)) && C.norm(i.brand)===C.norm(item.brand) &&
+      categoryOf(i.id,active.data)===categoryOf(item.parentId,active.data));
     if (existing) {
       error.innerHTML = `已有同名${C.materialRole(existing)==='product' ? '产品' : '原料'}。<button type="button" class="link-button" data-pick="${esc(existing.id)}">使用 ${esc(existing.name)}</button>`;
       return;
@@ -1078,6 +1051,39 @@
     };
     renderEditor(editor);
   }
+  function lookupField(type,label,value='',selected='') {
+    const names={glass:'glass',base:'base',source:'sourceName'},placeholder={parent:'输入酒名搜索',image:'搜索酒名选图，或粘贴 HTTPS 图片链接',glass:'输入杯型',base:'留空自动识别',source:'书名、调酒师或个人来源'};
+    return `<div class="field lookup" data-lookup-field="${type}"><label for="lookup-${type}">${label}</label><div class="lookup-input"><input id="lookup-${type}" ${names[type]?`name="${names[type]}"`:''} data-lookup="${type}" value="${esc(value)}" placeholder="${placeholder[type]}" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="lookup-results-${type}"><button type="button" class="icon-button" data-clear-lookup="${type}" ${value?'':'hidden'} aria-label="清空${label}">${icon('close')}</button></div>${type==='parent'?`<input type="hidden" name="parentId" value="${esc(selected)}">`:''}<div id="lookup-results-${type}" class="lookup-results" role="listbox" hidden></div></div>`;
+  }
+  function recipeExtraFields(r,isVersion) {
+    const parent=env.data.recipes.find(x=>x.id===r.parentId),photoRecipe=env.data.recipes.find(x=>x.catalog&&x.image&&x.image===r.image)||env.data.recipes.find(x=>x.id!==editor.id&&x.image&&x.image===r.image);
+    return `<section class="editor-section recipe-extra-section"><h2>风味与呈现</h2><fieldset class="tag-picker"><legend class="sr-only">风味</legend><div class="chips">${[...new Set([...env.data.options.tags,...r.tags])].map(t=>`<label class="chip pick-chip"><input name="tags" type="checkbox" value="${esc(t)}" ${r.tags.includes(t)?'checked':''}>${esc(t)}</label>`).join('')}</div></fieldset><div class="inline-tag-add"><label class="sr-only" for="new-recipe-tag">新增风味</label><input id="new-recipe-tag" maxlength="60" placeholder="新增风味"><button type="button" class="btn small" data-action="add-recipe-tag">添加</button></div><div class="field-row">${lookupField('glass','杯型',r.glass)}${lookupField('base','基酒',r.base)}</div>${!isVersion?lookupField('image','配图',r.photoUrl||photoRecipe?.name||r.image):''}<input type="hidden" name="image" value="${esc(r.image||'')}"><input type="hidden" name="photoUrl" value="${esc(r.photoUrl||'')}"></section><section class="editor-section recipe-extra-section" id="editor-more"><h2>补充信息</h2><label class="field">${isVersion?'记录者':'英文名'}<input name="${isVersion?'author':'en'}" maxlength="100" value="${esc(isVersion?r.author||'':r.en||'')}"></label>${lookupField('source','来源',r.sourceName||'')}<label class="field">来源链接 / 书名页码<input name="source" maxlength="2000" value="${esc(r.source||'')}"></label>${!isVersion?lookupField('parent','关联配方',parent?.name||'',r.parentId||''):`<input type="hidden" name="en" value="${esc(r.en||'')}"><input type="hidden" name="parentId" value="${esc(r.parentId||'')}">`}<label class="field">笔记<textarea name="notes" maxlength="10000" rows="3">${esc(r.notes||'')}</textarea></label></section>`;
+  }
+  function lookupOptions(type,q) {
+    const query=C.norm(q);
+    if(type==='parent') return query?env.data.recipes.filter(r=>r.id!==editor.id&&!recipeDescendant(r.id,editor.id)&&C.norm(r.name+' '+r.en).includes(query)).slice(0,8).map(r=>({id:r.id,label:r.name,detail:r.en})):[];
+    if(type==='image') return query&&!/^https?:/i.test(query)?env.data.recipes.filter(r=>(r.image||r.photoUrl)&&C.norm(r.name+' '+r.en).includes(query)).slice(0,6).map(r=>({id:r.id,label:r.name,detail:r.en,src:safeLink(r.photoUrl)||(r.image?'./assets/cocktails/'+encodeURIComponent(r.image)+'.webp':'')})):[];
+    const values=type==='glass'?env.data.options.glasses:type==='base'?['金酒','朗姆酒','伏特加','龙舌兰','威士忌','白兰地','其他烈酒','多种烈酒']:env.data.options.sources;
+    return values.filter(v=>!query||C.norm(v).includes(query)).slice(0,8).map(v=>({id:v,label:v}));
+  }
+  function renderLookup(input) {
+    const type=input.dataset.lookup,target=$('#lookup-results-'+type),options=lookupOptions(type,input.value);
+    input.closest('.lookup').querySelector('[data-clear-lookup]').hidden=!input.value;
+    target.hidden=!options.length;input.setAttribute('aria-expanded',String(!!options.length));
+    target.innerHTML=options.map(o=>`<button type="button" role="option" data-lookup-choice="${type}" data-value="${esc(o.id)}">${o.src?`<img src="${esc(o.src)}" alt="" loading="lazy">`:''}<span><strong>${esc(o.label)}</strong>${o.detail?`<small>${esc(o.detail)}</small>`:''}</span></button>`).join('');
+  }
+  function hideLookups() {
+    document.querySelectorAll('.lookup-results').forEach(e=>e.hidden=true);
+    document.querySelectorAll('[data-lookup]').forEach(e=>e.setAttribute('aria-expanded','false'));
+  }
+  function chooseLookup(type,value) {
+    const form=$('#recipe-form'),input=$('#lookup-'+type);
+    if(type==='parent') {form.elements.parentId.value=value;input.value=env.data.recipes.find(r=>r.id===value)?.name||'';}
+    else if(type==='image') {
+      const r=env.data.recipes.find(r=>r.id===value);form.elements.image.value=r?.image||'';form.elements.photoUrl.value=r?.photoUrl||'';input.value=r?.name||'';
+    } else input.value=value;
+    delete input.dataset.unresolved;input.focus();hideLookups();input.closest('.lookup').querySelector('[data-clear-lookup]').hidden=!input.value;captureEditorState();
+  }
   function renderEditor(record) {
     editorUndo = null;
     editor = C.clone(record);
@@ -1090,21 +1096,7 @@
     const r = editor.recipe,
       isVersion = editor.mode === "version",
       el = $("#editor-dialog");
-    el.innerHTML = `<form id="recipe-form" novalidate><div class="dialog-top"><div><span>${isVersion ? "我的配方版本" : editor.mode === "variant" ? "创建变体" : editor.id ? "编辑配方" : "新增配方"}</span></div><button type="button" class="icon-button" data-close="editor-dialog" aria-label="关闭">${icon("close")}</button></div><div class="editor-body"><div class="editor-layout"><div class="editor-fields"><section id="editor-identity" class="editor-section"><div class="field-row"><label class="field">${isVersion ? "版本名称" : "酒名"} <span class="required">*</span><input name="name" autofocus required maxlength="100" value="${esc(r.name)}" placeholder="${isVersion ? "例如：偏金酒的 45 / 30 / 30" : "例如：我的尼格罗尼"}"></label></div>${isVersion ? `<p class="hint">基于“${esc(env.data.recipes.find((x) => x.id === editor.id)?.name || "原配方")}”修改。</p>` : ""}</section><section id="editor-materials" class="editor-section"><div class="section-heading"><h2>原料</h2><button type="button" class="link-button" data-action="toggle-paste">多行粘贴</button></div><div id="paste-panel" class="paste-panel" hidden><label class="field">每行一种原料<textarea id="paste-ingredients" rows="4" placeholder="金酒 30 ml&#10;金巴利 30 ml&#10;甜味美思 30 ml"></textarea></label><div class="row"><button type="button" class="btn small" data-action="parse-paste">添加到原料表</button><span id="paste-status" class="hint" role="status"></span></div></div><div id="editor-ingredients">${(r.ingredients.length ? r.ingredients : [{}]).map((x) => rowMarkup({ amount: "", unit: "ml", optional: false, ...x })).join("")}</div><button type="button" class="btn add-row" data-add-row="ingredients">${icon("plus")}添加原料</button><details class="garnish-editor" ${r.garnishes.length ? "open" : ""}><summary>装饰 <span>${r.garnishes.length ? "已添加 " + r.garnishes.length + " 项" : "选填"}</span></summary><div id="editor-garnishes">${r.garnishes.map((x) => rowMarkup(x, "garnishes")).join("")}</div><button class="link-button" type="button" data-add-row="garnishes">${icon("plus")}添加装饰</button></details><datalist id="unit-options">${["ml", "吧匙", "茶匙", "汤匙", "dash", "滴", "片", "枝", "颗", "撮", "块", "份", "补满", "冲洗"].map((x) => `<option value="${x}"></option>`).join("")}</datalist></section><section id="editor-method" class="editor-section"><label class="field">做法 <span class="required">*</span><textarea name="steps" required rows="5" placeholder="材料加冰摇匀。&#10;滤入预冷鸡尾酒杯。">${esc(r.steps.join("\n"))}</textarea></label></section><section id="editor-more" class="editor-section"><details class="editor-advanced" ${r.notes ? "open" : ""}><summary>更多信息</summary><label class="field">${isVersion ? "记录者" : "英文名"}<input name="${isVersion ? "author" : "en"}" maxlength="100" value="${esc(isVersion ? r.author || "" : r.en || "")}"></label><div class="field-row"><label class="field">调制方式<select name="method">${selectOptions(["摇和", "搅拌", "直调", "捣压", "搅打", "旋调"], r.method, "不指定")}</select></label><label class="field">杯型<select name="glass">${selectOptions([...new Set([...env.data.options.glasses, r.glass].filter(Boolean))], r.glass, "不指定")}</select></label></div><div class="field-row"><label class="field">基酒<select name="base">${selectOptions(["金酒", "朗姆酒", "伏特加", "龙舌兰", "威士忌", "白兰地", "其他烈酒", "多种烈酒"], r.base, "自动识别")}</select></label><label class="field">配方来源<input name="sourceName" list="source-options" maxlength="200" value="${esc(r.sourceName || "")}" placeholder="个人配方 / 书名 / 调酒师"><datalist id="source-options">${env.data.options.sources.map((x) => `<option value="${esc(x)}"></option>`).join("")}</datalist></label></div><fieldset class="tag-picker"><legend>风味标签</legend><div class="chips">${[...new Set([...env.data.options.tags, ...r.tags])].map((t) => `<label class="chip pick-chip"><input name="tags" type="checkbox" value="${esc(t)}" ${r.tags.includes(t) ? "checked" : ""}>${esc(t)}</label>`).join("")}</div></fieldset><div class="inline-tag-add"><label class="sr-only" for="new-recipe-tag">新增风味标签</label><input id="new-recipe-tag" maxlength="60" placeholder="新增风味标签"><button type="button" class="btn small" data-action="add-recipe-tag">添加</button></div><label class="field">配方笔记<textarea name="notes" maxlength="10000" rows="3" placeholder="喜欢的比例、调整原因、制作心得…">${esc(r.notes || "")}</textarea></label><label class="field">来源链接 / 书名页码<input name="source" maxlength="2000" value="${esc(r.source || "")}"></label>${
-      !isVersion
-        ? `<label class="field">关联原配方<select name="parentId"><option value="">独立配方</option>${env.data.recipes
-            .filter(
-              (x) => x.id !== editor.id && !recipeDescendant(x.id, editor.id),
-            )
-            .map(
-              (x) =>
-                `<option value="${esc(x.id)}" ${r.parentId === x.id ? "selected" : ""}>${esc(x.name)}${x.en ? " · " + esc(x.en) : ""}</option>`,
-            )
-            .join(
-              "",
-            )}</select></label><div class="field-row"><label class="field">使用已有配图<select name="image"><option value="">暂无配图</option>${window.MIX_SEED.recipes.map((x) => `<option value="${esc(x.image)}" ${r.image === x.image ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label><label class="field">自定义图片链接（HTTPS）<input name="photoUrl" type="url" value="${esc(r.photoUrl || "")}" maxlength="2000" placeholder="https://…"></label></div>`
-        : `<input type="hidden" name="en" value="${esc(r.en || "")}"><input type="hidden" name="image" value="${esc(r.image || "")}"><input type="hidden" name="photoUrl" value="${esc(r.photoUrl || "")}"><input type="hidden" name="parentId" value="${esc(r.parentId || "")}">`
-    }</details></section><div id="editor-error" class="form-error" role="alert"></div></div></div></div><div class="dialog-actions"><button type="button" class="link-button left" data-action="reset-editor">${editor.id || editor.mode !== "recipe" ? "重置修改" : "清空"}</button><button class="btn" type="button" data-close="editor-dialog">取消</button><button class="btn primary" type="submit">保存${isVersion ? "版本" : "配方"}</button></div></form>`;
+    el.innerHTML = `<form id="recipe-form" novalidate><div class="dialog-top"><div><span>${isVersion ? "我的配方版本" : editor.mode === "variant" ? "创建变体" : editor.id ? "编辑配方" : "新增配方"}</span></div><button type="button" class="icon-button" data-close="editor-dialog" aria-label="关闭">${icon("close")}</button></div><div class="editor-body"><div class="editor-layout"><div class="editor-fields"><section id="editor-identity" class="editor-section"><div class="field-row"><label class="field">${isVersion ? "版本名称" : "酒名"} <span class="required">*</span><input name="name" autofocus required maxlength="100" value="${esc(r.name)}" placeholder="${isVersion ? "例如：偏金酒的 45 / 30 / 30" : "例如：我的尼格罗尼"}"></label></div>${isVersion ? `<p class="hint">基于“${esc(env.data.recipes.find((x) => x.id === editor.id)?.name || "原配方")}”修改。</p>` : ""}</section><section id="editor-materials" class="editor-section"><div class="section-heading"><h2>原料</h2><button type="button" class="link-button" data-action="toggle-paste">多行粘贴</button></div><div id="paste-panel" class="paste-panel" hidden><label class="field">每行一种原料<textarea id="paste-ingredients" rows="4" placeholder="金酒 30 ml&#10;金巴利 30 ml&#10;甜味美思 30 ml"></textarea></label><div class="row"><button type="button" class="btn small" data-action="parse-paste">添加到原料表</button><span id="paste-status" class="hint" role="status"></span></div></div><div id="editor-ingredients">${(r.ingredients.length ? r.ingredients : [{}]).map((x) => rowMarkup({ amount: "", unit: "ml", optional: false, ...x })).join("")}</div><button type="button" class="btn add-row" data-add-row="ingredients">${icon("plus")}添加原料</button><section class="garnish-editor"><div class="section-heading"><h3>装饰</h3><button class="link-button" type="button" data-add-row="garnishes">${icon('plus')}添加装饰</button></div><div id="editor-garnishes">${r.garnishes.map(x=>rowMarkup(x,'garnishes')).join('')}</div></section><datalist id="unit-options">${["ml", "吧匙", "茶匙", "汤匙", "dash", "滴", "片", "枝", "颗", "撮", "块", "份", "补满", "冲洗"].map((x) => `<option value="${x}"></option>`).join("")}</datalist></section><section id="editor-method" class="editor-section"><h2>做法</h2><input type="hidden" name="method" value="${esc(r.method||'')}"><div class="chips method-choices">${[...new Set(['摇和','搅拌','直调','捣压','搅打','旋调',r.method].filter(Boolean))].map(m=>`<button type="button" class="chip ${r.method===m?'active':''}" data-method-choice="${esc(m)}" aria-pressed="${r.method===m}">${icon(methodIcons[m]||'shake')}${esc(m)}</button>`).join('')}</div><label class="field">步骤 <span class="required">*</span><textarea name="steps" required rows="5" placeholder="材料加冰摇匀。&#10;滤入预冷鸡尾酒杯。">${esc(r.steps.join("\n"))}</textarea></label></section>${recipeExtraFields(r,isVersion)}<div id="editor-error" class="form-error" role="alert"></div></div></div></div><div class="dialog-actions"><button type="button" class="link-button left" data-action="reset-editor">${editor.id || editor.mode !== "recipe" ? "重置修改" : "清空"}</button><button class="btn" type="button" data-close="editor-dialog">取消</button><button class="btn primary" type="submit">保存${isVersion ? "版本" : "配方"}</button></div></form>`;
     showDialog(el);
     captureEditorState();
   }
@@ -1188,8 +1180,11 @@
       first ||= form.elements.steps;
       $("#editor-error").textContent = "请填写至少一个调制步骤。";
     } else if (r.photoUrl && !safeLink(r.photoUrl)) {
-      first ||= form.elements.photoUrl;
+      first ||= form.querySelector('[data-lookup="image"]');
       $("#editor-error").textContent = "图片链接需要使用 HTTPS。";
+    } else if(form.querySelector('[data-unresolved="true"]')) {
+      first ||= form.querySelector('[data-unresolved="true"]');
+      $('#editor-error').textContent=first.dataset.lookup==='image'?'请选择配图，或填写 HTTPS 图片链接。':'请从搜索结果选择关联配方，或清空输入。';
     } else $("#editor-error").textContent = "";
     if (first) {
       first.setAttribute('aria-invalid', 'true');
@@ -1413,12 +1408,19 @@
     if(syncBusy) {toast('正在同步，请稍后再编辑。');return;}
     const old=env.data.pantryItems.find(i=>i.id===id), material=ingredient(materialId);
     stockEditor={item:C.clone(old || {id:'',name:material?.name||'',brand:material?.brand||'',image:'',matches:materialId?[materialId]:[],tags:[],notes:'',identityMode:'explicit'}),
-      original:C.clone(old),library:C.clone(env.data),categoryId:old?C.pantryCategory(old,env.data):C.materialRole(material)==='product'?material.parentId:materialId};
-    renderStockForm();showDialog($('#item-dialog'));$('#stock-form [name=name]').focus();
+      original:C.clone(old),library:C.clone(env.data),materialId:old?.matches?.[0]||materialId,categoryId:categoryOf(old?.matches?.[0]||materialId,env.data)};
+    renderStockForm();showDialog($('#item-dialog'));$('#stock-form '+(old?'[name=name]':materialId?'[type=submit]':'[data-action=pick-stock]')).focus();
   }
   function renderStockForm() {
-    const i=stockEditor.item, id=stockEditor.categoryId;
-    $('#item-dialog').innerHTML=`<form id="stock-form" novalidate><div class="dialog-top"><span>${i.id?'编辑原料':'添加原料'}</span><button type="button" class="icon-button" data-close="item-dialog" aria-label="关闭">${icon('close')}</button></div><div class="editor-body stock-fields"><label class="field">名称<input name="name" required maxlength="100" value="${esc(i.name)}" placeholder="例如：拉弗格 10 年" autocomplete="off"></label><label class="field">分类<input type="hidden" name="categoryId" value="${esc(id)}"><button type="button" class="material-target ${id?'':'unselected'}" data-action="pick-stock"><span>${id?esc(materialPathLabel(id,stockEditor.library)):'选择分类'}</span>${icon('chevron')}</button></label><label class="field">品牌<input name="brand" maxlength="100" value="${esc(i.brand)}" placeholder="无品牌可留空" autocomplete="off"></label><div id="stock-error" class="form-error" role="alert"></div></div><div class="dialog-actions">${i.id?`<button type="button" class="link-button danger left" data-delete-stock="${esc(i.id)}">删除</button>`:''}<button type="button" class="btn" data-close="item-dialog">取消</button><button type="submit" class="btn primary">保存</button></div></form>`;
+    const i=stockEditor.item,id=stockEditor.categoryId;
+    $('#item-dialog').innerHTML=`<form id="stock-form" novalidate><div class="dialog-top"><span>${i.id?'编辑原料':'添加原料'}</span><button type="button" class="icon-button" data-close="item-dialog" aria-label="关闭">${icon('close')}</button></div><div class="editor-body stock-fields"><label class="field">分类<input type="hidden" name="categoryId" value="${esc(id)}"><button type="button" class="material-target ${id?'':'unselected'}" data-action="pick-stock"><span>${id?esc(categoryPath(id,stockEditor.library)):'选择分类'}</span>${icon('chevron')}</button></label><div class="field"><label for="stock-name">名称</label><input id="stock-name" name="name" required maxlength="100" value="${esc(i.name)}" placeholder="输入名称，或选用酒谱材料" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="stock-suggestions"><div id="stock-suggestions" class="stock-suggestions" role="listbox" hidden></div></div><label class="field">品牌<input name="brand" maxlength="100" value="${esc(i.brand)}" placeholder="无品牌可留空" autocomplete="off"></label><div id="stock-error" class="form-error" role="alert"></div></div><div class="dialog-actions">${i.id?`<button type="button" class="link-button danger left" data-delete-stock="${esc(i.id)}">删除</button>`:''}<button type="button" class="btn" data-close="item-dialog">取消</button><button type="submit" class="btn primary">保存</button></div></form>`;
+  }
+  function renderStockSuggestions() {
+    if(!stockEditor||!$('#stock-name'))return;
+    const input=$('#stock-name'),q=input.value.trim(),target=$('#stock-suggestions');
+    const items=q?materialMatches(stockEditor.library,q,stockEditor.categoryId,false).slice(0,6):[];
+    target.hidden=!items.length;input.setAttribute('aria-expanded',String(!!items.length));
+    target.innerHTML=items.map(i=>`<button type="button" role="option" data-stock-material="${esc(i.id)}"><strong>${esc(i.name)}</strong>${i.brand?`<small>${esc(i.brand)}</small>`:''}</button>`).join('');
   }
   async function saveStock(form) {
     if(form.dataset.saving) return;
@@ -1433,8 +1435,8 @@
       if(i.id && !C.same(current,active.original) && await confirmChoice('记录已在其他页面修改','是否保存本次修改？',[['cancel','取消',''],['yes','保存','primary']])!=='yes') return;
       const ok=await update(d=>{
         if(i.id && !C.same(d.pantryItems.find(x=>x.id===i.id),current)) throw Error('记录刚被修改，请重新打开后编辑。');
-        includeMaterials(d,active.library,[active.categoryId]);
-        const record=C.preparePantryItem(d,{name:i.name,brand:i.brand,categoryId:active.categoryId},i.id?{...active.original,notes:i.notes,image:i.image}:null);
+        includeMaterials(d,active.library,[active.categoryId,active.materialId].filter(Boolean));
+        const record=C.preparePantryItem(d,{name:i.name,brand:i.brand,categoryId:active.categoryId,materialId:active.materialId,categoryIds:fixedCategoryIds},i.id?{...active.original,notes:i.notes,image:i.image}:null);
         const n=d.pantryItems.findIndex(x=>x.id===record.id);
         if(n<0)d.pantryItems.push(record);else d.pantryItems[n]=record;
       });
@@ -1482,20 +1484,20 @@
   }
   function openMaterialEditor(id) {
     const material = ingredient(id);
-    if (!material?.customized) { toast('可新增自己的分类。'); return; }
+    if (!material?.customized || fixedCategorySet.has(id)) return;
     const el = $('#item-dialog');
-    el.innerHTML = `<form id="material-edit-form" novalidate><input type="hidden" name="materialId" value="${esc(id)}"><div class="dialog-top"><span>编辑${C.materialRole(material)==='product' ? '原料' : '分类'}</span><button type="button" class="icon-button" data-close="item-dialog" aria-label="关闭">${icon('close')}</button></div><div class="editor-body">${definitionFields(env.data,material)}<div id="material-edit-error" class="form-error" role="alert"></div></div><div class="dialog-actions"><button type="button" class="link-button danger left" data-delete-material="${esc(id)}">删除</button><button type="button" class="btn" data-close="item-dialog">取消</button><button class="btn primary" type="submit">保存</button></div></form>`;
+    el.innerHTML = `<form id="material-edit-form" novalidate><input type="hidden" name="materialId" value="${esc(id)}"><div class="dialog-top"><span>编辑材料</span><button type="button" class="icon-button" data-close="item-dialog" aria-label="关闭">${icon('close')}</button></div><div class="editor-body">${definitionFields(env.data,material)}<div id="material-edit-error" class="form-error" role="alert"></div></div><div class="dialog-actions"><button type="button" class="link-button danger left" data-delete-material="${esc(id)}">删除</button><button type="button" class="btn" data-close="item-dialog">取消</button><button class="btn primary" type="submit">保存</button></div></form>`;
     el._originalMaterial = C.clone(material);
     showDialog(el);
   }
   async function saveMaterialDefinition(form) {
     if (form.dataset.saving) return;
-    const id = form.elements.materialId.value, original = $('#item-dialog')._originalMaterial;
+    const id = form.elements.materialId.value; if(fixedCategorySet.has(id)) return; const original = $('#item-dialog')._originalMaterial;
     const error = $('#material-edit-error'); error.textContent='';
     let item;
     try { item = readDefinition(form,env.data,original); }
     catch(e) {error.textContent=e.message;return;}
-    if (env.data.ingredients.some((x)=>x.id !== id && C.materialRole(x) !== 'group' && C.norm(x.name)===C.norm(item.name) && C.norm(x.brand)===C.norm(item.brand))) {error.textContent='已有同名条目，请使用其他名称。';return;}
+    if (env.data.ingredients.some((x)=>x.id !== id && [x.name,...x.aliases].some(n=>C.norm(n)===C.norm(item.name)) && C.norm(x.brand)===C.norm(item.brand) && categoryOf(x.id,env.data)===categoryOf(item.parentId,env.data))) {error.textContent='已有同名条目，请使用其他名称。';return;}
     form.dataset.saving='true';form.querySelector('[type=submit]').disabled=true;
     const ok = await update((d)=>{
       const current=d.ingredients.find(x=>x.id===id);
@@ -1509,7 +1511,7 @@
 
   function settingsPage() {
     const connected=!!(config.owner&&config.repo);
-    return heading('','设置','')+`<div class="settings-layout"><section class="settings-section"><h2>数据</h2><div class="settings-actions"><button class="btn" data-action="export">导出备份</button><button class="btn" data-action="import">导入备份</button><button class="btn danger" data-action="clear-local-data">清空本机数据</button></div><input id="import-file" type="file" accept=".json,application/json" hidden></section><section class="settings-section"><div class="settings-section-title"><h2>GitHub 同步</h2><button class="link-button" data-action="open-sync-settings">${connected?'连接设置':'连接 GitHub'}</button></div>${connected?`<p class="sync-account">${esc(config.owner+'/'+config.repo)}</p><div class="sync-actions"><button class="btn" data-action="sync-now" ${syncBusy?'disabled':''}>合并同步</button><button class="btn" data-action="sync-upload">本机覆盖云端</button><button class="btn" data-action="sync-download">云端覆盖本机</button></div><p class="sync-time">${esc(dateText(env.lastSync))}</p>`:''}<details class="setup-guide"><summary>连接说明</summary><ol class="steps-list"><li>创建私有 GitHub 仓库。</li><li>创建仅限该仓库的 Fine-grained Token，授予 Contents 读写权限。</li><li>在连接设置中填写用户名、仓库名和令牌。</li></ol><a class="link-button" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">创建令牌 ${icon('arrow')}</a></details></section></div><footer class="app-version">版本 2.8.1</footer>`;
+    return heading('','设置','')+`<div class="settings-layout"><section class="settings-section"><h2>数据</h2><div class="settings-actions"><button class="btn" data-action="export">导出备份</button><button class="btn" data-action="import">导入备份</button><button class="btn danger" data-action="clear-local-data">清空本机数据</button></div><input id="import-file" type="file" accept=".json,application/json" hidden></section><section class="settings-section"><div class="settings-section-title"><h2>GitHub 同步</h2><button class="link-button" data-action="open-sync-settings">${connected?'连接设置':'连接 GitHub'}</button></div>${connected?`<p class="sync-account">${esc(config.owner+'/'+config.repo)}</p><div class="sync-actions"><button class="btn" data-action="sync-now" ${syncBusy?'disabled':''}>合并同步</button><button class="btn" data-action="sync-upload">本机覆盖云端</button><button class="btn" data-action="sync-download">云端覆盖本机</button></div><p class="sync-time">${esc(dateText(env.lastSync))}</p>`:''}<details class="setup-guide"><summary>连接说明</summary><ol class="steps-list"><li>创建私有 GitHub 仓库。</li><li>创建仅限该仓库的 Fine-grained Token，授予 Contents 读写权限。</li><li>在连接设置中填写用户名、仓库名和令牌。</li></ol><a class="link-button" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">创建令牌 ${icon('arrow')}</a></details></section></div><footer class="app-version">版本 2.9.0</footer>`;
   }
   function openSyncSettings() {
     const el=$('#sync-dialog');
@@ -1993,6 +1995,7 @@
     }
     closeDialog($("#" + id));
     if (id === "material-dialog") picker = null;
+    if (id === "category-dialog") categoryPicker = null;
     scheduleSync();
   }
   async function navigate(next) {
@@ -2024,32 +2027,22 @@
       await closeById(b.dataset.close);
       return;
     }
-    if (b.hasAttribute('data-definition-all')) {
-      const form=b.closest('form');renderDefinitionChoices(form);return;
+    if(b.dataset.methodChoice) {
+      const input=$('#recipe-form [name=method]');input.value=input.value===b.dataset.methodChoice?'':b.dataset.methodChoice;
+      document.querySelectorAll('[data-method-choice]').forEach(x=>{const selected=x.dataset.methodChoice===input.value;x.classList.toggle('active',selected);x.setAttribute('aria-pressed',String(selected));});captureEditorState();return;
     }
-    if (b.dataset.materialBranch) {
-      const parts=b.dataset.materialBranch.split('/');
-      if(parts[0]==='parent' && parts.length===2 && b.getAttribute('aria-expanded')!=='true') {
-        const form=b.closest('form');
-        form.querySelector('[data-definition-choices]').innerHTML=definitionTree(definitionData(form),parts[1],form.elements.materialId?.value||'');
-        return;
-      }
-      const open=b.getAttribute('aria-expanded')!=='true';
-      b.setAttribute('aria-expanded',String(open));
-      const children=b.closest('li').querySelector(':scope > ul');children.hidden=!open;
-      if(open && parts[0]!=='pick') children.firstElementChild?.scrollIntoView({block:'nearest'});
-      if(b.dataset.materialBranch.startsWith('pick/') && picker) {
-        picker.expanded ||= new Set();
-        if(open) picker.expanded.add(b.dataset.materialBranch); else picker.expanded.delete(b.dataset.materialBranch);
-      }
-      return;
+    if(b.dataset.lookupChoice) {chooseLookup(b.dataset.lookupChoice,b.dataset.value);return;}
+    if(b.dataset.clearLookup) {chooseLookup(b.dataset.clearLookup,'');return;}
+    if(b.hasAttribute('data-category-root')) {categoryPicker.root=b.dataset.categoryRoot;renderCategories();return;}
+    if(b.dataset.categoryPick) {
+      const active=categoryPicker,id=b.dataset.categoryPick;
+      if(!active||!fixedCategorySet.has(id))return;
+      closeDialog($('#category-dialog'));categoryPicker=null;active.onSelect(id);return;
     }
-    if (b.dataset.definitionParent) {
-      const form=b.closest('form'), data=definitionData(form), id=b.dataset.definitionParent;
-      form.elements.baseName.value=materialPathLabel(id,data);
-      form.querySelector('[data-definition-choices]').innerHTML='';
-      (form.elements.brand || form.querySelector('[type=submit]')).focus();
-      return;
+    if(b.dataset.stockMaterial) {
+      const i=ingredient(b.dataset.stockMaterial,stockEditor.library);if(!i)return;
+      captureStock();stockEditor.materialId=i.id;stockEditor.categoryId=categoryOf(i.id,stockEditor.library);
+      stockEditor.item.name=i.name;stockEditor.item.brand=i.brand;renderStockForm();$('#stock-form [type=submit]').focus();return;
     }
     if (b.dataset.view) {
       await navigate(b.dataset.view);
@@ -2061,9 +2054,6 @@
       $('#recipe-results').scrollIntoView({block: 'start', behavior: 'instant'});
       $('#result-page')?.focus({preventScroll: true});
       return;
-    }
-    if (b.dataset.pickerCategory) {
-      picker.category=b.dataset.pickerCategory;picker.limit=60;renderPickerShell();$('#material-search').focus();return;
     }
     if (b.dataset.removeFilter) {
       const key = b.dataset.removeFilter;
@@ -2240,7 +2230,7 @@
       }
       return;
     }
-    if (b.dataset.deleteMaterial) {
+    if (b.dataset.deleteMaterial && !fixedCategorySet.has(b.dataset.deleteMaterial)) {
       const id = b.dataset.deleteMaterial,
         referenced =
           env.data.recipes.some((r) =>
@@ -2258,12 +2248,12 @@
           );
       if (referenced) {
         $("#material-edit-error").textContent =
-          "此分类仍被使用，暂时不能删除。";
+          "此材料仍被使用，暂时不能删除。";
         return;
       }
       if (
         (await confirmChoice(
-          "删除这个分类？",
+          "删除这个材料？",
           "",
           [
             ["cancel", "取消", ""],
@@ -2288,7 +2278,12 @@
         delete picker.createDefaults;
         if(picker.scope==='directory') await closeById('material-dialog'); else renderPickerShell();
         break;
-      case 'picker-categories': picker.category='';picker.q='';renderPickerShell();break;
+      case 'picker-filter': openCategory(picker.data,id=>{picker.category=id;renderPickerShell();},picker.category); break;
+      case 'clear-material-filter': picker.category='';renderPickerShell();break;
+      case 'definition-category': {
+        const form=b.closest('form'),data=definitionData(form);
+        openCategory(data,id=>{form.elements.categoryId.value=id;form.querySelector('[data-action=definition-category] span').textContent=categoryPath(id,data);},form.elements.categoryId.value);break;
+      }
       case 'copy-ingredients': {
         const base = env.data.recipes.find((r) => r.id === $('#detail-dialog').dataset.recipe);
         if (!base) break;
@@ -2449,12 +2444,11 @@
       case "add-stock": await openStock(); break;
       case "pick-stock": {
         captureStock();
-        openPicker(stockEditor.library,(category)=>{
-          stockEditor.categoryId=category.id;
-          if(!stockEditor.item.name) stockEditor.item.name=category.name;
-          renderStockForm();$('#stock-form [name=brand]').focus();
-        },{scope:'stock-category'});
-        break;
+        openCategory(stockEditor.library,id=>{
+          if(stockEditor.categoryId!==id) stockEditor.materialId='';
+          stockEditor.categoryId=id;renderStockForm();
+          renderStockSuggestions();$('#stock-form [name=name]').focus();
+        },stockEditor.categoryId);break;
       }
       case "new-material":
         openPicker(
@@ -2588,6 +2582,12 @@
   });
   document.addEventListener("input", (e) => {
     const t = e.target;
+    if(t.dataset.lookup) {
+      const form=t.closest('form'),value=t.value.trim();
+      if(t.dataset.lookup==='parent') {form.elements.parentId.value='';t.dataset.unresolved=String(!!value);}
+      if(t.dataset.lookup==='image') {form.elements.image.value='';form.elements.photoUrl.value=/^https:\/\//i.test(value)?value:'';t.dataset.unresolved=String(!!value&&!form.elements.photoUrl.value);}
+      renderLookup(t);
+    }
     if (t.id === "recipe-search") {
       filters.q = t.value;
       clearTimeout(searchTimer);
@@ -2598,14 +2598,12 @@
       clearTimeout(searchTimer);
       searchTimer = setTimeout(renderPantry, 120);
     }
+    if(t.id==='category-search' && categoryPicker) {categoryPicker.q=t.value;renderCategories();return;}
+    if(t.name==='name' && t.closest('#stock-form')) renderStockSuggestions();
     if (t.id === "material-search" && picker) {
       picker.q = t.value;
       picker.limit = 60;
       renderPicker();
-    }
-    if(t.name==='baseName' && t.closest('#quick-material-form, #material-edit-form')) {
-      const form=t.closest('form');
-      renderDefinitionChoices(form,t.value);
     }
     if (t.closest("#recipe-form") || t.closest("#stock-form")) queueCapture();
   });
@@ -2620,11 +2618,7 @@
       sort = t.value;
       renderResults();
     }
-    if (t.id === "material-category") {
-      picker.category = t.value;
-      picker.limit = 60;
-      renderPickerShell();
-    }
+
     if (t.id === "detail-scale") {
       detailScale = Number(t.value);
       cookChecks.clear();
@@ -2696,7 +2690,16 @@
       $("#sync-error").textContent = err.message;
     }
   });
+  document.addEventListener('focusin',e=>{if(e.target.dataset.lookup)renderLookup(e.target);if(e.target.id==='stock-name')renderStockSuggestions();});
+  document.addEventListener('click',e=>{if(!e.target.closest('.lookup'))hideLookups();if(!e.target.closest('#stock-suggestions')&&e.target.id!=='stock-name'&&$('#stock-suggestions')){$('#stock-suggestions').hidden=true;$('#stock-name').setAttribute('aria-expanded','false');}});
   document.addEventListener("keydown", (e) => {
+    const lookup=e.target.closest('.lookup'),stockSearch=e.target.id==='stock-name'||e.target.closest('#stock-suggestions');
+    if(lookup||stockSearch) {
+      const input=lookup?.querySelector('[data-lookup]')||$('#stock-name'),results=lookup?.querySelector('.lookup-results')||$('#stock-suggestions');
+      const options=[...results.querySelectorAll('button')],n=options.indexOf(e.target);
+      if((e.key==='ArrowDown'||e.key==='ArrowUp')&&!results.hidden&&options.length) {e.preventDefault();const next=n+(e.key==='ArrowDown'?1:-1);(next<0?input:options[Math.min(next,options.length-1)]).focus();return;}
+      if(e.key==='Escape'&&!results.hidden) {e.preventDefault();e.stopPropagation();input.focus();results.hidden=true;input.setAttribute('aria-expanded','false');return;}
+    }
     if (picker && $('#material-results') && !e.isComposing && (e.target.id === 'material-search' || e.target.matches('[data-pick]'))) {
       const items = [...$('#material-results').querySelectorAll('[data-pick]:not(:disabled)')].filter((el) => el.getClientRects().length);
       const n = items.indexOf(e.target);
@@ -2731,6 +2734,7 @@
     "editor-dialog",
     "item-dialog",
     "material-dialog",
+    "category-dialog",
     "sync-dialog",
     "detail-dialog",
   ])

@@ -3246,3 +3246,47 @@ input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: var(--
 .stock-fields .material-target { font-weight: 400; }
 @media(min-width:1100px) { .sync-actions { grid-template-columns: repeat(3,minmax(0,1fr)); } }
 @media(max-width:650px) { #item-dialog:has(#stock-form), #sync-dialog { border: 1px solid var(--line); border-radius: 12px; } }
+
+/* Fixed directory selection is separate from material search. */
+#category-dialog { width: min(640px, 100vw); height: min(740px, 94dvh); max-height: 100dvh; padding: 0; overflow: hidden; }
+#category-dialog[open] { display: flex; flex-direction: column; }
+#category-dialog .dialog-top, #category-dialog .dialog-actions { flex: 0 0 auto; padding: 18px 24px; }
+.category-search { flex: 0 0 auto; padding: 16px 24px; }
+.category-body { min-height: 0; flex: 1; overflow: auto; padding: 0 24px 24px; }
+.category-back { margin: 4px 0 16px; }
+.category-parent { display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid var(--line); }
+.category-children { padding-left: 18px; }
+.category-choice { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 8px; text-align: left; border-bottom: 1px solid var(--line); min-height: 48px; }
+.category-choice small { display: block; font-size: 11px; color: var(--muted); margin-top: 4px; }
+.category-choice.active { color: var(--accent); }
+.category-choice svg { width: 18px; height: 18px; }
+.empty-search { color: var(--muted); padding: 24px 0; font-size: 13px; }
+.lookup { min-width: 0; }
+.lookup-input { display: flex; align-items: center; gap: 4px; }
+.lookup-input input { min-width: 0; flex: 1; font-weight: 400; }
+.lookup-input .icon-button { flex: 0 0 36px; }
+.lookup-results, .stock-suggestions { max-height: 220px; overflow: auto; overscroll-behavior: contain; }
+.lookup-results button, .stock-suggestions button { display: flex; width: 100%; gap: 12px; align-items: center; text-align: left; padding: 12px 4px; min-height: 44px; border-bottom: 1px solid var(--line); }
+.lookup-results button:hover, .stock-suggestions button:hover { background: var(--soft); }
+.lookup-results strong, .stock-suggestions strong { font-size: 13px; font-weight: 500; }
+.lookup-results small, .stock-suggestions small { display: block; font-size: 11px; color: var(--muted); }
+.lookup-results img { width: 44px; height: 44px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
+.stock-suggestions { max-height: 176px; }
+.stock-suggestions button { justify-content: space-between; }
+.stock-fields .field > label { display: block; margin-bottom: 8px; }
+.recipe-extra-section { border-top: 1px solid var(--line); padding-top: 28px; }
+.recipe-extra-section h2, #editor-method h2 { font-size: 16px; margin: 0 0 20px; }
+.recipe-extra-section .tag-picker { margin: 0 0 12px; }
+.method-choices { margin-bottom: 20px; }
+.method-choices .chip { gap: 6px; }
+.method-choices svg { width: 16px; height: 16px; }
+#quick-material-form .material-target, #material-edit-form .material-target { width: 100%; }
+#quick-material-form .material-target span, #material-edit-form .material-target span { flex: 1; text-align: left; }
+@media(max-width:650px) {
+  #category-dialog { width: 100vw; max-width: 100vw; height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+  #category-dialog:modal { margin: 0; }
+  #category-dialog .dialog-top, #category-dialog .dialog-actions { padding: 16px 18px; }
+  .category-search { padding: 14px 18px; }
+  .category-body { padding: 0 18px 18px; }
+  .lookup-results { max-height: 180px; }
+}

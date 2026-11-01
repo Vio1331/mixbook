@@ -372,8 +372,43 @@
     const material = data.ingredients.find(i => i.id === item?.matches?.[0]);
     return materialRole(material) === 'product' ? material.parentId : material?.id || '';
   }
+  function fixedCategory(id, data, categoryIds) {
+    const allowed = new Set(categoryIds);
+    return ingredientPath(id, data).reverse().find(i => allowed.has(i.id))?.id || '';
+  }
+  function prepareFixedPantryItem(data, fields, previous) {
+    const name=String(fields.name||'').trim(),brand=String(fields.brand||'').trim();
+    const category=data.ingredients.find(i=>i.id===fields.categoryId);
+    if(!name) fail('请填写名称。');
+    if(!category || !fields.categoryIds.includes(category.id)) fail('请选择分类。');
+    const sameCategory=previous && fixedCategory(previous.matches[0],data,fields.categoryIds)===category.id;
+    const selected=data.ingredients.find(i=>i.id===fields.materialId);
+    if(selected && fixedCategory(selected.id,data,fields.categoryIds)!==category.id) fail('材料与分类不一致，请重新选择。');
+    if(previous && previous.name===name && previous.brand===brand && sameCategory && (!selected || previous.matches[0]===selected.id)) return clone(previous);
+    let material;
+    if(selected && !selected.brand && !brand) material=selected;
+    if(selected?.brand && norm(selected.brand)===norm(brand) &&
+      ([selected.name,...selected.aliases].map(norm).includes(norm(name)) || sameCategory && previous.matches[0]===selected.id && previous.brand===brand)) material=selected;
+    if(!material) {
+      const generic=selected
+        ? ingredientPath(selected.id,data).reverse().find(i=>!i.brand && !fields.categoryIds.includes(i.id))
+        : data.ingredients.find(i=>!i.brand && !fields.categoryIds.includes(i.id) &&
+          [i.name,...i.aliases].map(norm).includes(norm(name)) && fixedCategory(i.id,data,fields.categoryIds)===category.id);
+      const parentId=generic?.id || category.id;
+      material=data.ingredients.find(i=>norm(i.brand)===norm(brand) &&
+        [i.name,...i.aliases].map(norm).includes(norm(name)) && fixedCategory(i.id,data,fields.categoryIds)===category.id);
+      if(!material) {
+        material={id:uid(),name,brand,parentId,category:category.name,kind:'product',aliases:[],tags:[],image:'',matchParent:true,customized:true,builtIn:false,builtInTag:false};
+        data.ingredients.push(material);
+      }
+    }
+    return {...(previous||{}),id:previous?.id||uid(),name,brand,category:category.name,
+      matches:[...new Set([material.id,...(sameCategory?previous.matches.slice(1):[])])],
+      tags:sameCategory?clone(previous.tags||[]):[],notes:previous?.notes||'',image:previous?.image||'',identityMode:'explicit'};
+  }
   // Bottle identity is editable independently of its classification and other bottles.
   function preparePantryItem(data, fields, previous = null) {
+    if(Array.isArray(fields.categoryIds)) return prepareFixedPantryItem(data,fields,previous);
     const name = String(fields.name || '').trim(), brand = String(fields.brand || '').trim();
     const category = data.ingredients.find(i => i.id === fields.categoryId);
     if (!name) fail('请填写名称。');
@@ -789,6 +824,7 @@
     amountIssue,
     materialRole,
     pantryCategory,
+    fixedCategory,
     preparePantryItem,
     searchMaterials: (data, query, category, recent) => indexed(data, () => searchMaterials(data, query, category, recent)),
     scaleAmount,
